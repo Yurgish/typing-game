@@ -1,5 +1,5 @@
 {
-  "name": "Dyploma",
+  "name": "dyploma",
   "private": true,
   "scripts": {
     "build": "turbo run build",
