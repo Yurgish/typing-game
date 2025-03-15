@@ -2,7 +2,7 @@ import { Shortcut } from "@/store/useKeyboardStore";
 
 export const globalShortcuts: Shortcut[] = [
   {
-    keys: ["z", "x"],
+    keyCodes: ["ControlLeft", "KeyZ", "ControlRight"],
     action: () => console.log("Глобальне: Збереження!"),
   },
 ];

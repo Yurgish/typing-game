@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import Keyboard from "./components/Keyboard/Keyboard";
 import { useKeyboardHandler } from "./hooks/useKeyboardHandler";
 import { useKeyboardStore } from "./store/useKeyboardStore";
 
@@ -9,7 +10,7 @@ function App() {
 
   const [text, setText] = useState<string>("");
 
-  useKeyboardHandler(); // Використовуємо хук для обробки подій
+  useKeyboardHandler();
 
   useEffect(() => {
     if (lastPressedKey) {
@@ -18,14 +19,13 @@ function App() {
   }, [lastPressedKey]);
 
   return (
-    <div
-      style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }}
-    >
+    <div style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }}>
       <h2>Остання натиснута клавіша:</h2>
       <p>{text || "Немає введеного тексту"}</p>
 
       <h3>Усі натиснуті клавіші:</h3>
-      <p>{Array.from(pressedKeys).join(", ") || "Немає натиснутих клавіш"}</p>
+      <p>{Array.from(pressedKeys.keys()).join(", ") || "Немає натиснутих клавіш"}</p>
+      <Keyboard size="full" />
     </div>
   );
 }
