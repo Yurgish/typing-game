@@ -1,15 +1,13 @@
 import { motion } from "framer-motion";
 import React from "react";
 
-import { keyLabels } from "./keyboardLabels";
+import { arrowsLabels, keyLabels } from "./keyboardLabels";
 import { specialKeyStyles } from "./specialKeyStyles";
 
 const Key = React.memo(
   ({ keyCode, isPressed, customLabels }: { keyCode: string; isPressed: boolean; customLabels?: string[] }) => {
     const labels = customLabels ? customLabels : keyLabels[keyCode] || [keyCode];
-    const keyClass = `flex flex-col items-center justify-center rounded text-white shadow text-base
-      ${isPressed ? "bg-gray-500" : "bg-gray-700"}
-      ${specialKeyStyles[keyCode] || "w-10 h-10"}`;
+    const keyClass = `flex flex-col items-center justify-center text-white shadow text-xs ${Object.keys(arrowsLabels).includes(keyCode) ? "" : "rounded"} ${isPressed ? "bg-gray-500" : "bg-gray-700"} ${specialKeyStyles[keyCode] || "w-8 h-8"}`;
 
     return (
       <motion.button
@@ -20,8 +18,8 @@ const Key = React.memo(
       >
         {labels.length > 1 ? (
           <div className="flex flex-col items-center">
-            <span className="text-sm leading-none">{labels[1]}</span>
-            <span className="text-base leading-none">{labels[0]}</span>
+            <span className="leading-none">{labels[1]}</span>
+            <span className="leading-none">{labels[0]}</span>
           </div>
         ) : (
           labels[0]

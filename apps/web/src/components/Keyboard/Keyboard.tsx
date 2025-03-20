@@ -11,7 +11,7 @@ const Keyboard = ({ size = "medium" }: { size?: KeyboardSize }) => {
   const isKeyPressed = (key: string) => pressedKeys.has(key);
 
   return (
-    <div className="flex w-[700px] flex-col gap-1 rounded-lg bg-[#242426] p-2">
+    <div className="flex w-[600px] flex-col gap-1 rounded-lg bg-[#242426] p-2">
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center gap-1 rounded">
           {row.map((key) => (

@@ -1,3 +1,4 @@
+import { Button } from "@repo/ui/components/ui/button";
 import { useEffect, useState } from "react";
 
 import Keyboard from "./components/Keyboard/Keyboard";
@@ -19,13 +20,13 @@ function App() {
   }, [lastPressedKey]);
 
   return (
-    <div style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }}>
+    <div style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }} className="bg-grad">
       <h2>Остання натиснута клавіша:</h2>
       <p>{text || "Немає введеного тексту"}</p>
-
       <h3>Усі натиснуті клавіші:</h3>
+      <Button>Click me!</Button>
       <p>{Array.from(pressedKeys.keys()).join(", ") || "Немає натиснутих клавіш"}</p>
-      <Keyboard size="full" />
+      <Keyboard size="small" />
     </div>
   );
 }
