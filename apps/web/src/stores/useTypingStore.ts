@@ -27,14 +27,12 @@ export const useTypingStore = create<TypingState>((set) => ({
       const words = state.targetText.split(" ");
       const inputWords = state.inputText.split(" ");
 
-      if (char === " " && inputWords[state.currentWordIndex].length >= words[state.currentWordIndex].length) {
+      if (inputWords[state.currentWordIndex].length === words[state.currentWordIndex].length) {
         return { inputText: newInput, currentWordIndex: state.currentWordIndex + 1 };
-      } else if (char !== " ") {
-        return {
-          inputText: newInput,
-        };
       }
-      return {};
+      return {
+        inputText: newInput,
+      };
     }),
 
   removeCharacter: () =>
