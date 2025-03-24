@@ -1,18 +1,14 @@
 import { create } from "zustand";
 
-import { keyLabels } from "@/components/Keyboard/keyboardLabels";
+import { findKeyCodeByChar } from "@/utils/keyboard";
 
-const findKeyCodeByChar = (char: string) => {
-  return Object.keys(keyLabels).find((key) =>
-    keyLabels[key].some((label) => label?.toLowerCase() === char.toLowerCase()),
-  );
-};
 type TypingState = {
   targetText: string;
   inputText: string;
   currentWordIndex: number;
   nextChar: string;
   nextKeyCode: string;
+  nextCharIndex: number;
   setTargetText: (text: string) => void;
   addCharacter: (char: string) => void;
   removeCharacter: () => void;
@@ -25,6 +21,7 @@ export const useTypingStore = create<TypingState>((set) => ({
   currentWordIndex: 0,
   nextChar: "",
   nextKeyCode: "",
+  nextCharIndex: 0,
   setTargetText: (text) =>
     set({
       targetText: text,
@@ -32,6 +29,7 @@ export const useTypingStore = create<TypingState>((set) => ({
       currentWordIndex: 0,
       nextChar: text[0],
       nextKeyCode: findKeyCodeByChar(text[0]),
+      nextCharIndex: 0,
     }),
 
   addCharacter: (char) =>
@@ -49,6 +47,7 @@ export const useTypingStore = create<TypingState>((set) => ({
         currentWordIndex: newWordIndex,
         nextChar: state.targetText[newInput.length] || "",
         nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
+        nextCharIndex: newInput.length,
       };
     }),
 
@@ -65,8 +64,9 @@ export const useTypingStore = create<TypingState>((set) => ({
         currentWordIndex: Math.max(newWordIndex, 0),
         nextChar: state.targetText[newInput.length] || "",
         nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
+        nextCharIndex: newInput.length,
       };
     }),
 
-  reset: () => set({ inputText: "", currentWordIndex: 0, nextChar: "" }),
+  reset: () => set({ inputText: "", currentWordIndex: 0, nextChar: "", nextCharIndex: 0 }),
 }));
