@@ -8,10 +8,9 @@ interface WordProps {
   isCurrentWord: boolean;
   wordIndex: number;
   currentWordIndex: number;
-  wordsLength: number;
 }
 
-const Word = memo(({ word, typedWord, isCurrentWord, wordIndex, wordsLength }: WordProps) => {
+const Word = memo(({ word, typedWord, isCurrentWord, wordIndex }: WordProps) => {
   const isWordWrong = !word.startsWith(typedWord);
 
   return (
@@ -30,14 +29,13 @@ const Word = memo(({ word, typedWord, isCurrentWord, wordIndex, wordsLength }: W
           />
         );
       })}
-      {wordIndex < wordsLength - 1 && (
-        <Character
-          key={`space-${wordIndex}`}
-          char=" "
-          typedChar={typedWord[typedWord.length]}
-          isCurrent={isCurrentWord && typedWord.length === word.length}
-        />
-      )}
+
+      <Character
+        key={`space-${wordIndex}`}
+        char=" "
+        typedChar={typedWord[typedWord.length]}
+        isCurrent={isCurrentWord && typedWord.length === word.length}
+      />
     </div>
   );
 });

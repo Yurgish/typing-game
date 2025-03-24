@@ -23,7 +23,6 @@ export default function TypingText() {
             isCurrentWord={isCurrentWord}
             wordIndex={wordIndex}
             currentWordIndex={currentWordIndex}
-            wordsLength={targetWords.length}
           />
         );
       })}

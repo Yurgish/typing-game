@@ -2,14 +2,14 @@ import { motion } from "framer-motion";
 
 import { useTypingStore } from "@/stores/useTypingStore";
 
+const letterGap = 8;
+const letterWidth = 48;
+const containerWidth = 300;
+
 const SequenceOfLetters = () => {
   const { targetText, nextCharIndex } = useTypingStore();
-  const letterGap = 8;
-  const letterWidth = 48;
-  const containerWidth = 300;
-
   const variants = {
-    base: { x: -(nextCharIndex * (letterWidth + letterGap)) + containerWidth / 2 - letterWidth / 2 },
+    base: { x: -((nextCharIndex ?? 0) * (letterWidth + letterGap)) + containerWidth / 2 - letterWidth / 2 },
   };
 
   return (

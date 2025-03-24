@@ -6,9 +6,9 @@ type TypingState = {
   targetText: string;
   inputText: string;
   currentWordIndex: number;
-  nextChar: string;
-  nextKeyCode: string;
-  nextCharIndex: number;
+  nextChar: string | null;
+  nextKeyCode: string | null;
+  nextCharIndex: number | null;
   setTargetText: (text: string) => void;
   addCharacter: (char: string) => void;
   removeCharacter: () => void;
@@ -34,6 +34,8 @@ export const useTypingStore = create<TypingState>((set) => ({
 
   addCharacter: (char) =>
     set((state) => {
+      if (state.nextCharIndex === null || state.nextCharIndex >= state.targetText.length) return state;
+
       const newInput = state.inputText + char;
       const inputWords = newInput.split(" ");
 
@@ -42,12 +44,24 @@ export const useTypingStore = create<TypingState>((set) => ({
         newWordIndex += 1;
       }
 
+      const nextCharIndex = newInput.length;
+      let nextChar = null;
+      let nextKeyCode = null;
+
+      if (nextCharIndex < state.targetText.length) {
+        nextChar = state.targetText[nextCharIndex];
+        nextKeyCode = findKeyCodeByChar(nextChar);
+      } else {
+        nextChar = null;
+        nextKeyCode = null;
+      }
+
       return {
         inputText: newInput,
         currentWordIndex: newWordIndex,
-        nextChar: state.targetText[newInput.length] || "",
-        nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
-        nextCharIndex: newInput.length,
+        nextChar,
+        nextKeyCode,
+        nextCharIndex,
       };
     }),
 
