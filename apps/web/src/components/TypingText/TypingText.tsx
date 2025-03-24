@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { useTypingStore } from "@/stores/useTypingStore";
 
 import Word from "./Word";
@@ -8,10 +6,6 @@ export default function TypingText() {
   const { targetText, inputText, currentWordIndex } = useTypingStore();
 
   const targetWords = targetText.split(" ");
-
-  useEffect(() => {
-    console.log(inputText);
-  }, [inputText]);
 
   return (
     <div className="mb-4 flex max-w-[70%] flex-wrap text-4xl">

@@ -45,7 +45,7 @@ export const keyLabels: Record<string, [string, string?]> = {
   Comma: [",", "<"],
   Period: [".", ">"],
   Slash: ["/", "?"],
-  Space: ["␣"],
+  Space: ["␣", " "],
   Shift: ["Shift"],
   ControlLeft: ["Ctrl"],
   AltLeft: ["Alt"],

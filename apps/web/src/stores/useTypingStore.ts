@@ -1,9 +1,18 @@
 import { create } from "zustand";
 
+import { keyLabels } from "@/components/Keyboard/keyboardLabels";
+
+const findKeyCodeByChar = (char: string) => {
+  return Object.keys(keyLabels).find((key) =>
+    keyLabels[key].some((label) => label?.toLowerCase() === char.toLowerCase()),
+  );
+};
 type TypingState = {
   targetText: string;
   inputText: string;
   currentWordIndex: number;
+  nextChar: string;
+  nextKeyCode: string;
   setTargetText: (text: string) => void;
   addCharacter: (char: string) => void;
   removeCharacter: () => void;
@@ -14,39 +23,50 @@ export const useTypingStore = create<TypingState>((set) => ({
   targetText: "",
   inputText: "",
   currentWordIndex: 0,
-
-  setTargetText: (text) => set({ targetText: text, inputText: "", currentWordIndex: 0 }),
+  nextChar: "",
+  nextKeyCode: "",
+  setTargetText: (text) =>
+    set({
+      targetText: text,
+      inputText: "",
+      currentWordIndex: 0,
+      nextChar: text[0],
+      nextKeyCode: findKeyCodeByChar(text[0]),
+    }),
 
   addCharacter: (char) =>
     set((state) => {
-      if (state.inputText.length === 0) {
-        return { inputText: char };
-      }
-
       const newInput = state.inputText + char;
-      const words = state.targetText.split(" ");
-      const inputWords = state.inputText.split(" ");
+      const inputWords = newInput.split(" ");
 
-      if (inputWords[state.currentWordIndex].length === words[state.currentWordIndex].length) {
-        return { inputText: newInput, currentWordIndex: state.currentWordIndex + 1 };
+      let newWordIndex = state.currentWordIndex;
+      if (inputWords.length > state.currentWordIndex + 1) {
+        newWordIndex += 1;
       }
+
       return {
         inputText: newInput,
+        currentWordIndex: newWordIndex,
+        nextChar: state.targetText[newInput.length] || "",
+        nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
       };
     }),
 
   removeCharacter: () =>
     set((state) => {
-      if (state.inputText.endsWith(" ")) {
-        return {
-          inputText: state.inputText.slice(0, -1),
-          currentWordIndex: Math.max(state.currentWordIndex - 1, 0),
-        };
-      }
+      if (state.inputText.length === 0) return state;
+
+      const newInput = state.inputText.slice(0, -1);
+      const words = newInput.split(" ");
+      const newWordIndex = words.length - 1;
+
       return {
-        inputText: state.inputText.slice(0, -1),
+        inputText: newInput,
+        currentWordIndex: Math.max(newWordIndex, 0),
+        nextChar: state.targetText[newInput.length] || "",
+        nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
       };
     }),
 
-  reset: () => set({ inputText: "", currentWordIndex: 0 }),
+  reset: () => set({ inputText: "", currentWordIndex: 0, nextChar: "" }),
 }));

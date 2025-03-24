@@ -1,4 +1,5 @@
 import { useKeyboardStore } from "@/stores/useKeyboardStore";
+import { useTypingStore } from "@/stores/useTypingStore";
 
 import ArrowKeys from "./Arrows";
 import Key from "./Key";
@@ -8,6 +9,8 @@ const Keyboard = ({ size = "medium" }: { size?: KeyboardSize }) => {
   const rows = layouts[size];
 
   const pressedKeys = useKeyboardStore((state) => state.pressedKeys);
+  const { nextKeyCode } = useTypingStore();
+
   const isKeyPressed = (key: string) => pressedKeys.has(key);
 
   return (
@@ -15,7 +18,7 @@ const Keyboard = ({ size = "medium" }: { size?: KeyboardSize }) => {
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="flex justify-center gap-1 rounded">
           {row.map((key) => (
-            <Key key={key} keyCode={key} isPressed={isKeyPressed(key)} />
+            <Key key={key} keyCode={key} isPressed={isKeyPressed(key)} isNextKey={nextKeyCode === key} />
           ))}
           {size === "full" && rowIndex === rows.length - 1 && <ArrowKeys />}
         </div>
