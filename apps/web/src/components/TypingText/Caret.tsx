@@ -20,7 +20,7 @@ const Caret = ({ type = "regular" }: CaretProps) => {
       transition={{ duration: 0.1, ease: "easeOut" }}
       className={`absolute inset-0 flex ${caretWrapperClassName}`}
     >
-      <div className={`border-gray-500 ${caretClassName}`} />
+      <div className={`border-foreground ${caretClassName}`} />
     </motion.div>
   );
 };

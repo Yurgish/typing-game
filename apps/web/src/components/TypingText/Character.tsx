@@ -16,16 +16,16 @@ const Character = memo(({ char, typedChar, isCurrent, className = "" }: Characte
       return "";
     }
     if (typedChar) {
-      return typedChar === char ? "text-green-400" : "text-red-400";
+      return typedChar === char ? "text-correct" : "text-error";
     } else {
-      return "text-gray-400";
+      return "text-foreground";
     }
   }, [char, isSpace, typedChar]);
 
   return (
     <span className={`relative ${className}`}>
       <span className={` ${getCharacterClassName()}`}>{isSpace ? "\u00A0\u00A0" : char}</span>
-      {isCurrent && <Caret />}
+      {isCurrent && <Caret type="bottom" />}
     </span>
   );
 });

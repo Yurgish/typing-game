@@ -16,11 +16,11 @@ const Key: React.FC<KeyProps> = React.memo(({ keyCode, isPressed, customLabels, 
   const labels = customLabels ?? keyLabels[keyCode] ?? [keyCode];
 
   const keyClass = cn(
-    "flex flex-col items-center justify-center shadow text-xs",
+    "flex flex-col items-center justify-center shadow-(--key-shadow) text-xs",
     !Object.keys(arrowsLabels).includes(keyCode) && "rounded",
-    isPressed ? "bg-gray-500" : "bg-gray-700",
+    isPressed ? "bg-muted" : "bg-background",
     specialKeyStyles[keyCode] ?? "w-8 h-8",
-    isNextKey ? "text-blue-500" : "text-white",
+    isNextKey ? "bg-keyboard-key-next text-background" : "text-foreground",
   );
 
   return (

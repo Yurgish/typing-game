@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap");
+
 @import "tailwindcss";
 
 @source "../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
@@ -5,6 +7,10 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+body {
+  font-family: "Geist Mono", monospace;
+}
 
 :root {
   --radius: 0.625rem;
@@ -40,6 +46,11 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --destructive-foreground: hsl(0 0% 98%);
+  --keyboard-key-next: oklch(77% 0.1085 274.24);
+  --error: oklch(67.64% 0.2135 13.76);
+  --correct: oklch(77.3% 0.1554 141.88);
+  --error-background: oklch(89.7% 0.0576 0);
+  --key-shadow: 0px 1px 1px rgba(26, 26, 26, 0.24);
 }
 
 .dark {
@@ -75,6 +86,11 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --destructive-foreground: hsl(0 0% 98%);
+  --keyboard-key-next: oklch(67.51% 0.1085 274.24);
+  --error: oklch(67.64% 0.2135 13.76);
+  --correct: oklch(77.3% 0.1554 141.88);
+  --error-background: oklch(22.4% 0.0903 0);
+  --key-shadow: 0px 1px 1px rgba(223, 223, 223, 0.253);
 }
 
 @theme inline {
@@ -114,6 +130,11 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-keyboard-key-next: var(--keyboard-key-next);
+  --color-error: var(--error);
+  --color-correct: var(--correct);
+  --color-error-background: var(--error-background);
+  --key-shadow: var(--key-shadow);
 }
 
 @layer base {

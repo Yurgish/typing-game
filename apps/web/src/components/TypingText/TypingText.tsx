@@ -10,15 +10,16 @@ export default function TypingText() {
   return (
     <div className="mb-4 flex max-w-[70%] flex-wrap text-4xl">
       {targetWords.map((word, wordIndex) => {
-        const startIndex = targetWords.slice(0, wordIndex).join(" ").length + (wordIndex > 0 ? 1 : 0);
-        const endIndex = startIndex + word.length;
+        const startIndex =
+          wordIndex === 0 ? 0 : targetWords.slice(0, wordIndex).reduce((acc, w) => acc + w.length + 1, 0);
+        const endIndex = startIndex + word.length + 1;
         const typedWord = inputText.slice(startIndex, endIndex);
         const isCurrentWord = inputText.length >= startIndex && inputText.length <= endIndex;
 
         return (
           <Word
             key={wordIndex}
-            word={word}
+            word={word + " "}
             typedWord={typedWord}
             isCurrentWord={isCurrentWord}
             wordIndex={wordIndex}
