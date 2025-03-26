@@ -16,7 +16,7 @@ const Key: React.FC<KeyProps> = React.memo(({ keyCode, isPressed, customLabels, 
   const labels = customLabels ?? keyLabels[keyCode] ?? [keyCode];
 
   const keyClass = cn(
-    "flex flex-col items-center justify-center shadow-(--key-shadow) text-xs",
+    "relative flex flex-col items-center justify-center shadow-(--key-shadow) text-xs",
     !Object.keys(arrowsLabels).includes(keyCode) && "rounded",
     isPressed ? "bg-muted" : "bg-background",
     specialKeyStyles[keyCode] ?? "w-8 h-8",
@@ -24,8 +24,9 @@ const Key: React.FC<KeyProps> = React.memo(({ keyCode, isPressed, customLabels, 
   );
 
   return (
-    <motion.button
+    <motion.div
       key={keyCode}
+      data-key={keyCode}
       className={keyClass}
       animate={{ scale: isPressed ? 0.95 : 1 }}
       transition={{ duration: 0.1 }}
@@ -38,7 +39,12 @@ const Key: React.FC<KeyProps> = React.memo(({ keyCode, isPressed, customLabels, 
       ) : (
         labels[0]
       )}
-    </motion.button>
+      {(keyCode === "KeyF" || keyCode === "KeyJ") && (
+        <div className="absolute right-0 bottom-1 left-0 flex items-center justify-center">
+          <span className={`h-0.5 w-2 rounded ${isNextKey ? "bg-background" : "bg-foreground"}`}></span>
+        </div>
+      )}
+    </motion.div>
   );
 });
 
