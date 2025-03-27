@@ -1,5 +1,6 @@
 import { Button } from "@repo/ui/components/ui/button";
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 import Keyboard from "@/components/Keyboard/Keyboard";
 import KeyIntroduction from "@/components/KeyIntroduction/KeyIntroduction";
@@ -23,6 +24,18 @@ export default function LessonScreen({
   onScreenComplete: () => void;
 }) {
   const { isEndOfInputText } = useTypingStore();
+  const [isButtonVisible, setIsButtonVisible] = useState(false);
+
+  const onContinueButtonClick = () => {
+    setIsButtonVisible(false);
+    onScreenComplete();
+  };
+
+  useEffect(() => {
+    if (isEndOfInputText) {
+      setIsButtonVisible(true);
+    }
+  }, [isEndOfInputText]);
 
   return (
     <LayoutGroup>
@@ -57,7 +70,7 @@ export default function LessonScreen({
           <Keyboard size="full" />
         </motion.div>
         <AnimatePresence mode="wait">
-          {isEndOfInputText && (
+          {isButtonVisible && (
             <motion.div
               layoutId="continue-button"
               initial="hidden"
@@ -66,7 +79,7 @@ export default function LessonScreen({
               variants={screenVariants}
               transition={{ duration: 0.4 }}
             >
-              <Button onClick={onScreenComplete}>Continue</Button>
+              <Button onClick={onContinueButtonClick}>Continue</Button>
             </motion.div>
           )}
         </AnimatePresence>

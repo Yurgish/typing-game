@@ -17,7 +17,9 @@ export const useLessonsScreensHandler = () => {
 
   const initialScreenIndex = lesson ? lesson.screens.findIndex((s) => s.id === currentLink?.screenId) : 0;
 
-  const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(initialScreenIndex);
+  const [currentScreenIndex, setCurrentScreenIndex] = useState<number>(
+    initialScreenIndex >= 0 ? initialScreenIndex : 0,
+  );
 
   const isFirstRender = useRef(true);
 
