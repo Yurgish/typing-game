@@ -6,7 +6,8 @@ import { BrowserRouter, Route, Routes } from "react-router";
 
 import App from "./App.tsx";
 import MainLayout from "./layouts/MainLayout.tsx";
-import LessonScreen from "./pages/LessonScreen.tsx";
+import Lesson from "./pages/Lesson.tsx";
+import Lessons from "./pages/Lessons.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -14,7 +15,8 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<App />} />
-          <Route path="/lessonScreen" element={<LessonScreen />} />
+          <Route path="/lessons" element={<Lessons />} />
+          <Route path="/lesson/:lessonId" element={<Lesson />} />
         </Route>
       </Routes>
     </BrowserRouter>

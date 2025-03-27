@@ -11,15 +11,17 @@ type KeyboardState = {
   pressedKeys: Map<string, string>;
   globalShortcuts: Shortcut[];
   localShortcuts: Shortcut[];
+  isKeyPressed: (key: string) => boolean;
   setKeyPressed: (code: string, key: string, pressed: boolean) => void;
   setLocalShortcuts: (shortcuts: Shortcut[]) => void;
 };
 
-export const useKeyboardStore = create<KeyboardState>((set) => ({
+export const useKeyboardStore = create<KeyboardState>((set, get) => ({
   lastPressedKey: null,
   pressedKeys: new Map(),
   globalShortcuts,
   localShortcuts: [],
+  isKeyPressed: (key: string) => get().pressedKeys.has(key),
   setKeyPressed: (code, key, pressed) =>
     set(({ pressedKeys }) => {
       const newPressedKeys = new Map(pressedKeys);

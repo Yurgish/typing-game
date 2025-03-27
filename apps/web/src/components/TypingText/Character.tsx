@@ -25,7 +25,7 @@ const Character = memo(({ char, typedChar, isCurrent, className = "" }: Characte
   return (
     <span className={`relative ${className}`}>
       <span className={` ${getCharacterClassName()}`}>{isSpace ? "\u00A0\u00A0" : char}</span>
-      {isCurrent && <Caret type="bottom" />}
+      {isCurrent && <Caret />}
     </span>
   );
 });

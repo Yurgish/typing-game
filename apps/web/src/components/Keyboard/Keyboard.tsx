@@ -8,10 +8,8 @@ import { KeyboardSize, layouts } from "./keyboardLayouts";
 const Keyboard = ({ size = "medium" }: { size?: KeyboardSize }) => {
   const rows = layouts[size];
 
-  const pressedKeys = useKeyboardStore((state) => state.pressedKeys);
+  const { isKeyPressed } = useKeyboardStore();
   const { nextKeyCode } = useTypingStore();
-
-  const isKeyPressed = (key: string) => pressedKeys.has(key);
 
   return (
     <div className="bg-sidebar-border flex h-full w-[600px] flex-col gap-1 rounded-lg p-2">

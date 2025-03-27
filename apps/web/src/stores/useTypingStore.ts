@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { findKeyCodeByChar } from "@/utils/keyboard";
+import { findCharByKeyCode, findKeyCodeByChar } from "@/utils/keyboard";
 
 type TypingState = {
   targetText: string;
@@ -9,6 +9,8 @@ type TypingState = {
   nextChar: string | null;
   nextKeyCode: string | null;
   nextCharIndex: number | null;
+  isEndOfInputText: boolean;
+  setTargetKeyCode: (keyCode: string) => void;
   setTargetText: (text: string) => void;
   addCharacter: (char: string) => void;
   removeCharacter: () => void;
@@ -22,6 +24,7 @@ export const useTypingStore = create<TypingState>((set) => ({
   nextChar: "",
   nextKeyCode: "",
   nextCharIndex: 0,
+  isEndOfInputText: false,
   setTargetText: (text) =>
     set({
       targetText: text,
@@ -30,6 +33,18 @@ export const useTypingStore = create<TypingState>((set) => ({
       nextChar: text[0],
       nextKeyCode: findKeyCodeByChar(text[0]),
       nextCharIndex: 0,
+      isEndOfInputText: false,
+    }),
+
+  setTargetKeyCode: (keyCode) =>
+    set({
+      targetText: findCharByKeyCode(keyCode, 0),
+      inputText: "",
+      currentWordIndex: 0,
+      nextChar: findCharByKeyCode(keyCode, 0),
+      nextKeyCode: keyCode,
+      nextCharIndex: 0,
+      isEndOfInputText: false,
     }),
 
   addCharacter: (char) =>
@@ -62,6 +77,7 @@ export const useTypingStore = create<TypingState>((set) => ({
         nextChar,
         nextKeyCode,
         nextCharIndex,
+        isEndOfInputText: nextCharIndex >= state.targetText.length,
       };
     }),
 
@@ -79,8 +95,9 @@ export const useTypingStore = create<TypingState>((set) => ({
         nextChar: state.targetText[newInput.length] || "",
         nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
         nextCharIndex: newInput.length,
+        isEndOfInputText: newInput.length >= state.targetText.length,
       };
     }),
 
-  reset: () => set({ inputText: "", currentWordIndex: 0, nextChar: "", nextCharIndex: 0 }),
+  reset: () => set({ inputText: "", currentWordIndex: 0, nextChar: "", nextCharIndex: 0, isEndOfInputText: false }),
 }));
