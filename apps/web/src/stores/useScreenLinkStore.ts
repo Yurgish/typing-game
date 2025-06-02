@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 type ScreenLink = {
   lessonId: string;
-  screenId: string;
+  screenId: number;
 };
 
 type ScreenLinkStore = {

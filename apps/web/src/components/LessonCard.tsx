@@ -3,14 +3,15 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@repo/ui/componen
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 
-import { Lesson } from "@/pages/Lessons";
 import { useScreenLinkStore } from "@/stores/useScreenLinkStore";
+import { getScreenCustomId } from "@/utils/transformation";
+import { Lesson } from "@/utils/types";
 
 const LessonCard = ({ lesson, index }: { lesson: Lesson; index: number }) => {
   const navigate = useNavigate();
   const { setCurrentLink } = useScreenLinkStore();
 
-  const navigateToScreen = (screenId: string) => {
+  const navigateToScreen = (screenId: number) => {
     setCurrentLink({ lessonId: lesson.id, screenId });
     navigate(`/lesson/${lesson.id}`);
   };
@@ -22,23 +23,23 @@ const LessonCard = ({ lesson, index }: { lesson: Lesson; index: number }) => {
           <h1 className="text-base">
             {index + 1}. {lesson.title}
           </h1>
-          <Button variant="ghost" size="sm" onClick={() => navigate(`/lesson/${lesson.id}`)}>
+          <Button variant="ghost" size="sm" onClick={() => navigateToScreen(1)}>
             Start
           </Button>
         </div>
         <div className="flex w-full gap-1">
           {lesson.screens.map((screen) => (
-            <HoverCard key={screen.id}>
+            <HoverCard key={screen.order}>
               <motion.div
-                className="bg-foreground h-1 cursor-pointer"
+                className="bg-accent h-1 cursor-pointer"
                 whileHover={{ scaleY: 2, flex: 1.1 }}
                 initial={{ scaleY: 1, flex: 1 }}
-                onClick={() => navigateToScreen(screen.id)}
+                onClick={() => navigateToScreen(screen.order)}
               >
                 <HoverCardTrigger className="flex h-full w-full"></HoverCardTrigger>
               </motion.div>
               <HoverCardContent className="w-full px-4 py-2 text-xs">
-                <p>{screen.id}</p>
+                <p>{getScreenCustomId(lesson.order, screen.order)}</p>
                 <p>Mode: {screen.type}</p>
               </HoverCardContent>
             </HoverCard>

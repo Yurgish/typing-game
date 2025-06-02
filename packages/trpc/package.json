@@ -1,0 +1,18 @@
+{
+  "name": "@repo/trpc",
+  "version": "1.0.0",
+  "dependencies": {
+    "@repo/database": "*",
+    "@trpc/server": "^11.2.0",
+    "superjson": "^2.2.2",
+    "zod": "^3.25.48"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./routers": "./src/routers/index.js",
+    "./context": "./src/context.ts"
+  }
+}

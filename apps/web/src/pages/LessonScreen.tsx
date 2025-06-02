@@ -7,8 +7,7 @@ import KeyIntroduction from "@/components/KeyIntroduction/KeyIntroduction";
 import SequenceOfLetters from "@/components/SequenceOfLetters/SequenceOfLetters";
 import TypingText from "@/components/TypingText/TypingText";
 import { useTypingStore } from "@/stores/useTypingStore";
-
-import { LearningModes } from "./Lessons";
+import { LearningMode, Screen } from "@/utils/types";
 
 const screenVariants = {
   hidden: { clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" },
@@ -20,7 +19,7 @@ export default function LessonScreen({
   currentScreen,
   onScreenComplete,
 }: {
-  currentScreen: any;
+  currentScreen: Screen;
   onScreenComplete: () => void;
 }) {
   const { isEndOfInputText } = useTypingStore();
@@ -39,10 +38,11 @@ export default function LessonScreen({
 
   return (
     <LayoutGroup>
-      <motion.div className="flex w-full flex-col items-center justify-center gap-6">
+      <motion.div className="reltive flex w-full flex-col items-center justify-center gap-6">
+        <p className="absolute top-6 left-0">{currentScreen.order}</p>
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentScreen.id}
+            key={currentScreen.order}
             layout="position"
             layoutId="lesson-screen"
             initial="hidden"
@@ -54,11 +54,11 @@ export default function LessonScreen({
           >
             {(() => {
               switch (currentScreen.type) {
-                case LearningModes.KEY_INTRODUCTION:
+                case LearningMode.KEY_INTRODUCTION:
                   return <KeyIntroduction />;
-                case LearningModes.DEFAULT:
+                case LearningMode.DEFAULT:
                   return <TypingText />;
-                case LearningModes.LETTER_SEQUENCE:
+                case LearningMode.LETTER_SEQUENCE:
                   return <SequenceOfLetters />;
                 default:
                   return null;

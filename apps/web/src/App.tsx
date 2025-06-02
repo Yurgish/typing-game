@@ -7,7 +7,7 @@ import { useKeyboardHandler } from "./hooks/useKeyboardHandler";
 import { useKeyboardStore } from "./stores/useKeyboardStore";
 
 function App() {
-  const lastPressedKey = useKeyboardStore((state) => state.lastPressedKey); // Отримуємо останню клавішу
+  const lastPressedKey = useKeyboardStore((state) => state.lastPressedKey);
   const pressedKeys = useKeyboardStore((state) => state.pressedKeys);
 
   const [text, setText] = useState<string>("");

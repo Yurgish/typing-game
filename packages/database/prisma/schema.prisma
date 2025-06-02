@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client"
+  output = "./../generated/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url = "mongodb+srv://Yurgish:YUraha1z2x@cluster0.aeufdab.mongodb.net/typing?retryWrites=true&w=majority&appName=Cluster0"
+}
+
+enum LearningMode {
+  KEY_INTRODUCTION
+  LETTER_SEQUENCE
+  DEFAULT
+}
+
+enum LessonDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model Lesson {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  difficulty LessonDifficulty
+  order      Int
+  screens    Screen[]
+}
+
+type Screen {
+  type     LearningMode
+  content  Content
+  order    Int
+}
+
+type Content {
+  keyCode   String?
+  sequence  String?
+  text      String?
+}
