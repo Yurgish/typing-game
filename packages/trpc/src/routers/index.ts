@@ -1,5 +1,5 @@
 import { router } from "../index";
-import { lessonRouter } from "./example";
+import { lessonRouter } from "./lessons";
 
 export const appRouter = router({
   lesson: lessonRouter,

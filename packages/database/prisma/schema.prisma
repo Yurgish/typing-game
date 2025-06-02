@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url = "mongodb+srv://Yurgish:YUraha1z2x@cluster0.aeufdab.mongodb.net/typing?retryWrites=true&w=majority&appName=Cluster0"
+  url = env("DATABASE_URL")
 }
 
 enum LearningMode {

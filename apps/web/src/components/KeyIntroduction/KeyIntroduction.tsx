@@ -12,28 +12,27 @@ const KeyIntroduction = () => {
   const { pressedKeys, isKeyPressed } = useKeyboardStore();
 
   const [isCorrect, setIsCorrect] = useState(false);
-  const targetKey = targetText[0];
 
   useEffect(() => {
-    if (isKeyPressed(findKeyCodeByChar(targetKey || "") || "")) {
+    if (isKeyPressed(findKeyCodeByChar(targetText || "") || "")) {
       setIsCorrect(true);
     }
-  }, [isKeyPressed, targetKey, pressedKeys]);
+  }, [isKeyPressed, targetText, pressedKeys]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
       <Alert>
         <AlertTitle className="flex items-center gap-2 py-1">
           <p>Introduction of key</p>
-          <Key keyCode={findKeyCodeByChar(targetKey || "") || ""} isPressed={false} />
+          <Key keyCode={findKeyCodeByChar(targetText || "") || ""} isPressed={false} />
         </AlertTitle>
-        <AlertDescription>Press the key {targetKey?.toUpperCase()} with your finger to continue!</AlertDescription>
+        <AlertDescription>Press the key {targetText?.toUpperCase()} with your finger to continue!</AlertDescription>
       </Alert>
       <span
         className={`flex items-center justify-center rounded border-1 text-lg ${isCorrect ? "text-correct border-correct" : "text-keyboard-key-next border-keyboard-key-next"}`}
         style={{ width: 48, height: 48 }}
       >
-        {targetKey?.toUpperCase()}
+        {targetText?.toUpperCase()}
       </span>
     </div>
   );

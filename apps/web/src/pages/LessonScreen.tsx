@@ -51,6 +51,11 @@ export default function LessonScreen({
             variants={screenVariants}
             transition={{ duration: 0.4 }}
             className="flex w-full items-center justify-center py-1"
+            onAnimationComplete={(definition) => {
+              if (definition === "exit") {
+                onScreenComplete();
+              }
+            }}
           >
             {(() => {
               switch (currentScreen.type) {
