@@ -17,6 +17,7 @@
     "superjson": "^2.2.2"
   },
   "devDependencies": {
+    "@repo/prettier-config": "*",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
     "@types/cors": "^2.8.18",

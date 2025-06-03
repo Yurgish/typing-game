@@ -2,7 +2,15 @@ import { create } from "zustand";
 
 import { globalShortcuts } from "@/config/keyboardShortcuts";
 
-export const SPECIAL_KEYS = new Set(["shift", "control", "alt", "meta", "space", "enter", "backspace"]);
+export const SPECIAL_KEYS = new Set([
+  "shift",
+  "control",
+  "alt",
+  "meta",
+  "space",
+  "enter",
+  "backspace",
+]);
 
 export type Shortcut = { keyCodes: string[]; action: () => void };
 

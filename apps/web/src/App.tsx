@@ -21,13 +21,18 @@ function App() {
   }, [lastPressedKey]);
 
   return (
-    <div style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }} className="bg-grad">
+    <div
+      style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }}
+      className="bg-grad"
+    >
       <h2>Остання натиснута клавіша:</h2>
       <p>{text || "Немає введеного тексту"}</p>
       <h3>Усі натиснуті клавіші:</h3>
       <Button size="sm">Click me!</Button>
       <ThemeToggle />
-      <p>{Array.from(pressedKeys.keys()).join(", ") || "Немає натиснутих клавіш"}</p>
+      <p>
+        {Array.from(pressedKeys.keys()).join(", ") || "Немає натиснутих клавіш"}
+      </p>
       <Keyboard size="small" />
     </div>
   );
