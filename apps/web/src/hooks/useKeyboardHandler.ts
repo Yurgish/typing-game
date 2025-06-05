@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import { Shortcut, useKeyboardStore } from "@/stores/useKeyboardStore";
+import { Shortcut, useKeyboardStore } from '@/stores/useKeyboardStore';
 
 function isShortcutPressed(
   shortcutKeys: string[],
   pressedKeys: Map<string, string>,
-  lastPressedKeyCode: string,
+  lastPressedKeyCode: string
 ): boolean {
   const shortcutSet = new Set(shortcutKeys);
   const pressedKeyCodes = new Set([...pressedKeys.keys(), lastPressedKeyCode]);
@@ -23,7 +23,7 @@ export function useKeyboardHandler(ref?: React.RefObject<HTMLElement>, localShor
     pressedKeys,
     globalShortcuts,
     setLocalShortcuts,
-    localShortcuts: storedLocalShortcuts,
+    localShortcuts: storedLocalShortcuts
   } = useKeyboardStore();
 
   useEffect(() => {
@@ -47,12 +47,12 @@ export function useKeyboardHandler(ref?: React.RefObject<HTMLElement>, localShor
       setKeyPressed(event.code, event.key, false);
     };
 
-    target.addEventListener("keydown", handleKeyDown);
-    target.addEventListener("keyup", handleKeyUp);
+    target.addEventListener('keydown', handleKeyDown);
+    target.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      target.removeEventListener("keydown", handleKeyDown);
-      target.removeEventListener("keyup", handleKeyUp);
+      target.removeEventListener('keydown', handleKeyDown);
+      target.removeEventListener('keyup', handleKeyUp);
       if (localShortcuts) setLocalShortcuts([]);
     };
   }, [ref, setKeyPressed, pressedKeys, globalShortcuts, setLocalShortcuts, storedLocalShortcuts, localShortcuts]);

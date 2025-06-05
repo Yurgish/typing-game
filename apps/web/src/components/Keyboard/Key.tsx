@@ -1,9 +1,9 @@
-import { cn } from "@repo/ui/lib/utils";
-import { motion } from "framer-motion";
-import React from "react";
+import { cn } from '@repo/ui/lib/utils';
+import { motion } from 'framer-motion';
+import React from 'react';
 
-import { arrowsLabels, keyLabels } from "./keyboardLabels";
-import { specialKeyStyles } from "./specialKeyStyles";
+import { arrowsLabels, keyLabels } from './keyboardLabels';
+import { specialKeyStyles } from './specialKeyStyles';
 
 interface KeyProps {
   keyCode: string;
@@ -16,11 +16,11 @@ const Key: React.FC<KeyProps> = React.memo(({ keyCode, isPressed, customLabels, 
   const labels = customLabels ?? keyLabels[keyCode] ?? [keyCode];
 
   const keyClass = cn(
-    "relative flex flex-col items-center justify-center shadow-(--key-shadow) text-xs",
-    !Object.keys(arrowsLabels).includes(keyCode) && "rounded",
-    isPressed ? "bg-muted" : "bg-background",
-    specialKeyStyles[keyCode] ?? "w-8 h-8",
-    isNextKey ? "bg-keyboard-key-next text-background" : "text-foreground",
+    'relative flex flex-col items-center justify-center shadow-(--key-shadow) text-xs',
+    !Object.keys(arrowsLabels).includes(keyCode) && 'rounded',
+    isPressed ? 'bg-muted' : 'bg-background',
+    specialKeyStyles[keyCode] ?? 'w-8 h-8',
+    isNextKey ? 'bg-keyboard-key-next text-background' : 'text-foreground'
   );
 
   return (
@@ -39,9 +39,9 @@ const Key: React.FC<KeyProps> = React.memo(({ keyCode, isPressed, customLabels, 
       ) : (
         labels[0]
       )}
-      {(keyCode === "KeyF" || keyCode === "KeyJ") && (
+      {(keyCode === 'KeyF' || keyCode === 'KeyJ') && (
         <div className="absolute right-0 bottom-1 left-0 flex items-center justify-center">
-          <span className={`h-0.5 w-2 rounded ${isNextKey ? "bg-background" : "bg-foreground"}`}></span>
+          <span className={`h-0.5 w-2 rounded ${isNextKey ? 'bg-background' : 'bg-foreground'}`}></span>
         </div>
       )}
     </motion.div>

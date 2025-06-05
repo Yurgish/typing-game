@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 
-import Metrics from '@/components/Metrics';
 import { useLessonsScreensHandler } from '@/hooks/useLessonsScreensHandler';
 
 import LessonScreen from './LessonScreen';
@@ -11,11 +10,8 @@ const Lesson = () => {
   return (
     <motion.div layout className="relative flex min-h-screen w-full flex-col items-center justify-center">
       <h2 className="absolute top-0 left-0">{lesson?.title}</h2>
-      <div className="absolute top-20 right-0">
-        <Metrics />
-      </div>
       {lesson && currentScreen && (
-        <LessonScreen currentScreen={currentScreen} onScreenComplete={handleScreenComplete} />
+        <LessonScreen currentScreen={currentScreen} onScreenComplete={handleScreenComplete} lesson={lesson} />
       )}
     </motion.div>
   );

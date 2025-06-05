@@ -1,17 +1,17 @@
-import "@repo/ui/globals.css";
+import '@repo/ui/globals.css';
 
-import { QueryClientProvider } from "@tanstack/react-query";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { QueryClientProvider } from '@tanstack/react-query';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router';
 
-import App from "./App.tsx";
-import MainLayout from "./layouts/MainLayout.tsx";
-import Lesson from "./pages/Lesson.tsx";
-import Lessons from "./pages/Lessons.tsx";
-import { queryClient } from "./utils/trpc.ts";
+import App from './App.tsx';
+import MainLayout from './layouts/MainLayout.tsx';
+import Lesson from './pages/Lesson.tsx';
+import Lessons from './pages/Lessons.tsx';
+import { queryClient } from './utils/trpc.ts';
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -24,5 +24,5 @@ createRoot(document.getElementById("root")!).render(
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-  </StrictMode>,
+  </StrictMode>
 );

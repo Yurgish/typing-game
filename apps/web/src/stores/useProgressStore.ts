@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { localStorageWrapper as storage } from "@/utils/localStorage";
+import { localStorageWrapper as storage } from '@/utils/localStorage';
 
 type Progress = {
   lessons: Record<string, { started: boolean; completedScreens: string[] }>;
@@ -15,7 +15,7 @@ type ProgressStore = Progress & {
   resetProgress: () => void;
 };
 
-const LOCAL_STORAGE_KEY = "lessonProgress";
+const LOCAL_STORAGE_KEY = 'lessonProgress';
 
 const loadProgress = (): Progress =>
   storage.get(LOCAL_STORAGE_KEY, { lessons: {}, lastLessonId: null, lastScreenId: null });
@@ -29,8 +29,8 @@ export const useProgressStore = create<ProgressStore>((set) => ({
         ...state,
         lessons: {
           ...state.lessons,
-          [lessonId]: { started: true, completedScreens: state.lessons[lessonId]?.completedScreens || [] },
-        },
+          [lessonId]: { started: true, completedScreens: state.lessons[lessonId]?.completedScreens || [] }
+        }
       };
       storage.set(LOCAL_STORAGE_KEY, newState);
       return newState;
@@ -47,8 +47,8 @@ export const useProgressStore = create<ProgressStore>((set) => ({
         ...state,
         lessons: {
           ...state.lessons,
-          [lessonId]: lesson,
-        },
+          [lessonId]: lesson
+        }
       };
 
       storage.set(LOCAL_STORAGE_KEY, newState);
@@ -66,5 +66,5 @@ export const useProgressStore = create<ProgressStore>((set) => ({
     set(() => {
       storage.remove(LOCAL_STORAGE_KEY);
       return { lessons: {}, lastLessonId: null, lastScreenId: null };
-    }),
+    })
 }));

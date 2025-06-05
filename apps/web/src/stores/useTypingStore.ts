@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { findCharByKeyCode, findKeyCodeByChar } from "@/utils/keyboard";
+import { findCharByKeyCode, findKeyCodeByChar } from '@/utils/keyboard';
 
 type TypingState = {
   targetText: string;
@@ -18,45 +18,41 @@ type TypingState = {
 };
 
 export const useTypingStore = create<TypingState>((set) => ({
-  targetText: "",
-  inputText: "",
+  targetText: '',
+  inputText: '',
   currentWordIndex: 0,
-  nextChar: "",
-  nextKeyCode: "",
+  nextChar: '',
+  nextKeyCode: '',
   nextCharIndex: 0,
   isEndOfInputText: false,
   setTargetText: (text) =>
     set({
       targetText: text,
-      inputText: "",
+      inputText: '',
       currentWordIndex: 0,
       nextChar: text[0],
       nextKeyCode: findKeyCodeByChar(text[0]),
       nextCharIndex: 0,
-      isEndOfInputText: false,
+      isEndOfInputText: false
     }),
 
   setTargetKeyCode: (keyCode) =>
     set({
       targetText: findCharByKeyCode(keyCode, 0),
-      inputText: "",
+      inputText: '',
       currentWordIndex: 0,
       nextChar: findCharByKeyCode(keyCode, 0),
       nextKeyCode: keyCode,
       nextCharIndex: 0,
-      isEndOfInputText: false,
+      isEndOfInputText: false
     }),
 
   addCharacter: (char) =>
     set((state) => {
-      if (
-        state.nextCharIndex === null ||
-        state.nextCharIndex >= state.targetText.length
-      )
-        return state;
+      if (state.nextCharIndex === null || state.nextCharIndex >= state.targetText.length) return state;
 
       const newInput = state.inputText + char;
-      const inputWords = newInput.split(" ");
+      const inputWords = newInput.split(' ');
 
       let newWordIndex = state.currentWordIndex;
       if (inputWords.length > state.currentWordIndex + 1) {
@@ -81,7 +77,7 @@ export const useTypingStore = create<TypingState>((set) => ({
         nextChar,
         nextKeyCode,
         nextCharIndex,
-        isEndOfInputText: nextCharIndex >= state.targetText.length,
+        isEndOfInputText: nextCharIndex >= state.targetText.length
       };
     }),
 
@@ -90,25 +86,25 @@ export const useTypingStore = create<TypingState>((set) => ({
       if (state.inputText.length === 0) return state;
 
       const newInput = state.inputText.slice(0, -1);
-      const words = newInput.split(" ");
+      const words = newInput.split(' ');
       const newWordIndex = words.length - 1;
 
       return {
         inputText: newInput,
         currentWordIndex: Math.max(newWordIndex, 0),
-        nextChar: state.targetText[newInput.length] || "",
+        nextChar: state.targetText[newInput.length] || '',
         nextKeyCode: findKeyCodeByChar(state.targetText[newInput.length]),
         nextCharIndex: newInput.length,
-        isEndOfInputText: newInput.length >= state.targetText.length,
+        isEndOfInputText: newInput.length >= state.targetText.length
       };
     }),
 
   reset: () =>
     set({
-      inputText: "",
+      inputText: '',
       currentWordIndex: 0,
-      nextChar: "",
+      nextChar: '',
       nextCharIndex: 0,
-      isEndOfInputText: false,
-    }),
+      isEndOfInputText: false
+    })
 }));

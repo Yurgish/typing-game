@@ -1,4 +1,4 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
 type ScreenLink = {
   lessonId: string;
@@ -12,5 +12,5 @@ type ScreenLinkStore = {
 
 export const useScreenLinkStore = create<ScreenLinkStore>((set) => ({
   currentLink: null,
-  setCurrentLink: (link) => set({ currentLink: link }),
+  setCurrentLink: (link) => set({ currentLink: link })
 }));

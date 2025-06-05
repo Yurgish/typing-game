@@ -1,9 +1,9 @@
-import { Screen, ScreenWithId } from "./types";
+import { Screen, ScreenWithId } from './types';
 
 export const addIdToScreen = (screen: Screen, lessonOrder: number, screenIndex: number): ScreenWithId => {
   return {
     ...screen,
-    id: `screen-${lessonOrder}-${screenIndex}`,
+    id: `screen-${lessonOrder}-${screenIndex}`
   };
 };
 

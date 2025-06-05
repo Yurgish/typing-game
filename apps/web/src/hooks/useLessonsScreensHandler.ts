@@ -17,17 +17,15 @@ export const useLessonsScreensHandler = () => {
 
   const { isEndOfInputText, setTargetText, setTargetKeyCode, reset: resetTypingInput } = useTypingStore();
 
-  const {
-    currentLessonMetrics,
-    startScreenTimer,
-    startLessonTimer,
-    resetScreenMetrics,
-    resetLessonMetrics,
-    updateTotalLessonMetrics,
-    setCurrentScreenTargetTextLength,
-    updateCalculatedScreenMetrics,
-    addScreenMetricsToLesson
-  } = useTypingMetricsStore();
+  const startScreenTimer = useTypingMetricsStore((s) => s.startScreenTimer);
+  const startLessonTimer = useTypingMetricsStore((s) => s.startLessonTimer);
+  const resetScreenMetrics = useTypingMetricsStore((s) => s.resetScreenMetrics);
+  const resetLessonMetrics = useTypingMetricsStore((s) => s.resetLessonMetrics);
+  const updateTotalLessonMetrics = useTypingMetricsStore((s) => s.updateTotalLessonMetrics);
+  const setCurrentScreenTargetTextLength = useTypingMetricsStore((s) => s.setCurrentScreenTargetTextLength);
+  const updateCalculatedScreenMetrics = useTypingMetricsStore((s) => s.updateCalculatedScreenMetrics);
+  const addScreenMetricsToLesson = useTypingMetricsStore((s) => s.addScreenMetricsToLesson);
+  // const currentLessonMetrics = useTypingMetricsStore((s) => s.currentLessonMetrics);
 
   const { currentLink, setCurrentLink } = useScreenLinkStore();
 
@@ -106,11 +104,13 @@ export const useLessonsScreensHandler = () => {
 
       setCurrentLink({ lessonId: lesson.id, screenId: nextScreen.order });
     } else if (isEndOfInputText && currentIndex === lesson.screens.length - 1) {
-      if (!lessons || !currentLessonMetrics) return;
+      if (!lessons) return;
       updateTotalLessonMetrics(totalLessonTargetTextLength);
 
       const currentLessonIndex = lessons.findIndex((l) => l.id === lessonId);
       const nextLesson = lessons[currentLessonIndex + 1];
+
+      // REMAKE FOR ORDER
 
       if (nextLesson) {
         setCurrentLink({ lessonId: nextLesson.id, screenId: 1 });
@@ -128,7 +128,6 @@ export const useLessonsScreensHandler = () => {
     isEndOfInputText,
     setCurrentLink,
     lessons,
-    currentLessonMetrics,
     updateTotalLessonMetrics,
     lessonId,
     navigate

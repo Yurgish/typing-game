@@ -1,8 +1,8 @@
-import { Outlet } from "react-router";
+import { Outlet } from 'react-router';
 
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { useKeyboardHandler } from "@/hooks/useKeyboardHandler";
-import { useApplyTheme } from "@/stores/useThemeStore";
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useKeyboardHandler } from '@/hooks/useKeyboardHandler';
+import { useApplyTheme } from '@/stores/useThemeStore';
 
 export default function MainLayout() {
   useKeyboardHandler();

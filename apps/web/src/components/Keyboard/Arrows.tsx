@@ -1,7 +1,7 @@
-import { useKeyboardStore } from "@/stores/useKeyboardStore";
+import { useKeyboardStore } from '@/stores/useKeyboardStore';
 
-import Key from "./Key";
-import { arrowsLabels } from "./keyboardLabels";
+import Key from './Key';
+import { arrowsLabels } from './keyboardLabels';
 
 const ArrowKeys = () => {
   const pressedKeys = useKeyboardStore((state) => state.pressedKeys);
@@ -20,7 +20,7 @@ const ArrowKeys = () => {
                 <Key keyCode={key} isPressed={isKeyPressed(key)} key={key} customLabels={[label]} />
               ))}
           </div>
-        ) : null,
+        ) : null
       )}
     </div>
   );

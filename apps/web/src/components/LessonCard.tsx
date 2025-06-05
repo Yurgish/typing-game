@@ -1,11 +1,11 @@
-import { Button } from "@repo/ui/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@repo/ui/components/ui/hover-card";
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router";
+import { Button } from '@repo/ui/components/ui/button';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui/components/ui/hover-card';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router';
 
-import { useScreenLinkStore } from "@/stores/useScreenLinkStore";
-import { getScreenCustomId } from "@/utils/transformation";
-import { Lesson } from "@/utils/types";
+import { useScreenLinkStore } from '@/stores/useScreenLinkStore';
+import { getScreenCustomId } from '@/utils/transformation';
+import { Lesson } from '@/utils/types';
 
 const LessonCard = ({ lesson, index }: { lesson: Lesson; index: number }) => {
   const navigate = useNavigate();

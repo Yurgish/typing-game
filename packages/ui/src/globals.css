@@ -1,5 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap");
 
+@font-face {
+  font-family: "VCR_OSD Mono";
+  src: url("../../../apps/web//public/fonts/VCR_OSD_MONO_1.001.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 @import "tailwindcss";
 
 @source "../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";
@@ -9,7 +16,7 @@
 @custom-variant dark (&:is(.dark *));
 
 body {
-  font-family: "Geist Mono", monospace;
+  font-family: "VCR_OSD Mono", "Geist Mono", monospace;
 }
 
 :root {

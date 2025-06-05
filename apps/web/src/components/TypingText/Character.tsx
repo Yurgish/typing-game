@@ -1,6 +1,6 @@
-import { memo, useCallback } from "react";
+import { memo, useCallback } from 'react';
 
-import Caret from "./Caret";
+import Caret from './Caret';
 
 interface CharacterProps {
   char: string;
@@ -9,22 +9,22 @@ interface CharacterProps {
   isCurrent: boolean;
 }
 
-const Character = memo(({ char, typedChar, isCurrent, className = "" }: CharacterProps) => {
-  const isSpace = char === " ";
+const Character = memo(({ char, typedChar, isCurrent, className = '' }: CharacterProps) => {
+  const isSpace = char === ' ';
   const getCharacterClassName = useCallback(() => {
     if (isSpace) {
-      return "";
+      return '';
     }
     if (typedChar) {
-      return typedChar === char ? "text-correct" : "text-error";
+      return typedChar === char ? 'text-correct' : 'text-error';
     } else {
-      return "text-foreground";
+      return 'text-foreground';
     }
   }, [char, isSpace, typedChar]);
 
   return (
     <span className={`relative ${className}`}>
-      <span className={` ${getCharacterClassName()}`}>{isSpace ? "\u00A0" : char}</span>
+      <span className={` ${getCharacterClassName()}`}>{isSpace ? '\u00A0' : char}</span>
       {isCurrent && <Caret />}
     </span>
   );

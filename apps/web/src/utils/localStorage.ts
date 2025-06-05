@@ -22,5 +22,5 @@ export const localStorageWrapper = {
     } catch (error) {
       throw new Error(`Error while deleting data from localStorage "${key}": ${error}`);
     }
-  },
+  }
 };

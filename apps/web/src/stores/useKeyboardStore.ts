@@ -1,16 +1,8 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { globalShortcuts } from "@/config/keyboardShortcuts";
+import { globalShortcuts } from '@/config/keyboardShortcuts';
 
-export const SPECIAL_KEYS = new Set([
-  "shift",
-  "control",
-  "alt",
-  "meta",
-  "space",
-  "enter",
-  "backspace",
-]);
+export const SPECIAL_KEYS = new Set(['shift', 'control', 'alt', 'meta', 'space', 'enter', 'backspace']);
 
 export type Shortcut = { keyCodes: string[]; action: () => void };
 
@@ -32,6 +24,10 @@ export const useKeyboardStore = create<KeyboardState>((set, get) => ({
   isKeyPressed: (key: string) => get().pressedKeys.has(key),
   setKeyPressed: (code, key, pressed) =>
     set(({ pressedKeys }) => {
+      const hasChanged = pressed ? !pressedKeys.has(code) : pressedKeys.has(code);
+
+      if (!hasChanged) return {};
+
       const newPressedKeys = new Map(pressedKeys);
 
       if (pressed) {
@@ -42,8 +38,8 @@ export const useKeyboardStore = create<KeyboardState>((set, get) => ({
 
       return {
         pressedKeys: newPressedKeys,
-        lastPressedKey: pressed ? key : null,
+        lastPressedKey: pressed ? key : null
       };
     }),
-  setLocalShortcuts: (shortcuts) => set({ localShortcuts: shortcuts }),
+  setLocalShortcuts: (shortcuts) => set({ localShortcuts: shortcuts })
 }));

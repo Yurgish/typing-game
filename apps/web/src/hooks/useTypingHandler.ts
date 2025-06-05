@@ -6,11 +6,13 @@ import { useTypingStore } from '@/stores/useTypingStore';
 
 export function useTypingHandler() {
   const { lastPressedKey } = useKeyboardStore();
-  const { addCharacter, removeCharacter, targetText, inputText } = useTypingStore();
+  const { addCharacter, removeCharacter, targetText, inputText, isEndOfInputText } = useTypingStore();
   const { incrementBackspaces, incrementErrors, addTypedCharacter } = useTypingMetricsStore();
 
   useEffect(() => {
     if (!lastPressedKey) return;
+
+    if (isEndOfInputText) return;
 
     if (lastPressedKey === 'Backspace') {
       removeCharacter();

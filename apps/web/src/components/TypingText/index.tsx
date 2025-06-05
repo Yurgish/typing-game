@@ -1,11 +1,11 @@
-import { useTypingStore } from "@/stores/useTypingStore";
+import { useTypingStore } from '@/stores/useTypingStore';
 
-import Word from "./Word";
+import Word from './Word';
 
 export default function TypingText() {
   const { targetText, inputText, currentWordIndex } = useTypingStore();
 
-  const targetWords = targetText.split(" ");
+  const targetWords = targetText.split(' ');
 
   return (
     <div className="mb-4 flex max-w-[70%] flex-wrap text-4xl">
@@ -19,7 +19,7 @@ export default function TypingText() {
         return (
           <Word
             key={wordIndex}
-            word={word + " "}
+            word={word + ' '}
             typedWord={typedWord}
             isCurrentWord={isCurrentWord}
             wordIndex={wordIndex}

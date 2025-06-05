@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { create } from "zustand";
+import { useEffect } from 'react';
+import { create } from 'zustand';
 
-type Theme = "dark" | "light" | "system";
+type Theme = 'dark' | 'light' | 'system';
 
 type ThemeStore = {
   theme: Theme;
@@ -9,11 +9,11 @@ type ThemeStore = {
 };
 
 export const useThemeStore = create<ThemeStore>((set) => ({
-  theme: (localStorage.getItem("vite-ui-theme") as Theme) || "system",
+  theme: (localStorage.getItem('vite-ui-theme') as Theme) || 'system',
   setTheme: (theme) => {
-    localStorage.setItem("vite-ui-theme", theme);
+    localStorage.setItem('vite-ui-theme', theme);
     set({ theme });
-  },
+  }
 }));
 
 export function useApplyTheme() {
@@ -21,10 +21,10 @@ export function useApplyTheme() {
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.remove("light", "dark");
+    root.classList.remove('light', 'dark');
 
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       root.classList.add(systemTheme);
     } else {
       root.classList.add(theme);

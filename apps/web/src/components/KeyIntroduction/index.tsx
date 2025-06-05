@@ -1,11 +1,11 @@
-import { Alert, AlertDescription, AlertTitle } from "@repo/ui/components/ui/alert";
-import { useEffect, useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/ui/alert';
+import { useEffect, useState } from 'react';
 
-import { useKeyboardStore } from "@/stores/useKeyboardStore";
-import { useTypingStore } from "@/stores/useTypingStore";
-import { findKeyCodeByChar } from "@/utils/keyboard";
+import { useKeyboardStore } from '@/stores/useKeyboardStore';
+import { useTypingStore } from '@/stores/useTypingStore';
+import { findKeyCodeByChar } from '@/utils/keyboard';
 
-import Key from "../Keyboard/Key";
+import Key from '../Keyboard/Key';
 
 const KeyIntroduction = () => {
   const { targetText } = useTypingStore();
@@ -14,7 +14,7 @@ const KeyIntroduction = () => {
   const [isCorrect, setIsCorrect] = useState(false);
 
   useEffect(() => {
-    if (isKeyPressed(findKeyCodeByChar(targetText || "") || "")) {
+    if (isKeyPressed(findKeyCodeByChar(targetText || '') || '')) {
       setIsCorrect(true);
     }
   }, [isKeyPressed, targetText, pressedKeys]);
@@ -24,12 +24,12 @@ const KeyIntroduction = () => {
       <Alert>
         <AlertTitle className="flex items-center gap-2 py-1">
           <p>Introduction of key</p>
-          <Key keyCode={findKeyCodeByChar(targetText || "") || ""} isPressed={false} />
+          <Key keyCode={findKeyCodeByChar(targetText || '') || ''} isPressed={false} />
         </AlertTitle>
         <AlertDescription>Press the key {targetText?.toUpperCase()} with your finger to continue!</AlertDescription>
       </Alert>
       <span
-        className={`flex items-center justify-center rounded border-1 text-lg ${isCorrect ? "text-correct border-correct" : "text-keyboard-key-next border-keyboard-key-next"}`}
+        className={`flex items-center justify-center rounded border-1 text-lg ${isCorrect ? 'text-correct border-correct' : 'text-keyboard-key-next border-keyboard-key-next'}`}
         style={{ width: 48, height: 48 }}
       >
         {targetText?.toUpperCase()}

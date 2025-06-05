@@ -1,19 +1,14 @@
-import { Button } from "@repo/ui/components/ui/button";
+import { Button } from '@repo/ui/components/ui/button';
 
-import SocialSignInButton from "./components/SignButton";
-import { useKeyboardHandler } from "./hooks/useKeyboardHandler";
-import { authClient } from "./lib/auth";
+import Keyboard from './components/Keyboard';
+import SocialSignInButton from './components/SignButton';
+import { authClient } from './lib/auth';
 
 function App() {
-  useKeyboardHandler();
-
   const { data: session, isPending } = authClient.useSession();
 
   return (
-    <div
-      style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }}
-      className="bg-grad w-full"
-    >
+    <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '4px' }} className="bg-grad w-full">
       <SocialSignInButton provider="google" />
       <SocialSignInButton provider="github" />
       <div className="">
@@ -30,6 +25,7 @@ function App() {
           Sign Out
         </Button>
       )}
+      <Keyboard size="full" />
     </div>
   );
 }

@@ -1,8 +1,8 @@
 // Lessons.tsx
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 
-import LessonCard from "@/components/LessonCard";
-import { trpc } from "@/utils/trpc";
+import LessonCard from '@/components/LessonCard';
+import { trpc } from '@/utils/trpc';
 
 const Lessons = () => {
   const { data: lessons } = useQuery(trpc.lesson.getAll.queryOptions());

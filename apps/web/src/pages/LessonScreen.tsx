@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 
 import Keyboard from '@/components/Keyboard';
 import KeyIntroduction from '@/components/KeyIntroduction';
+import RealTimeMetrics from '@/components/RealTimeMetrics';
 import SequenceOfLetters from '@/components/SequenceOfLetters';
 import TypingText from '@/components/TypingText';
+import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
 import { useTypingStore } from '@/stores/useTypingStore';
-import { LearningMode, Screen } from '@/utils/types';
+import { LearningMode, Lesson, Screen } from '@/utils/types';
 
 const screenVariants = {
   hidden: { clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)' },
@@ -17,12 +19,16 @@ const screenVariants = {
 
 export default function LessonScreen({
   currentScreen,
-  onScreenComplete
+  onScreenComplete,
+  lesson
 }: {
   currentScreen: Screen;
   onScreenComplete: () => void;
+  lesson: Lesson;
 }) {
-  const { isEndOfInputText } = useTypingStore();
+  const isEndOfInputText = useTypingStore((s) => s.isEndOfInputText);
+  const screenStartTime = useTypingMetricsStore((s) => s.screenStartTime);
+  const updateCalculatedScreenMetrics = useTypingMetricsStore((s) => s.updateCalculatedScreenMetrics);
   const [isButtonVisible, setIsButtonVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -35,6 +41,20 @@ export default function LessonScreen({
       setIsButtonVisible(true);
     }
   }, [isEndOfInputText]);
+
+  useEffect(() => {
+    if (!screenStartTime) return;
+
+    const interval = setInterval(() => {
+      updateCalculatedScreenMetrics();
+    }, 1000);
+
+    if (isEndOfInputText) {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [isEndOfInputText, screenStartTime, updateCalculatedScreenMetrics]);
 
   return (
     <LayoutGroup>
@@ -77,8 +97,11 @@ export default function LessonScreen({
           )}
         </AnimatePresence>
 
-        <motion.div layoutId="keyboard" className="block">
+        <motion.div layoutId="keyboard" className="relative flex items-center justify-center">
           <Keyboard size="full" />
+          <div className="absolute left-full ml-8 w-3/6">
+            <RealTimeMetrics screensInLesson={lesson.screens.length} currentScreenOrder={currentScreen.order} />
+          </div>
         </motion.div>
 
         <AnimatePresence mode="wait">

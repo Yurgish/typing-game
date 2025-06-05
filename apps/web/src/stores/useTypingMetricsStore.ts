@@ -77,7 +77,6 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
 
   incrementErrors: () => {
     set((state) => ({ errors: state.errors + 1 }));
-    get().updateCalculatedScreenMetrics();
   },
   incrementBackspaces: () => {
     set((state) => ({ backspaces: state.backspaces + 1 }));
@@ -88,7 +87,6 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       typedCharacters: state.typedCharacters + 1,
       correctCharacters: isCorrect ? state.correctCharacters + 1 : state.correctCharacters
     }));
-    get().updateCalculatedScreenMetrics();
   },
   setCurrentScreenTargetTextLength: (length: number) => set({ currentScreenTargetTextLength: length }),
 
