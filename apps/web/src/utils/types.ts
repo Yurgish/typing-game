@@ -22,3 +22,5 @@ export enum LearningMode {
   LETTER_SEQUENCE = "LETTER_SEQUENCE",
   DEFAULT = "DEFAULT",
 }
+
+// remake types

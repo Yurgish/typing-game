@@ -2,7 +2,6 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
-// import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,6 +14,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@api": path.resolve(__dirname, "../api/src"),
       "@repo/ui": path.resolve(__dirname, "../../packages/ui/src"),
+      "@repo/trpc": path.resolve(__dirname, "../../packages/trcp/src"),
+      "@repo/database": path.resolve(__dirname, "../../packages/database/src"),
+      // remake types
     },
   },
 });

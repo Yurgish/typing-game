@@ -49,7 +49,11 @@ export const useTypingStore = create<TypingState>((set) => ({
 
   addCharacter: (char) =>
     set((state) => {
-      if (state.nextCharIndex === null || state.nextCharIndex >= state.targetText.length) return state;
+      if (
+        state.nextCharIndex === null ||
+        state.nextCharIndex >= state.targetText.length
+      )
+        return state;
 
       const newInput = state.inputText + char;
       const inputWords = newInput.split(" ");
@@ -99,5 +103,12 @@ export const useTypingStore = create<TypingState>((set) => ({
       };
     }),
 
-  reset: () => set({ inputText: "", currentWordIndex: 0, nextChar: "", nextCharIndex: 0, isEndOfInputText: false }),
+  reset: () =>
+    set({
+      inputText: "",
+      currentWordIndex: 0,
+      nextChar: "",
+      nextCharIndex: 0,
+      isEndOfInputText: false,
+    }),
 }));

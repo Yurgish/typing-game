@@ -1,6 +1,7 @@
 {
   "name": "@repo/trpc",
   "version": "1.0.0",
+  "type": "module",
   "dependencies": {
     "@repo/database": "*",
     "@trpc/server": "^11.2.0",
@@ -8,7 +9,8 @@
     "zod": "^3.25.48"
   },
   "devDependencies": {
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "@repo/eslint-config": "*"
   },
   "exports": {
     ".": "./src/index.ts",

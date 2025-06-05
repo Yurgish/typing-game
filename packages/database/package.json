@@ -7,7 +7,9 @@
     "db:push": "prisma db push --skip-generate"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/generated/client/index.ts",
+    "./keys": "./src/config.ts",
+    "./prisma": "./src/index.ts"
   },
   "dependencies": {
     "prisma": "^6.6.0",
@@ -15,6 +17,7 @@
     "@t3-oss/env-core": "^0.13.6"
   },
   "devDependencies": {
+    "@repo/typescript-config": "*",
     "@repo/prettier-config": "*",
     "prettier-plugin-prisma": "^5.0.0"
   }

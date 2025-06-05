@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"],
+  "compilerOptions": {
+    "paths": {
+      "@repo/db/*": ["../database/src/*"]
+    },
+    "module": "es2022",
+    "moduleResolution": "bundler"
+  }
+}

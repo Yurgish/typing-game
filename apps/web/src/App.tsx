@@ -1,39 +1,35 @@
 import { Button } from "@repo/ui/components/ui/button";
-import { useEffect, useState } from "react";
 
-import Keyboard from "./components/Keyboard/Keyboard";
-import { ThemeToggle } from "./components/ThemeToggle";
+import SocialSignInButton from "./components/SignButton";
 import { useKeyboardHandler } from "./hooks/useKeyboardHandler";
-import { useKeyboardStore } from "./stores/useKeyboardStore";
+import { authClient } from "./lib/auth";
 
 function App() {
-  const lastPressedKey = useKeyboardStore((state) => state.lastPressedKey);
-  const pressedKeys = useKeyboardStore((state) => state.pressedKeys);
-
-  const [text, setText] = useState<string>("");
-
   useKeyboardHandler();
 
-  useEffect(() => {
-    if (lastPressedKey) {
-      setText((prev) => prev + lastPressedKey);
-    }
-  }, [lastPressedKey]);
+  const { data: session, isPending } = authClient.useSession();
 
   return (
     <div
       style={{ padding: "20px", border: "1px solid #ccc", borderRadius: "4px" }}
-      className="bg-grad"
+      className="bg-grad w-full"
     >
-      <h2>Остання натиснута клавіша:</h2>
-      <p>{text || "Немає введеного тексту"}</p>
-      <h3>Усі натиснуті клавіші:</h3>
-      <Button size="sm">Click me!</Button>
-      <ThemeToggle />
-      <p>
-        {Array.from(pressedKeys.keys()).join(", ") || "Немає натиснутих клавіш"}
-      </p>
-      <Keyboard size="small" />
+      <SocialSignInButton provider="google" />
+      <SocialSignInButton provider="github" />
+      <div className="">
+        {isPending && <p>Loading...</p>}
+        {isPending === false && session && <p>Welcome, {session.user.name}!</p>}
+        <p />
+      </div>
+      {session && (
+        <Button
+          onClick={async () => {
+            await authClient.signOut();
+          }}
+        >
+          Sign Out
+        </Button>
+      )}
     </div>
   );
 }

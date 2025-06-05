@@ -1,7 +1,9 @@
-module.export = {
+const config = {
   semi: true,
   trailingComma: "none",
   singleQuote: true,
-  printWidth: 80,
+  printWidth: 120,
   endOfLine: "lf",
 };
+
+module.exports = config;
