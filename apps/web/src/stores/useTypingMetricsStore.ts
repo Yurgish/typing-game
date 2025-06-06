@@ -87,6 +87,7 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       typedCharacters: state.typedCharacters + 1,
       correctCharacters: isCorrect ? state.correctCharacters + 1 : state.correctCharacters
     }));
+    get().updateCalculatedScreenMetrics();
   },
   setCurrentScreenTargetTextLength: (length: number) => set({ currentScreenTargetTextLength: length }),
 

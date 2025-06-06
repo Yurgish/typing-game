@@ -3,16 +3,18 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui/componen
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router';
 
-import { useScreenLinkStore } from '@/stores/useScreenLinkStore';
+import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
+// import { useScreenLinkStore } from '@/stores/useScreenLinkStore';
 import { getScreenCustomId } from '@/utils/transformation';
 import { Lesson } from '@/utils/types';
 
 const LessonCard = ({ lesson, index }: { lesson: Lesson; index: number }) => {
   const navigate = useNavigate();
-  const { setCurrentLink } = useScreenLinkStore();
+  const { setCurrentLessonId, setCurrentScreenOrder } = useCurrentLessonStore();
 
-  const navigateToScreen = (screenId: number) => {
-    setCurrentLink({ lessonId: lesson.id, screenId });
+  const navigateToScreen = (screenOrder: number) => {
+    setCurrentLessonId(lesson.id);
+    setCurrentScreenOrder(screenOrder);
     navigate(`/lesson/${lesson.id}`);
   };
 
@@ -38,7 +40,7 @@ const LessonCard = ({ lesson, index }: { lesson: Lesson; index: number }) => {
               >
                 <HoverCardTrigger className="flex h-full w-full"></HoverCardTrigger>
               </motion.div>
-              <HoverCardContent className="w-full px-4 py-2 text-xs">
+              <HoverCardContent className="w-full px-3 py-1 text-xs">
                 <p>{getScreenCustomId(lesson.order, screen.order)}</p>
                 <p>Mode: {screen.type}</p>
               </HoverCardContent>

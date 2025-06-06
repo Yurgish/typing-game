@@ -1,11 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
-import { useScreenLinkStore } from '@/stores/useScreenLinkStore';
+import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
 import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
 import { useTypingStore } from '@/stores/useTypingStore';
-import { trpc } from '@/utils/trpc';
 import { LearningMode } from '@/utils/types';
 
 import { useTypingHandler } from './useTypingHandler';
@@ -25,39 +23,40 @@ export const useLessonsScreensHandler = () => {
   const setCurrentScreenTargetTextLength = useTypingMetricsStore((s) => s.setCurrentScreenTargetTextLength);
   const updateCalculatedScreenMetrics = useTypingMetricsStore((s) => s.updateCalculatedScreenMetrics);
   const addScreenMetricsToLesson = useTypingMetricsStore((s) => s.addScreenMetricsToLesson);
-  // const currentLessonMetrics = useTypingMetricsStore((s) => s.currentLessonMetrics);
 
-  const { currentLink, setCurrentLink } = useScreenLinkStore();
+  const {
+    currentScreenOrder,
+    setCurrentLessonId,
+    setCurrentScreenOrder,
+    setLessonComplete,
+    getCurrentLesson,
+    getCurrentScreen,
+    getNextLesson
+  } = useCurrentLessonStore();
 
-  const { data: lesson } = useQuery(
-    trpc.lesson.getById.queryOptions(lessonId!, {
-      enabled: !!lessonId
-    })
-  );
+  const isFirstRender = useRef(true);
 
-  const { data: lessons } = useQuery(trpc.lesson.getAll.queryOptions());
-
-  const isFirstLessonRender = useRef(true);
-
-  const currentScreen = lesson?.screens.find((s) => s.order === currentLink?.screenId);
+  const lesson = getCurrentLesson();
+  const currentScreen = getCurrentScreen();
 
   useEffect(() => {
-    if (lessonId && isFirstLessonRender.current) {
+    if (lessonId && isFirstRender.current) {
       resetLessonMetrics(lessonId);
       startLessonTimer();
-      isFirstLessonRender.current = false;
+      setCurrentLessonId(lessonId);
+      isFirstRender.current = false;
     }
     return () => {
-      isFirstLessonRender.current = true;
+      isFirstRender.current = true;
     };
-  }, [lessonId, resetLessonMetrics, startLessonTimer]);
+  }, [lessonId, resetLessonMetrics, startLessonTimer, setCurrentLessonId]);
 
   useEffect(() => {
     if (!currentScreen) return;
 
     resetTypingInput();
     resetScreenMetrics();
-    startScreenTimer();
+    startScreenTimer(); // Remake later, make it start screen when key typed for the first time
 
     const targetTextContent = currentScreen.content.sequence || currentScreen.content.text || '';
 
@@ -67,53 +66,43 @@ export const useLessonsScreensHandler = () => {
   useEffect(() => {
     if (!currentScreen) return;
 
-    const updateScreenData = () => {
-      let targetTextContent = '';
-
-      if (currentScreen.type === LearningMode.LETTER_SEQUENCE || currentScreen.type === LearningMode.DEFAULT) {
-        targetTextContent = currentScreen.content.sequence || currentScreen.content.text || '';
-        setTargetText(targetTextContent);
-      } else if (currentScreen.type === LearningMode.KEY_INTRODUCTION) {
-        targetTextContent = currentScreen.content.keyCode || '';
-        setTargetKeyCode(targetTextContent);
-      }
-    };
-
-    updateScreenData();
+    if (currentScreen.type === LearningMode.LETTER_SEQUENCE || currentScreen.type === LearningMode.DEFAULT) {
+      const targetText = currentScreen.content.sequence || currentScreen.content.text || '';
+      setTargetText(targetText);
+    } else if (currentScreen.type === LearningMode.KEY_INTRODUCTION) {
+      const targetKey = currentScreen.content.keyCode || '';
+      setTargetKeyCode(targetKey);
+    }
   }, [currentScreen, setTargetKeyCode, setTargetText]);
 
   const handleScreenComplete = useCallback(() => {
-    if (!lesson || !currentLink || !currentScreen) return;
+    if (!lesson || !currentScreen) return;
 
     updateCalculatedScreenMetrics();
     addScreenMetricsToLesson();
 
-    const totalLessonTargetTextLength = lesson.screens.reduce((sum, s) => {
-      if (s.type === LearningMode.LETTER_SEQUENCE || s.type === LearningMode.DEFAULT) {
-        return sum + (s.content.sequence?.length || s.content.text?.length || 0);
-      } else if (s.type === LearningMode.KEY_INTRODUCTION) {
+    const totalTargetLength = lesson.screens.reduce((sum, s) => {
+      if (s.type === LearningMode.KEY_INTRODUCTION) {
         return sum + (s.content.keyCode?.length || 0);
+      } else {
+        return sum + (s.content.sequence?.length || s.content.text?.length || 0);
       }
-      return sum;
-    }, 0);
+    }, 0); // redo chatGpt made some shit idk
 
-    const currentIndex = lesson.screens.findIndex((s) => s.order === currentLink.screenId);
+    const currentIndex = lesson.screens.findIndex((s) => s.order === currentScreen.order);
 
     if (isEndOfInputText && currentIndex < lesson.screens.length - 1) {
       const nextScreen = lesson.screens[currentIndex + 1];
-
-      setCurrentLink({ lessonId: lesson.id, screenId: nextScreen.order });
+      setCurrentScreenOrder(nextScreen.order);
     } else if (isEndOfInputText && currentIndex === lesson.screens.length - 1) {
-      if (!lessons) return;
-      updateTotalLessonMetrics(totalLessonTargetTextLength);
+      updateTotalLessonMetrics(totalTargetLength);
+      setLessonComplete(true);
 
-      const currentLessonIndex = lessons.findIndex((l) => l.id === lessonId);
-      const nextLesson = lessons[currentLessonIndex + 1];
-
-      // REMAKE FOR ORDER
+      const nextLesson = getNextLesson();
 
       if (nextLesson) {
-        setCurrentLink({ lessonId: nextLesson.id, screenId: 1 });
+        setCurrentLessonId(nextLesson.id);
+        setCurrentScreenOrder(1);
         navigate(`/lesson/${nextLesson.id}`);
       } else {
         navigate('/lessons');
@@ -121,26 +110,23 @@ export const useLessonsScreensHandler = () => {
     }
   }, [
     lesson,
-    currentLink,
     currentScreen,
     updateCalculatedScreenMetrics,
     addScreenMetricsToLesson,
     isEndOfInputText,
-    setCurrentLink,
-    lessons,
+    setCurrentScreenOrder,
     updateTotalLessonMetrics,
-    lessonId,
+    setLessonComplete,
+    getNextLesson,
+    setCurrentLessonId,
     navigate
   ]);
 
   useEffect(() => {
-    if (lesson && !currentLink && lesson.screens.length > 0) {
-      setCurrentLink({
-        lessonId: lesson.id,
-        screenId: lesson.screens[0].order
-      });
+    if (lesson && currentScreenOrder === null && lesson.screens.length > 0) {
+      setCurrentScreenOrder(lesson.screens[0].order);
     }
-  }, [lesson, currentLink, setCurrentLink]);
+  }, [lesson, currentScreenOrder, setCurrentScreenOrder]);
 
-  return { lesson, currentScreen, handleScreenComplete, currentLink };
+  return { lesson, currentScreen, handleScreenComplete };
 };

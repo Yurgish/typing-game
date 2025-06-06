@@ -1,11 +1,20 @@
-// Lessons.tsx
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 import LessonCard from '@/components/LessonCard';
+import { useLessonsDataStore } from '@/stores/useLessonsDataStore';
 import { trpc } from '@/utils/trpc';
 
 const Lessons = () => {
-  const { data: lessons } = useQuery(trpc.lesson.getAll.queryOptions());
+  const { lessons, setLessons } = useLessonsDataStore();
+
+  const { data, isSuccess } = useQuery({ enabled: !lessons.length, ...trpc.lesson.getAll.queryOptions() });
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      setLessons(data);
+    }
+  }, [isSuccess, data, setLessons]);
 
   return (
     lessons && (
