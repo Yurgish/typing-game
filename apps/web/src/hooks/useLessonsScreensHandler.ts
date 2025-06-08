@@ -1,9 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
 import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
 import { useTypingStore } from '@/stores/useTypingStore';
+import { trpc } from '@/utils/trpc';
+import { Screen } from '@/utils/types';
 import { LearningMode } from '@/utils/types';
 
 import { useTypingHandler } from './useTypingHandler';
@@ -11,6 +14,7 @@ import { useTypingHandler } from './useTypingHandler';
 export const useLessonsScreensHandler = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();
+
   useTypingHandler();
 
   const { isEndOfInputText, setTargetText, setTargetKeyCode, reset: resetTypingInput } = useTypingStore();
@@ -24,20 +28,17 @@ export const useLessonsScreensHandler = () => {
   const updateCalculatedScreenMetrics = useTypingMetricsStore((s) => s.updateCalculatedScreenMetrics);
   const addScreenMetricsToLesson = useTypingMetricsStore((s) => s.addScreenMetricsToLesson);
 
-  const {
-    currentScreenOrder,
-    setCurrentLessonId,
-    setCurrentScreenOrder,
-    setLessonComplete,
-    getCurrentLesson,
-    getCurrentScreen,
-    getNextLesson
-  } = useCurrentLessonStore();
+  const { currentScreenOrder, setCurrentLessonId, setCurrentScreenOrder, setLessonComplete } = useCurrentLessonStore();
 
   const isFirstRender = useRef(true);
 
-  const lesson = getCurrentLesson();
-  const currentScreen = getCurrentScreen();
+  const { data: lesson } = useQuery({
+    ...trpc.lesson.getById.queryOptions(lessonId || ''),
+    enabled: !!lessonId,
+    staleTime: 1000 * 60 * 10
+  });
+
+  const currentScreen: Screen | undefined = lesson?.screens.find((s) => s.order === currentScreenOrder);
 
   useEffect(() => {
     if (lessonId && isFirstRender.current) {
@@ -49,7 +50,7 @@ export const useLessonsScreensHandler = () => {
     return () => {
       isFirstRender.current = true;
     };
-  }, [lessonId, resetLessonMetrics, startLessonTimer, setCurrentLessonId]);
+  }, [lessonId, resetLessonMetrics, startLessonTimer, setCurrentLessonId, setCurrentScreenOrder]);
 
   useEffect(() => {
     if (!currentScreen) return;
@@ -79,15 +80,7 @@ export const useLessonsScreensHandler = () => {
     if (!lesson || !currentScreen) return;
 
     updateCalculatedScreenMetrics();
-    addScreenMetricsToLesson();
-
-    const totalTargetLength = lesson.screens.reduce((sum, s) => {
-      if (s.type === LearningMode.KEY_INTRODUCTION) {
-        return sum + (s.content.keyCode?.length || 0);
-      } else {
-        return sum + (s.content.sequence?.length || s.content.text?.length || 0);
-      }
-    }, 0); // redo chatGpt made some shit idk
+    addScreenMetricsToLesson(currentScreen.order, currentScreen.type);
 
     const currentIndex = lesson.screens.findIndex((s) => s.order === currentScreen.order);
 
@@ -95,18 +88,10 @@ export const useLessonsScreensHandler = () => {
       const nextScreen = lesson.screens[currentIndex + 1];
       setCurrentScreenOrder(nextScreen.order);
     } else if (isEndOfInputText && currentIndex === lesson.screens.length - 1) {
-      updateTotalLessonMetrics(totalTargetLength);
+      updateTotalLessonMetrics();
       setLessonComplete(true);
 
-      const nextLesson = getNextLesson();
-
-      if (nextLesson) {
-        setCurrentLessonId(nextLesson.id);
-        setCurrentScreenOrder(1);
-        navigate(`/lesson/${nextLesson.id}`);
-      } else {
-        navigate('/lessons');
-      }
+      navigate(`/lesson/${lesson.id}/results`);
     }
   }, [
     lesson,
@@ -117,8 +102,6 @@ export const useLessonsScreensHandler = () => {
     setCurrentScreenOrder,
     updateTotalLessonMetrics,
     setLessonComplete,
-    getNextLesson,
-    setCurrentLessonId,
     navigate
   ]);
 

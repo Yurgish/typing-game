@@ -31,4 +31,26 @@ export const lessonRouter = router({
 
     return lesson;
   }),
+  getNextLessonById: publicProcedure.input(z.string()).query(async ({ input: id, ctx }) => {
+    const currentLesson = await ctx.prisma.lesson.findUnique({
+      where: { id: id },
+    });
+
+    if (!currentLesson) {
+      return null;
+    }
+
+    const nextLesson = await ctx.prisma.lesson.findFirst({
+      where: {
+        order: {
+          gt: currentLesson.order + 1,
+        },
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    return nextLesson;
+  }),
 });

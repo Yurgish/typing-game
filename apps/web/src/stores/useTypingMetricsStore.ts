@@ -1,10 +1,12 @@
 // stores/useTypingMetricsStore.ts
+import { LearningMode } from '@repo/database';
 import { create } from 'zustand';
 
 import { calculateWPM } from '@/utils/metrics';
 
 export type ScreenMetricsData = {
-  screenId: number;
+  order: number;
+  type: LearningMode;
   rawWPM: number;
   adjustedWPM: number;
   accuracy: number;
@@ -23,6 +25,8 @@ export type LessonMetricsData = {
   totalBackspaces: number;
   totalErrors: number;
   totalTimeTaken: number; // in milliseconds
+  totalTypedCharacters: number;
+  totalCorrectCharacters: number;
   screenMetrics: ScreenMetricsData[];
 };
 
@@ -49,11 +53,11 @@ type TypingMetricsState = {
   addTypedCharacter: (isCorrect: boolean) => void;
   setCurrentScreenTargetTextLength: (length: number) => void;
 
-  addScreenMetricsToLesson: () => void;
+  addScreenMetricsToLesson: (screenOrder: number, screenType: LearningMode) => void;
   resetScreenMetrics: () => void;
   resetLessonMetrics: (lessonId: string) => void;
   updateCalculatedScreenMetrics: () => void;
-  updateTotalLessonMetrics: (totalLessonTargetTextLength: number) => void;
+  updateTotalLessonMetrics: () => void;
 };
 
 export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
@@ -109,9 +113,10 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
     });
   },
 
-  addScreenMetricsToLesson: () => {
-    const state = get();
+  addScreenMetricsToLesson: (screenOrder, screenType) => {
+    if (screenType === 'KEY_INTRODUCTION') return;
 
+    const state = get();
     const {
       currentScreenRawWPM,
       currentScreenAdjustedWPM,
@@ -128,7 +133,8 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
     if (!currentLessonMetrics || !screenStartTime) return;
 
     const metrics: ScreenMetricsData = {
-      screenId: currentLessonMetrics.screenMetrics.length + 1,
+      order: screenOrder,
+      type: screenType,
       rawWPM: currentScreenRawWPM,
       adjustedWPM: currentScreenAdjustedWPM,
       accuracy: currentScreenAccuracy,
@@ -171,39 +177,59 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
         totalBackspaces: 0,
         totalErrors: 0,
         totalTimeTaken: 0,
-        screenMetrics: []
+        screenMetrics: [],
+        totalTypedCharacters: 0,
+        totalCorrectCharacters: 0
       },
       lessonStartTime: null
     }),
 
-  updateTotalLessonMetrics: (totalLessonTargetTextLength: number) =>
+  updateTotalLessonMetrics: () =>
     set((state) => {
       if (!state.currentLessonMetrics) return state;
 
-      const { screenMetrics } = state.currentLessonMetrics;
+      const relevantScreens = state.currentLessonMetrics.screenMetrics.filter(
+        (screen) => screen.type !== 'KEY_INTRODUCTION'
+      );
 
-      const totalTimeTaken = screenMetrics.reduce((sum, sm) => sum + sm.timeTaken, 0);
-      const totalErrors = screenMetrics.reduce((sum, sm) => sum + sm.errors, 0);
-      const totalBackspaces = screenMetrics.reduce((sum, sm) => sum + sm.backspaces, 0);
-      const totalTypedCharacters = screenMetrics.reduce((sum, sm) => sum + sm.typedCharacters, 0);
-      const totalCorrectCharacters = screenMetrics.reduce((sum, sm) => sum + sm.correctCharacters, 0);
+      const count = relevantScreens.length;
+      if (count === 0) return state;
 
-      const { rawWPM, adjustedWPM, accuracy } = calculateWPM(
-        totalTypedCharacters,
-        totalCorrectCharacters,
-        totalTimeTaken,
-        totalLessonTargetTextLength
+      const sum = relevantScreens.reduce(
+        (acc, sm) => {
+          acc.rawWPM += sm.rawWPM;
+          acc.adjustedWPM += sm.adjustedWPM;
+          acc.accuracy += sm.accuracy;
+          acc.backspaces += sm.backspaces;
+          acc.errors += sm.errors;
+          acc.timeTaken += sm.timeTaken;
+          acc.typedCharacters += sm.typedCharacters;
+          acc.correctCharacters += sm.correctCharacters;
+          return acc;
+        },
+        {
+          rawWPM: 0,
+          adjustedWPM: 0,
+          accuracy: 0,
+          backspaces: 0,
+          errors: 0,
+          timeTaken: 0,
+          typedCharacters: 0,
+          correctCharacters: 0
+        }
       );
 
       return {
         currentLessonMetrics: {
           ...state.currentLessonMetrics,
-          totalRawWPM: rawWPM,
-          totalAdjustedWPM: adjustedWPM,
-          totalAccuracy: accuracy,
-          totalBackspaces,
-          totalErrors,
-          totalTimeTaken
+          totalRawWPM: parseFloat((sum.rawWPM / count).toFixed(2)),
+          totalAdjustedWPM: parseFloat((sum.adjustedWPM / count).toFixed(2)),
+          totalAccuracy: parseFloat((sum.accuracy / count).toFixed(2)),
+          totalBackspaces: parseFloat((sum.backspaces / count).toFixed(2)),
+          totalErrors: parseFloat((sum.errors / count).toFixed(2)),
+          totalTimeTaken: parseFloat((sum.timeTaken / count).toFixed(2)),
+          totalTypedCharacters: parseFloat((sum.typedCharacters / count).toFixed(2)),
+          totalCorrectCharacters: parseFloat((sum.correctCharacters / count).toFixed(2))
         }
       };
     })

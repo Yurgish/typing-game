@@ -14,7 +14,9 @@ export default function MainLayout() {
         <ThemeToggle />
       </div>
       <main className="container mx-auto flex-1">
-        <Outlet />
+        <div className="flex min-h-screen w-full flex-col items-center justify-center">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

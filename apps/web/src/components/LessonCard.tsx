@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router';
 
 import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
-// import { useScreenLinkStore } from '@/stores/useScreenLinkStore';
 import { getScreenCustomId } from '@/utils/transformation';
 import { Lesson } from '@/utils/types';
 
