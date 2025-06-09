@@ -1,8 +1,7 @@
-// stores/useTypingMetricsStore.ts
-import { LearningMode } from '@repo/database';
 import { create } from 'zustand';
 
 import { calculateWPM } from '@/utils/metrics';
+import { LearningMode } from '@/utils/types';
 
 export type ScreenMetricsData = {
   order: number;
@@ -32,7 +31,6 @@ export type LessonMetricsData = {
 
 type TypingMetricsState = {
   screenStartTime: number | null;
-  lessonStartTime: number | null;
   errors: number;
   backspaces: number;
   typedCharacters: number;
@@ -46,23 +44,25 @@ type TypingMetricsState = {
 
   currentLessonMetrics: LessonMetricsData | null;
 
+  isScreenTimerRunning: boolean;
+
   startScreenTimer: () => void;
-  startLessonTimer: () => void;
+  resetScreenTimerState: () => void;
+
   incrementErrors: () => void;
   incrementBackspaces: () => void;
   addTypedCharacter: (isCorrect: boolean) => void;
   setCurrentScreenTargetTextLength: (length: number) => void;
 
-  addScreenMetricsToLesson: (screenOrder: number, screenType: LearningMode) => void;
+  addScreenMetricsToLesson: (screenOrder: number, screenType: LearningMode) => ScreenMetricsData | null;
   resetScreenMetrics: () => void;
   resetLessonMetrics: (lessonId: string) => void;
   updateCalculatedScreenMetrics: () => void;
-  updateTotalLessonMetrics: () => void;
+  updateTotalLessonMetrics: () => LessonMetricsData | null;
 };
 
 export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
   screenStartTime: null,
-  lessonStartTime: null,
   errors: 0,
   backspaces: 0,
   typedCharacters: 0,
@@ -76,8 +76,10 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
 
   currentLessonMetrics: null,
 
-  startScreenTimer: () => set({ screenStartTime: Date.now() }),
-  startLessonTimer: () => set({ lessonStartTime: Date.now() }),
+  isScreenTimerRunning: false,
+
+  startScreenTimer: () => set({ screenStartTime: Date.now(), isScreenTimerRunning: true }),
+  resetScreenTimerState: () => set({ screenStartTime: null, isScreenTimerRunning: false }),
 
   incrementErrors: () => {
     set((state) => ({ errors: state.errors + 1 }));
@@ -97,7 +99,9 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
 
   updateCalculatedScreenMetrics: () => {
     set((state) => {
-      const timeElapsed = state.screenStartTime ? Date.now() - state.screenStartTime : 0;
+      if (!state.screenStartTime) return {};
+
+      const timeElapsed = Date.now() - state.screenStartTime;
       const { rawWPM, adjustedWPM, accuracy } = calculateWPM(
         state.typedCharacters,
         state.correctCharacters,
@@ -114,8 +118,6 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
   },
 
   addScreenMetricsToLesson: (screenOrder, screenType) => {
-    if (screenType === 'KEY_INTRODUCTION') return;
-
     const state = get();
     const {
       currentScreenRawWPM,
@@ -130,7 +132,7 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       currentLessonMetrics
     } = state;
 
-    if (!currentLessonMetrics || !screenStartTime) return;
+    if (!currentLessonMetrics || !screenStartTime) return null;
 
     const metrics: ScreenMetricsData = {
       order: screenOrder,
@@ -145,12 +147,16 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       correctCharacters
     };
 
-    set({
-      currentLessonMetrics: {
-        ...currentLessonMetrics,
-        screenMetrics: [...currentLessonMetrics.screenMetrics, metrics]
-      }
-    });
+    const filteredMetrics = currentLessonMetrics.screenMetrics.filter((m) => m.order !== screenOrder);
+
+    const updatedLessonMetrics: LessonMetricsData = {
+      ...currentLessonMetrics,
+      screenMetrics: [...filteredMetrics, metrics]
+    };
+
+    set({ currentLessonMetrics: updatedLessonMetrics });
+
+    return metrics;
   },
 
   resetScreenMetrics: () =>
@@ -180,57 +186,57 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
         screenMetrics: [],
         totalTypedCharacters: 0,
         totalCorrectCharacters: 0
-      },
-      lessonStartTime: null
+      }
     }),
 
-  updateTotalLessonMetrics: () =>
-    set((state) => {
-      if (!state.currentLessonMetrics) return state;
+  updateTotalLessonMetrics: () => {
+    const state = get();
 
-      const relevantScreens = state.currentLessonMetrics.screenMetrics.filter(
-        (screen) => screen.type !== 'KEY_INTRODUCTION'
-      );
+    if (!state.currentLessonMetrics) return null;
 
-      const count = relevantScreens.length;
-      if (count === 0) return state;
+    const relevantScreens = state.currentLessonMetrics.screenMetrics;
 
-      const sum = relevantScreens.reduce(
-        (acc, sm) => {
-          acc.rawWPM += sm.rawWPM;
-          acc.adjustedWPM += sm.adjustedWPM;
-          acc.accuracy += sm.accuracy;
-          acc.backspaces += sm.backspaces;
-          acc.errors += sm.errors;
-          acc.timeTaken += sm.timeTaken;
-          acc.typedCharacters += sm.typedCharacters;
-          acc.correctCharacters += sm.correctCharacters;
-          return acc;
-        },
-        {
-          rawWPM: 0,
-          adjustedWPM: 0,
-          accuracy: 0,
-          backspaces: 0,
-          errors: 0,
-          timeTaken: 0,
-          typedCharacters: 0,
-          correctCharacters: 0
-        }
-      );
+    const count = relevantScreens.length;
+    if (count === 0) return null;
 
-      return {
-        currentLessonMetrics: {
-          ...state.currentLessonMetrics,
-          totalRawWPM: parseFloat((sum.rawWPM / count).toFixed(2)),
-          totalAdjustedWPM: parseFloat((sum.adjustedWPM / count).toFixed(2)),
-          totalAccuracy: parseFloat((sum.accuracy / count).toFixed(2)),
-          totalBackspaces: parseFloat((sum.backspaces / count).toFixed(2)),
-          totalErrors: parseFloat((sum.errors / count).toFixed(2)),
-          totalTimeTaken: parseFloat((sum.timeTaken / count).toFixed(2)),
-          totalTypedCharacters: parseFloat((sum.typedCharacters / count).toFixed(2)),
-          totalCorrectCharacters: parseFloat((sum.correctCharacters / count).toFixed(2))
-        }
-      };
-    })
+    const sum = relevantScreens.reduce(
+      (acc, sm) => {
+        acc.rawWPM += sm.rawWPM;
+        acc.adjustedWPM += sm.adjustedWPM;
+        acc.accuracy += sm.accuracy;
+        acc.backspaces += sm.backspaces;
+        acc.errors += sm.errors;
+        acc.timeTaken += sm.timeTaken;
+        acc.typedCharacters += sm.typedCharacters;
+        acc.correctCharacters += sm.correctCharacters;
+        return acc;
+      },
+      {
+        rawWPM: 0,
+        adjustedWPM: 0,
+        accuracy: 0,
+        backspaces: 0,
+        errors: 0,
+        timeTaken: 0,
+        typedCharacters: 0,
+        correctCharacters: 0
+      }
+    );
+
+    const updatedMetrics: LessonMetricsData = {
+      ...state.currentLessonMetrics,
+      totalRawWPM: parseFloat((sum.rawWPM / count).toFixed(2)),
+      totalAdjustedWPM: parseFloat((sum.adjustedWPM / count).toFixed(2)),
+      totalAccuracy: parseFloat((sum.accuracy / count).toFixed(2)),
+      totalBackspaces: sum.backspaces,
+      totalErrors: sum.errors,
+      totalTimeTaken: sum.timeTaken,
+      totalTypedCharacters: sum.typedCharacters,
+      totalCorrectCharacters: sum.correctCharacters
+    };
+
+    set({ currentLessonMetrics: updatedMetrics });
+
+    return updatedMetrics;
+  }
 }));

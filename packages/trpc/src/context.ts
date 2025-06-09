@@ -1,14 +1,28 @@
 import { prisma } from "@repo/database/prisma";
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
+import { fromNodeHeaders } from "better-auth/node";
 import { config } from "dotenv";
+
+import { auth } from "../../../apps/api/src/lib/auth"; // Need to remake
 
 config();
 
-export const createContext = async (_opts: CreateExpressContextOptions) => {
-  return {
-    prisma,
-    user: null,
-  };
+export type Context = {
+  prisma: typeof prisma;
+  session: Awaited<ReturnType<typeof auth.api.getSession>>;
 };
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export const createContext = async ({ req }: CreateExpressContextOptions): Promise<Context> => {
+  console.log("Incoming request headers:", req.headers);
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+
+  console.log("Session in createContext:", session);
+  console.log("Session user in createContext:", session?.user); // Check if user object exists
+
+  return {
+    prisma,
+    session,
+  };
+};

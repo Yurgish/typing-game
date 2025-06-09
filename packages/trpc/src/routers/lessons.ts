@@ -20,9 +20,6 @@ export const lessonRouter = router({
       where: {
         id: id,
       },
-      include: {
-        screens: {},
-      },
     });
 
     if (!lesson) {

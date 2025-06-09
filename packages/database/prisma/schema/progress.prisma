@@ -1,0 +1,67 @@
+model UserLessonProgress {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId String @db.ObjectId
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+
+  currentScreenOrder Int
+  isCompleted        Boolean   @default(false)
+  completedAt        DateTime?
+
+  totalRawWPM            Float?
+  totalAdjustedWPM       Float?
+  totalAccuracy          Float?
+  totalBackspaces        Int?
+  totalErrors            Int?
+  totalTimeTaken         Int?
+  totalTypedCharacters   Int?
+  totalCorrectCharacters Int?
+
+  screenMetrics ScreenMetrics[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+  @@map("userLessonProgress")
+}
+
+model ScreenMetrics {
+  id                   String             @id @default(auto()) @map("_id") @db.ObjectId
+  userLessonProgressId String             @db.ObjectId
+  userLessonProgress   UserLessonProgress @relation(fields: [userLessonProgressId], references: [id], onDelete: Cascade)
+
+  screenOrder Int
+  screenType  LearningMode
+
+  rawWPM            Float
+  adjustedWPM       Float
+  accuracy          Float
+  backspaces        Int
+  errors            Int
+  timeTaken         Int
+  typedCharacters   Int
+  correctCharacters Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userLessonProgressId, screenOrder])
+  @@map("screenMetrics")
+}
+
+model CharacterMetric {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  character    String
+  correctCount Int    @default(0)
+  errorCount   Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, character])
+  @@map("characterMetric")
+}

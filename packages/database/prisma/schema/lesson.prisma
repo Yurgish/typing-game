@@ -11,11 +11,12 @@ enum LessonDifficulty {
 }
 
 model Lesson {
-  id         String           @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  difficulty LessonDifficulty
-  order      Int
-  screens    Screen[]
+  id                   String               @id @default(auto()) @map("_id") @db.ObjectId
+  title                String
+  difficulty           LessonDifficulty
+  order                Int
+  screens              Screen[]
+  userLessonProgresses UserLessonProgress[]
 }
 
 type Screen {

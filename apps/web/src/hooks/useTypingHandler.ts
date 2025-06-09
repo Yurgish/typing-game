@@ -6,13 +6,13 @@ import { useTypingStore } from '@/stores/useTypingStore';
 
 export function useTypingHandler() {
   const { lastPressedKey } = useKeyboardStore();
+
   const { addCharacter, removeCharacter, targetText, inputText, isEndOfInputText } = useTypingStore();
-  const { incrementBackspaces, incrementErrors, addTypedCharacter } = useTypingMetricsStore();
+  const { incrementBackspaces, incrementErrors, addTypedCharacter, startScreenTimer, isScreenTimerRunning } =
+    useTypingMetricsStore();
 
   useEffect(() => {
-    if (!lastPressedKey) return;
-
-    if (isEndOfInputText) return;
+    if (!lastPressedKey || isEndOfInputText) return;
 
     if (lastPressedKey === 'Backspace') {
       removeCharacter();
@@ -31,4 +31,12 @@ export function useTypingHandler() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastPressedKey, addCharacter, removeCharacter, incrementBackspaces, incrementErrors, addTypedCharacter]);
+
+  useEffect(() => {
+    if (!lastPressedKey || isEndOfInputText) return;
+
+    if (!isScreenTimerRunning && lastPressedKey !== 'Backspace') {
+      startScreenTimer();
+    }
+  }, [isEndOfInputText, isScreenTimerRunning, lastPressedKey, startScreenTimer]);
 }

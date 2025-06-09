@@ -99,12 +99,14 @@ const LessonMetricsScreen = () => {
           </div>
         ))}
       </div>
-      <Button className="mt-6" onClick={() => navigate('/lessons')}>
-        Back to Lessons
-      </Button>
-      <Button className="mt-6" onClick={handleNextLesson}>
-        Continue
-      </Button>
+      <div className="flex gap-4">
+        <Button className="mt-6" onClick={() => navigate('/lessons')}>
+          Back to Lessons
+        </Button>
+        <Button className="mt-6" onClick={handleNextLesson}>
+          Continue
+        </Button>
+      </div>
     </div>
   );
 };

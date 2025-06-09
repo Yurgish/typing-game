@@ -4,9 +4,11 @@
   "exclude": ["dist", "node_modules"],
   "compilerOptions": {
     "paths": {
-      "@repo/db/*": ["../database/src/*"]
+      "@repo/db/*": ["../database/src/*"],
+      "@api/*": ["../../apps/api/src/*"]
     },
     "module": "es2022",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "baseUrl": "."
   }
 }

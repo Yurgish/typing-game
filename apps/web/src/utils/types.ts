@@ -1,21 +1,20 @@
 import type {
-  Content as PrismaContent,
-  Lesson as PrismaLesson,
-  LessonDifficulty,
-  Screen as PrismaScreen
-} from '@repo/database';
+  LessonType,
+  ScreenContentType,
+  ScreenMetricsReturnedType,
+  ScreenType,
+  UserLessonProgressType
+} from '@repo/trpc/types';
 
-export type Lesson = PrismaLesson;
-export type Screen = PrismaScreen;
-export type Content = PrismaContent;
+export type Lesson = LessonType;
+export type Screen = ScreenType;
+export type Content = ScreenContentType;
 
-export { LessonDifficulty };
-
-export type ScreenWithId = PrismaScreen & { id: string };
-
-export type LessonWithScreenId = Omit<PrismaLesson, 'screens'> & {
-  screens: ScreenWithId[];
-};
+export enum LessonDifficulty {
+  BEGINNER = 'BEGINNER',
+  INTERMEDIATE = 'INTERMEDIATE',
+  ADVANCED = 'ADVANCED'
+}
 
 export enum LearningMode {
   KEY_INTRODUCTION = 'KEY_INTRODUCTION',
@@ -23,4 +22,10 @@ export enum LearningMode {
   DEFAULT = 'DEFAULT'
 }
 
-// remake types
+export type ScreenWithId = ScreenType & { id: string };
+
+export type LessonWithScreenId = Omit<LessonType, 'screens'> & {
+  screens: ScreenWithId[];
+};
+
+export { ScreenMetricsReturnedType, UserLessonProgressType };

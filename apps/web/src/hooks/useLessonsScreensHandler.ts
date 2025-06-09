@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
@@ -6,8 +6,7 @@ import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
 import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
 import { useTypingStore } from '@/stores/useTypingStore';
 import { trpc } from '@/utils/trpc';
-import { Screen } from '@/utils/types';
-import { LearningMode } from '@/utils/types';
+import { LearningMode, Screen } from '@/utils/types';
 
 import { useTypingHandler } from './useTypingHandler';
 
@@ -19,14 +18,16 @@ export const useLessonsScreensHandler = () => {
 
   const { isEndOfInputText, setTargetText, setTargetKeyCode, reset: resetTypingInput } = useTypingStore();
 
-  const startScreenTimer = useTypingMetricsStore((s) => s.startScreenTimer);
-  const startLessonTimer = useTypingMetricsStore((s) => s.startLessonTimer);
-  const resetScreenMetrics = useTypingMetricsStore((s) => s.resetScreenMetrics);
-  const resetLessonMetrics = useTypingMetricsStore((s) => s.resetLessonMetrics);
-  const updateTotalLessonMetrics = useTypingMetricsStore((s) => s.updateTotalLessonMetrics);
-  const setCurrentScreenTargetTextLength = useTypingMetricsStore((s) => s.setCurrentScreenTargetTextLength);
-  const updateCalculatedScreenMetrics = useTypingMetricsStore((s) => s.updateCalculatedScreenMetrics);
-  const addScreenMetricsToLesson = useTypingMetricsStore((s) => s.addScreenMetricsToLesson);
+  const {
+    startScreenTimer,
+    resetScreenMetrics,
+    resetLessonMetrics,
+    updateCalculatedScreenMetrics,
+    addScreenMetricsToLesson,
+    updateTotalLessonMetrics,
+    setCurrentScreenTargetTextLength,
+    resetScreenTimerState
+  } = useTypingMetricsStore();
 
   const { currentScreenOrder, setCurrentLessonId, setCurrentScreenOrder, setLessonComplete } = useCurrentLessonStore();
 
@@ -40,29 +41,38 @@ export const useLessonsScreensHandler = () => {
 
   const currentScreen: Screen | undefined = lesson?.screens.find((s) => s.order === currentScreenOrder);
 
+  const saveLessonProgressMutation = useMutation(trpc.userProgress.saveLessonProgress.mutationOptions());
+  const saveScreenMetricMutation = useMutation(trpc.userProgress.saveScreenMetric.mutationOptions());
+
   useEffect(() => {
     if (lessonId && isFirstRender.current) {
       resetLessonMetrics(lessonId);
-      startLessonTimer();
       setCurrentLessonId(lessonId);
       isFirstRender.current = false;
     }
     return () => {
       isFirstRender.current = true;
     };
-  }, [lessonId, resetLessonMetrics, startLessonTimer, setCurrentLessonId, setCurrentScreenOrder]);
+  }, [lessonId, resetLessonMetrics, setCurrentLessonId, setCurrentScreenOrder]);
 
   useEffect(() => {
     if (!currentScreen) return;
 
     resetTypingInput();
     resetScreenMetrics();
-    startScreenTimer(); // Remake later, make it start screen when key typed for the first time
+    resetScreenTimerState();
 
     const targetTextContent = currentScreen.content.sequence || currentScreen.content.text || '';
 
     setCurrentScreenTargetTextLength(targetTextContent.length);
-  }, [currentScreen, resetTypingInput, resetScreenMetrics, startScreenTimer, setCurrentScreenTargetTextLength]);
+  }, [
+    currentScreen,
+    resetTypingInput,
+    resetScreenMetrics,
+    startScreenTimer,
+    setCurrentScreenTargetTextLength,
+    resetScreenTimerState
+  ]);
 
   useEffect(() => {
     if (!currentScreen) return;
@@ -79,8 +89,18 @@ export const useLessonsScreensHandler = () => {
   const handleScreenComplete = useCallback(() => {
     if (!lesson || !currentScreen) return;
 
-    updateCalculatedScreenMetrics();
-    addScreenMetricsToLesson(currentScreen.order, currentScreen.type);
+    const metrics = addScreenMetricsToLesson(currentScreen.order, currentScreen.type as LearningMode);
+
+    if (metrics) {
+      try {
+        saveScreenMetricMutation.mutateAsync({
+          lessonId: lesson.id,
+          screenMetric: metrics
+        });
+      } catch (error) {
+        throw new Error(`Failed to update screen metrics: ${error}`);
+      }
+    }
 
     const currentIndex = lesson.screens.findIndex((s) => s.order === currentScreen.order);
 
@@ -88,22 +108,64 @@ export const useLessonsScreensHandler = () => {
       const nextScreen = lesson.screens[currentIndex + 1];
       setCurrentScreenOrder(nextScreen.order);
     } else if (isEndOfInputText && currentIndex === lesson.screens.length - 1) {
-      updateTotalLessonMetrics();
+      const updatedLessonMetrics = updateTotalLessonMetrics();
+
+      if (!updatedLessonMetrics) {
+        throw new Error('Failed to calculate updated lesson metrics.');
+      }
+
       setLessonComplete(true);
+
+      const metricsForServer = updatedLessonMetrics.screenMetrics.map((metric) => ({
+        order: metric.order,
+        type: metric.type,
+        rawWPM: metric.rawWPM,
+        adjustedWPM: metric.adjustedWPM,
+        accuracy: metric.accuracy,
+        backspaces: metric.backspaces,
+        errors: metric.errors,
+        timeTaken: metric.timeTaken,
+        typedCharacters: metric.typedCharacters,
+        correctCharacters: metric.correctCharacters
+      }));
+
+      try {
+        saveLessonProgressMutation.mutateAsync({
+          lessonId: updatedLessonMetrics.lessonId,
+          currentScreenOrder: currentScreen.order,
+          isCompleted: true,
+          totalRawWPM: updatedLessonMetrics.totalRawWPM,
+          totalAdjustedWPM: updatedLessonMetrics.totalAdjustedWPM,
+          totalAccuracy: updatedLessonMetrics.totalAccuracy,
+          totalBackspaces: updatedLessonMetrics.totalBackspaces,
+          totalErrors: updatedLessonMetrics.totalErrors,
+          totalTimeTaken: updatedLessonMetrics.totalTimeTaken,
+          totalTypedCharacters: updatedLessonMetrics.totalTypedCharacters,
+          totalCorrectCharacters: updatedLessonMetrics.totalCorrectCharacters,
+          screenMetrics: metricsForServer
+        });
+      } catch (error) {
+        console.error(`Failed to save lesson progress: ${error}`);
+      }
 
       navigate(`/lesson/${lesson.id}/results`);
     }
   }, [
     lesson,
     currentScreen,
-    updateCalculatedScreenMetrics,
     addScreenMetricsToLesson,
     isEndOfInputText,
+    saveScreenMetricMutation,
     setCurrentScreenOrder,
     updateTotalLessonMetrics,
     setLessonComplete,
-    navigate
+    navigate,
+    saveLessonProgressMutation
   ]);
+
+  useEffect(() => {
+    if (isEndOfInputText) updateCalculatedScreenMetrics();
+  }, [isEndOfInputText, updateCalculatedScreenMetrics]);
 
   useEffect(() => {
     if (lesson && currentScreenOrder === null && lesson.screens.length > 0) {

@@ -15,6 +15,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./routers": "./src/routers/index.js",
-    "./context": "./src/context.ts"
+    "./context": "./src/context.ts",
+    "./types": "./src/types.ts"
   }
 }

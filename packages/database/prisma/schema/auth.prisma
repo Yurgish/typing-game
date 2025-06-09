@@ -1,4 +1,3 @@
-
 model User {
   id            String    @id @map("_id")
   name          String
@@ -14,6 +13,9 @@ model User {
   banned     Boolean?
   banReason  String?
   banExpires DateTime?
+
+  userLessonProgresses UserLessonProgress[]
+  characterMetrics     CharacterMetric[]
 
   @@unique([email])
   @@map("user")
