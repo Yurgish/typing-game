@@ -1,6 +1,6 @@
-// src/server/api/routers/userProgress.ts
 import { z } from "zod";
 
+import { areNewMetricsBetter } from "../../src/utils/metricsComparator";
 import { protectedProcedure, router } from "../index";
 import { LearningMode } from "../types";
 
@@ -21,15 +21,14 @@ const saveLessonProgressInputSchema = z.object({
   lessonId: z.string(),
   currentScreenOrder: z.number(),
   isCompleted: z.boolean(),
-  totalRawWPM: z.number().optional().nullable(),
-  totalAdjustedWPM: z.number().optional().nullable(),
-  totalAccuracy: z.number().optional().nullable(),
-  totalBackspaces: z.number().int().optional().nullable(),
-  totalErrors: z.number().int().optional().nullable(),
-  totalTimeTaken: z.number().int().optional().nullable(),
-  totalTypedCharacters: z.number().int().optional().nullable(),
-  totalCorrectCharacters: z.number().int().optional().nullable(),
-  screenMetrics: z.array(screenMetricInputSchema).optional(),
+  totalRawWPM: z.number(),
+  totalAdjustedWPM: z.number(),
+  totalAccuracy: z.number(),
+  totalBackspaces: z.number().int(),
+  totalErrors: z.number().int(),
+  totalTimeTaken: z.number().int(),
+  totalTypedCharacters: z.number().int(),
+  totalCorrectCharacters: z.number().int(),
 });
 
 const updateCharacterMetricsInputSchema = z.object({
@@ -53,11 +52,79 @@ export const userProgressRouter = router({
           lessonId: input.lessonId,
         },
       },
+      select: {
+        id: true,
+        currentScreenOrder: true,
+        isCompleted: true,
+        totalRawWPM: true,
+        totalAdjustedWPM: true,
+        totalAccuracy: true,
+        totalBackspaces: true,
+        totalErrors: true,
+        totalTimeTaken: true,
+        totalTypedCharacters: true,
+        totalCorrectCharacters: true,
+      },
     });
 
     let newCurrentScreenOrder = input.currentScreenOrder;
     if (existingProgress && existingProgress.currentScreenOrder !== null) {
       newCurrentScreenOrder = Math.max(existingProgress.currentScreenOrder, input.currentScreenOrder);
+    }
+
+    let updateLessonMetricsData: {
+      totalRawWPM?: number | null;
+      totalAdjustedWPM?: number | null;
+      totalAccuracy?: number | null;
+      totalBackspaces?: number | null;
+      totalErrors?: number | null;
+      totalTimeTaken?: number | null;
+      totalTypedCharacters?: number | null;
+      totalCorrectCharacters?: number | null;
+    } = {};
+
+    if (input.isCompleted) {
+      const newTotalMetrics = {
+        adjustedWPM: input.totalAdjustedWPM,
+        accuracy: input.totalAccuracy,
+        errors: input.totalErrors,
+        backspaces: input.totalBackspaces,
+        timeTaken: input.totalTimeTaken,
+      };
+
+      if (!existingProgress?.isCompleted) {
+        updateLessonMetricsData = {
+          totalRawWPM: input.totalRawWPM,
+          totalAdjustedWPM: input.totalAdjustedWPM,
+          totalAccuracy: input.totalAccuracy,
+          totalBackspaces: input.totalBackspaces,
+          totalErrors: input.totalErrors,
+          totalTimeTaken: input.totalTimeTaken,
+          totalTypedCharacters: input.totalTypedCharacters,
+          totalCorrectCharacters: input.totalCorrectCharacters,
+        };
+      } else {
+        const existingTotalMetrics = {
+          adjustedWPM: existingProgress.totalAdjustedWPM,
+          accuracy: existingProgress.totalAccuracy,
+          errors: existingProgress.totalErrors,
+          backspaces: existingProgress.totalBackspaces,
+          timeTaken: existingProgress.totalTimeTaken,
+        };
+
+        if (areNewMetricsBetter(newTotalMetrics, existingTotalMetrics)) {
+          updateLessonMetricsData = {
+            totalRawWPM: input.totalRawWPM,
+            totalAdjustedWPM: input.totalAdjustedWPM,
+            totalAccuracy: input.totalAccuracy,
+            totalBackspaces: input.totalBackspaces,
+            totalErrors: input.totalErrors,
+            totalTimeTaken: input.totalTimeTaken,
+            totalTypedCharacters: input.totalTypedCharacters,
+            totalCorrectCharacters: input.totalCorrectCharacters,
+          };
+        }
+      }
     }
 
     if (existingProgress) {
@@ -69,46 +136,7 @@ export const userProgressRouter = router({
           currentScreenOrder: newCurrentScreenOrder,
           isCompleted: input.isCompleted,
           completedAt: input.isCompleted ? new Date() : undefined,
-          totalRawWPM: input.totalRawWPM,
-          totalAdjustedWPM: input.totalAdjustedWPM,
-          totalAccuracy: input.totalAccuracy,
-          totalBackspaces: input.totalBackspaces,
-          totalErrors: input.totalErrors,
-          totalTimeTaken: input.totalTimeTaken,
-          totalTypedCharacters: input.totalTypedCharacters,
-          totalCorrectCharacters: input.totalCorrectCharacters,
-          screenMetrics: {
-            upsert: input.screenMetrics?.map((metric) => ({
-              where: {
-                userLessonProgressId_screenOrder: {
-                  userLessonProgressId: existingProgress.id,
-                  screenOrder: metric.order,
-                },
-              },
-              update: {
-                rawWPM: metric.rawWPM,
-                adjustedWPM: metric.adjustedWPM,
-                accuracy: metric.accuracy,
-                backspaces: metric.backspaces,
-                errors: metric.errors,
-                timeTaken: metric.timeTaken,
-                typedCharacters: metric.typedCharacters,
-                correctCharacters: metric.correctCharacters,
-              },
-              create: {
-                screenOrder: metric.order,
-                screenType: metric.type,
-                rawWPM: metric.rawWPM,
-                adjustedWPM: metric.adjustedWPM,
-                accuracy: metric.accuracy,
-                backspaces: metric.backspaces,
-                errors: metric.errors,
-                timeTaken: metric.timeTaken,
-                typedCharacters: metric.typedCharacters,
-                correctCharacters: metric.correctCharacters,
-              },
-            })),
-          },
+          ...updateLessonMetricsData,
         },
       });
       return updatedProgress;
@@ -120,31 +148,7 @@ export const userProgressRouter = router({
           currentScreenOrder: input.currentScreenOrder,
           isCompleted: input.isCompleted,
           completedAt: input.isCompleted ? new Date() : undefined,
-          totalRawWPM: input.totalRawWPM,
-          totalAdjustedWPM: input.totalAdjustedWPM,
-          totalAccuracy: input.totalAccuracy,
-          totalBackspaces: input.totalBackspaces,
-          totalErrors: input.totalErrors,
-          totalTimeTaken: input.totalTimeTaken,
-          totalTypedCharacters: input.totalTypedCharacters,
-          totalCorrectCharacters: input.totalCorrectCharacters,
-          screenMetrics: {
-            createMany: {
-              data:
-                input.screenMetrics?.map((metric) => ({
-                  screenOrder: metric.order,
-                  screenType: metric.type,
-                  rawWPM: metric.rawWPM,
-                  adjustedWPM: metric.adjustedWPM,
-                  accuracy: metric.accuracy,
-                  backspaces: metric.backspaces,
-                  errors: metric.errors,
-                  timeTaken: metric.timeTaken,
-                  typedCharacters: metric.typedCharacters,
-                  correctCharacters: metric.correctCharacters,
-                })) || [],
-            },
-          },
+          ...updateLessonMetricsData,
         },
       });
       return newProgress;
@@ -169,18 +173,20 @@ export const userProgressRouter = router({
         currentScreenOrder: screenMetric.order,
         isCompleted: false,
       },
-    });
-
-    const newCurrentScreenOrder = Math.max(progress.currentScreenOrder || 0, screenMetric.order);
-
-    const updated = await ctx.prisma.screenMetrics.upsert({
-      where: {
-        userLessonProgressId_screenOrder: {
-          userLessonProgressId: progress.id,
-          screenOrder: screenMetric.order,
+      include: {
+        screenMetrics: {
+          where: { screenOrder: screenMetric.order },
         },
       },
-      update: {
+    });
+
+    const existingScreenMetric = progress.screenMetrics[0];
+
+    const shouldUpdateScreenMetric = areNewMetricsBetter(screenMetric, existingScreenMetric);
+
+    let updateData = {};
+    if (shouldUpdateScreenMetric) {
+      updateData = {
         rawWPM: screenMetric.rawWPM,
         adjustedWPM: screenMetric.adjustedWPM,
         accuracy: screenMetric.accuracy,
@@ -189,7 +195,17 @@ export const userProgressRouter = router({
         timeTaken: screenMetric.timeTaken,
         typedCharacters: screenMetric.typedCharacters,
         correctCharacters: screenMetric.correctCharacters,
+      };
+    }
+
+    const updatedScreenMetricRecord = await ctx.prisma.screenMetrics.upsert({
+      where: {
+        userLessonProgressId_screenOrder: {
+          userLessonProgressId: progress.id,
+          screenOrder: screenMetric.order,
+        },
       },
+      update: updateData,
       create: {
         userLessonProgressId: progress.id,
         screenOrder: screenMetric.order,
@@ -205,6 +221,8 @@ export const userProgressRouter = router({
       },
     });
 
+    const newCurrentScreenOrder = Math.max(progress.currentScreenOrder || 0, screenMetric.order);
+
     await ctx.prisma.userLessonProgress.update({
       where: {
         id: progress.id,
@@ -214,7 +232,7 @@ export const userProgressRouter = router({
       },
     });
 
-    return updated;
+    return updatedScreenMetricRecord;
   }),
 
   getUserLessonProgress: protectedProcedure.input(z.object({ lessonId: z.string() })).query(async ({ input, ctx }) => {

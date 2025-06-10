@@ -28,10 +28,10 @@ const LessonCard = ({ lesson, index, lessonProgress, isLessonAvailable }: Lesson
 
   return (
     <div
-      className={`border-border w-[700px] overflow-hidden rounded-md border-2 transition-all duration-200 hover:shadow-(--key-shadow) ${!isLessonAvailable ? 'bg-red-400' : ''}`}
+      className={`border-border relative w-[700px] overflow-hidden rounded-md border-2 transition-all duration-200 hover:shadow-(--key-shadow)`}
     >
       <div className="border-background h-full w-full overflow-hidden rounded-md border-2">
-        <div className="flex items-center justify-between px-4 py-4">
+        <div className="flex items-center justify-between p-4">
           <h1 className="text-base">
             {index + 1}. {lesson.title}
           </h1>
@@ -89,6 +89,26 @@ const LessonCard = ({ lesson, index, lessonProgress, isLessonAvailable }: Lesson
           })}
         </div>
       </div>
+      {!isLessonAvailable && (
+        <div className="absolute inset-0 z-30 h-full w-full">
+          <div className="bg-background h-full w-full opacity-80"></div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="absolute top-1/2 left-1/2 mr-5 size-10 -translate-x-1/2 -translate-y-1/2"
+          >
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+      )}
     </div>
   );
 };

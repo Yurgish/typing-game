@@ -116,19 +116,6 @@ export const useLessonsScreensHandler = () => {
 
       setLessonComplete(true);
 
-      const metricsForServer = updatedLessonMetrics.screenMetrics.map((metric) => ({
-        order: metric.order,
-        type: metric.type,
-        rawWPM: metric.rawWPM,
-        adjustedWPM: metric.adjustedWPM,
-        accuracy: metric.accuracy,
-        backspaces: metric.backspaces,
-        errors: metric.errors,
-        timeTaken: metric.timeTaken,
-        typedCharacters: metric.typedCharacters,
-        correctCharacters: metric.correctCharacters
-      }));
-
       try {
         saveLessonProgressMutation.mutateAsync({
           lessonId: updatedLessonMetrics.lessonId,
@@ -141,8 +128,7 @@ export const useLessonsScreensHandler = () => {
           totalErrors: updatedLessonMetrics.totalErrors,
           totalTimeTaken: updatedLessonMetrics.totalTimeTaken,
           totalTypedCharacters: updatedLessonMetrics.totalTypedCharacters,
-          totalCorrectCharacters: updatedLessonMetrics.totalCorrectCharacters,
-          screenMetrics: metricsForServer
+          totalCorrectCharacters: updatedLessonMetrics.totalCorrectCharacters
         });
       } catch (error) {
         console.error(`Failed to save lesson progress: ${error}`);
