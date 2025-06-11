@@ -28,12 +28,12 @@ const LessonCard = ({ lesson, index, lessonProgress, isLessonAvailable }: Lesson
 
   return (
     <div
-      className={`border-border relative w-[700px] overflow-hidden rounded-md border-2 transition-all duration-200 hover:shadow-(--key-shadow)`}
+      className={`relative w-[700px] overflow-hidden rounded-md border-2 transition-all duration-200 hover:shadow-(--key-shadow)`}
     >
       <div className="border-background h-full w-full overflow-hidden rounded-md border-2">
         <div className="flex items-center justify-between p-4">
           <h1 className="text-base">
-            {index + 1}. {lesson.title}
+            {index + 1}. {lesson.title} {lessonProgress?.isCompleted && '(completed)'}
           </h1>
           {lessonProgress?.isCompleted ? (
             <Button variant="ghost" size="sm" onClick={() => navigateToScreen(1)}>

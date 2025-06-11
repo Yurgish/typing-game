@@ -6,6 +6,12 @@ export enum LearningMode {
   DEFAULT = "DEFAULT",
 }
 
+export enum LessonDifficulty {
+  BEGINNER = "BEGINNER",
+  INTERMEDIATE = "INTERMEDIATE",
+  ADVANCED = "ADVANCED",
+}
+
 export type LessonType = RouterOutputs["lesson"]["getById"];
 
 export type UserLessonProgressType = RouterOutputs["userProgress"]["getUserLessonProgress"];

@@ -14,8 +14,12 @@ model User {
   banReason  String?
   banExpires DateTime?
 
-  userLessonProgresses UserLessonProgress[]
-  characterMetrics     CharacterMetric[]
+  userStats UserStats?
+
+  userAchievements   UserAchievement[]
+  userDailyActivity  UserDailyActivity[]
+  userLessonProgress UserLessonProgress[]
+  characterMetrics   CharacterMetric[]
 
   @@unique([email])
   @@map("user")

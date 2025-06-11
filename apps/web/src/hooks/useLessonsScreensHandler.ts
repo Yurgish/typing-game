@@ -93,10 +93,11 @@ export const useLessonsScreensHandler = () => {
 
     if (metrics) {
       try {
-        saveScreenMetricMutation.mutateAsync({
+        const data = saveScreenMetricMutation.mutateAsync({
           lessonId: lesson.id,
           screenMetric: metrics
         });
+        console.log('Screen metrics saved:', data);
       } catch (error) {
         throw new Error(`Failed to update screen metrics: ${error}`);
       }
@@ -117,7 +118,7 @@ export const useLessonsScreensHandler = () => {
       setLessonComplete(true);
 
       try {
-        saveLessonProgressMutation.mutateAsync({
+        const data = saveLessonProgressMutation.mutateAsync({
           lessonId: updatedLessonMetrics.lessonId,
           currentScreenOrder: currentScreen.order,
           isCompleted: true,
@@ -130,6 +131,7 @@ export const useLessonsScreensHandler = () => {
           totalTypedCharacters: updatedLessonMetrics.totalTypedCharacters,
           totalCorrectCharacters: updatedLessonMetrics.totalCorrectCharacters
         });
+        console.log('Lesson progress saved:', data);
       } catch (error) {
         console.error(`Failed to save lesson progress: ${error}`);
       }

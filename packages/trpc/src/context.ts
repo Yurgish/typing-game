@@ -13,13 +13,9 @@ export type Context = {
 };
 
 export const createContext = async ({ req }: CreateExpressContextOptions): Promise<Context> => {
-  console.log("Incoming request headers:", req.headers);
   const session = await auth.api.getSession({
     headers: fromNodeHeaders(req.headers),
   });
-
-  console.log("Session in createContext:", session);
-  console.log("Session user in createContext:", session?.user); // Check if user object exists
 
   return {
     prisma,

@@ -1,9 +1,9 @@
-type MetricData = {
-  adjustedWPM?: number | null;
-  accuracy?: number | null;
-  errors?: number | null;
-  backspaces?: number | null;
-  timeTaken?: number | null;
+export type MetricData = {
+  adjustedWPM: number;
+  accuracy: number;
+  errors: number;
+  backspaces: number;
+  timeTaken: number;
 };
 
 type MetricWeights = {
