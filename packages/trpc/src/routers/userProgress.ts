@@ -35,10 +35,13 @@ const saveLessonProgressInputSchema = z.object({
   totalCorrectCharacters: z.number().int(),
 });
 
-const updateCharacterMetricsInputSchema = z.object({
-  character: z.string().length(1), // Not one symbol, but one keycode
-  isCorrect: z.boolean(),
-});
+export const updateCharacterMetricsInputSchema = z.array(
+  z.object({
+    character: z.string().length(1),
+    correctCount: z.number().int().min(0),
+    errorCount: z.number().int().min(0),
+  })
+);
 
 const saveSingleScreenInputSchema = z.object({
   lessonId: z.string(),
@@ -146,7 +149,6 @@ export const userProgressRouter = router({
     });
   }),
 
-  //  New TRPC Procedures for User Stats and Achievements
   getUserXpAndLevel: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
     const userStatsService = new UserStatsService();
@@ -168,37 +170,37 @@ export const userProgressRouter = router({
   }),
 
   updateCharacterMetrics: protectedProcedure
-    .input(z.array(updateCharacterMetricsInputSchema))
+    .input(updateCharacterMetricsInputSchema)
     .mutation(async ({ input, ctx }) => {
       const { userId } = ctx.session;
-      const results = [];
-
-      for (const { character, isCorrect } of input) {
-        const updateData = isCorrect ? { correctCount: { increment: 1 } } : { errorCount: { increment: 1 } };
-
-        const characterMetric = await ctx.prisma.characterMetric.upsert({
-          where: {
-            userId_character: {
+      const results = await ctx.prisma.$transaction(
+        input.map(({ character, correctCount, errorCount }) => {
+          return ctx.prisma.characterMetric.upsert({
+            where: {
+              userId_character: {
+                userId: userId,
+                character: character,
+              },
+            },
+            update: {
+              correctCount: { increment: correctCount },
+              errorCount: { increment: errorCount },
+            },
+            create: {
               userId: userId,
               character: character,
+              correctCount: correctCount,
+              errorCount: errorCount,
             },
-          },
-          update: updateData,
-          create: {
-            userId: userId,
-            character: character,
-            correctCount: isCorrect ? 1 : 0,
-            errorCount: isCorrect ? 0 : 1,
-          },
-        });
-        results.push(characterMetric);
-      }
+          });
+        })
+      );
       return results;
     }),
 
   getCharacterMetrics: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
-    return ctx.prisma.characterMetric.findMany({
+    const characterMetrics = await ctx.prisma.characterMetric.findMany({
       where: {
         userId: userId,
       },
@@ -206,7 +208,27 @@ export const userProgressRouter = router({
         errorCount: "desc",
       },
     });
+
+    const metricsWithRatio = characterMetrics.map((metric) => {
+      const totalTyped = metric.correctCount + metric.errorCount;
+      // Уникаємо ділення на нуль
+      const errorRatio = totalTyped > 0 ? metric.errorCount / totalTyped : 0;
+      const accuracy = totalTyped > 0 ? metric.correctCount / totalTyped : 0;
+
+      return {
+        ...metric,
+        errorRatio: parseFloat(errorRatio.toFixed(4)),
+        accuracy: parseFloat(accuracy.toFixed(4)),
+        errorPercentage: parseFloat((errorRatio * 100).toFixed(2)),
+        accuracyPercentage: parseFloat((accuracy * 100).toFixed(2)),
+      };
+    });
+
+    metricsWithRatio.sort((a, b) => b.errorRatio - a.errorRatio);
+
+    return metricsWithRatio;
   }),
+
   getUserActivityHeatmap: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
     const dailyActivityService = new DailyActivityService();

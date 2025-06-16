@@ -26,7 +26,8 @@ export const useLessonsScreensHandler = () => {
     addScreenMetricsToLesson,
     updateTotalLessonMetrics,
     setCurrentScreenTargetTextLength,
-    resetScreenTimerState
+    resetScreenTimerState,
+    screenCharacterMetrics
   } = useTypingMetricsStore();
 
   const { currentScreenOrder, setCurrentLessonId, setCurrentScreenOrder, setLessonComplete } = useCurrentLessonStore();
@@ -43,6 +44,7 @@ export const useLessonsScreensHandler = () => {
 
   const saveLessonProgressMutation = useMutation(trpc.userProgress.saveLessonProgress.mutationOptions());
   const saveScreenMetricMutation = useMutation(trpc.userProgress.saveScreenMetric.mutationOptions());
+  const updateCharacterMetricsMutation = useMutation(trpc.userProgress.updateCharacterMetrics.mutationOptions());
 
   useEffect(() => {
     if (lessonId && isFirstRender.current) {
@@ -86,17 +88,26 @@ export const useLessonsScreensHandler = () => {
     }
   }, [currentScreen, setTargetKeyCode, setTargetText]);
 
-  const handleScreenComplete = useCallback(() => {
+  const handleScreenComplete = useCallback(async () => {
     if (!lesson || !currentScreen) return;
 
     const metrics = addScreenMetricsToLesson(currentScreen.order, currentScreen.type as LearningMode);
 
     if (metrics) {
       try {
-        const data = saveScreenMetricMutation.mutateAsync({
+        const data = await saveScreenMetricMutation.mutateAsync({
           lessonId: lesson.id,
           screenMetric: metrics
         });
+
+        const aggregatedDataForBackend = Array.from(screenCharacterMetrics.entries()).map(([character, counts]) => ({
+          character,
+          correctCount: counts.correctCount,
+          errorCount: counts.errorCount
+        }));
+
+        await updateCharacterMetricsMutation.mutateAsync(aggregatedDataForBackend);
+
         console.log('Screen metrics saved:', data);
       } catch (error) {
         throw new Error(`Failed to update screen metrics: ${error}`);
@@ -118,7 +129,7 @@ export const useLessonsScreensHandler = () => {
       setLessonComplete(true);
 
       try {
-        const data = saveLessonProgressMutation.mutateAsync({
+        const data = await saveLessonProgressMutation.mutateAsync({
           lessonId: updatedLessonMetrics.lessonId,
           currentScreenOrder: currentScreen.order,
           isCompleted: true,
@@ -144,6 +155,8 @@ export const useLessonsScreensHandler = () => {
     addScreenMetricsToLesson,
     isEndOfInputText,
     saveScreenMetricMutation,
+    screenCharacterMetrics,
+    updateCharacterMetricsMutation,
     setCurrentScreenOrder,
     updateTotalLessonMetrics,
     setLessonComplete,

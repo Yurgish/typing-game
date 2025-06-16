@@ -8,8 +8,14 @@ export function useTypingHandler() {
   const { lastPressedKey } = useKeyboardStore();
 
   const { addCharacter, removeCharacter, targetText, inputText, isEndOfInputText } = useTypingStore();
-  const { incrementBackspaces, incrementErrors, addTypedCharacter, startScreenTimer, isScreenTimerRunning } =
-    useTypingMetricsStore();
+  const {
+    incrementBackspaces,
+    incrementErrors,
+    addTypedCharacter,
+    startScreenTimer,
+    isScreenTimerRunning,
+    addCharacterMetric
+  } = useTypingMetricsStore();
 
   useEffect(() => {
     if (!lastPressedKey || isEndOfInputText) return;
@@ -24,6 +30,10 @@ export function useTypingHandler() {
       const isCorrect = lastPressedKey === currentTargetChar;
 
       addTypedCharacter(isCorrect);
+
+      if (currentTargetChar) {
+        addCharacterMetric(currentTargetChar, isCorrect);
+      }
 
       if (!isCorrect) {
         incrementErrors();

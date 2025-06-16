@@ -1,3 +1,4 @@
+import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 
 import LessonCard from '@/components/LessonCard';
@@ -25,7 +26,14 @@ const Lessons = () => {
 
   return (
     lessons && (
-      <div>
+      <div className="no-scrollbar h-full max-h-screen overflow-auto py-40">
+        <Tabs className="mb-6 flex w-full items-center justify-center" defaultValue="BEGGINER">
+          <TabsList>
+            <TabsTrigger value="BEGGINER">BEGGINER</TabsTrigger>
+            <TabsTrigger value="INTERMEDIATE">INTERMEDIATE</TabsTrigger>
+            <TabsTrigger value="ADVANCED">ADVANCED</TabsTrigger>
+          </TabsList>
+        </Tabs>
         <ul className="flex flex-col gap-4">
           {lessons.map((lesson, index) => {
             const lessonProgress = allUserProgress?.find((progress) => progress.lessonId === lesson.id);

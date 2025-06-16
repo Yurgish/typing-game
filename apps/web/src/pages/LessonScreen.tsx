@@ -59,8 +59,6 @@ export default function LessonScreen({
   return (
     <LayoutGroup>
       <motion.div className="relative flex w-full flex-col items-center justify-center gap-6">
-        <p className="absolute top-6 left-0">{currentScreen.order}</p>
-
         <AnimatePresence mode="wait">
           {!isExiting && (
             <motion.div
@@ -101,6 +99,12 @@ export default function LessonScreen({
           <Keyboard size="full" />
           <div className="absolute left-full ml-8 w-3/6">
             <RealTimeMetrics screensInLesson={lesson.screens.length} currentScreenOrder={currentScreen.order} />
+          </div>
+          <div className="absolute top-6 -left-full ml-20 w-full">
+            <h1 className="text-2xl">
+              Lesson {lesson.order} -&gt; {lesson.title}
+            </h1>
+            <p className="text-xl">Screen {currentScreen.order}</p>
           </div>
         </motion.div>
 

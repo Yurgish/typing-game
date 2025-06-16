@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "db:generate": "prisma generate --schema ./prisma/schema",
-    "db:push": "prisma db push --skip-generate"
+    "db:push": "prisma db push --skip-generate",
+    "prisma:seed": "tsx seed.ts"
   },
   "exports": {
     ".": "./src/generated/client/index.ts",

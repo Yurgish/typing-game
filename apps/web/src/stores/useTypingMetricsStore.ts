@@ -46,6 +46,8 @@ type TypingMetricsState = {
 
   isScreenTimerRunning: boolean;
 
+  screenCharacterMetrics: Map<string, { correctCount: number; errorCount: number }>;
+
   startScreenTimer: () => void;
   resetScreenTimerState: () => void;
 
@@ -59,6 +61,8 @@ type TypingMetricsState = {
   resetLessonMetrics: (lessonId: string) => void;
   updateCalculatedScreenMetrics: () => void;
   updateTotalLessonMetrics: () => LessonMetricsData | null;
+
+  addCharacterMetric: (character: string, isCorrect: boolean) => void;
 };
 
 export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
@@ -78,6 +82,8 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
 
   isScreenTimerRunning: false,
 
+  screenCharacterMetrics: new Map(),
+
   startScreenTimer: () => set({ screenStartTime: Date.now(), isScreenTimerRunning: true }),
   resetScreenTimerState: () => set({ screenStartTime: null, isScreenTimerRunning: false }),
 
@@ -95,6 +101,23 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
     }));
     get().updateCalculatedScreenMetrics();
   },
+
+  addCharacterMetric: (character: string, isCorrect: boolean) => {
+    set((state) => {
+      const updatedMetrics = new Map(state.screenCharacterMetrics); // new map every time, kinda bad
+      const currentCounts = updatedMetrics.get(character) || { correctCount: 0, errorCount: 0 };
+
+      if (isCorrect) {
+        currentCounts.correctCount++;
+      } else {
+        currentCounts.errorCount++;
+      }
+      updatedMetrics.set(character, currentCounts);
+
+      return { screenCharacterMetrics: updatedMetrics };
+    });
+  },
+
   setCurrentScreenTargetTextLength: (length: number) => set({ currentScreenTargetTextLength: length }),
 
   updateCalculatedScreenMetrics: () => {
@@ -170,7 +193,8 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       currentScreenRawWPM: 0,
       currentScreenAdjustedWPM: 0,
       currentScreenAccuracy: 0,
-      currentScreenTimeTaken: 0
+      currentScreenTimeTaken: 0,
+      screenCharacterMetrics: new Map()
     }),
 
   resetLessonMetrics: (lessonId: string) =>

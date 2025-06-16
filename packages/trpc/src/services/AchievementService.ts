@@ -66,7 +66,6 @@ export class AchievementService {
     userId: string
   ): Promise<(Achievement & { unlocked: boolean; unlockedAt: Date | null })[]> {
     const userUnlockedAchievements = await this.db.userAchievement.findMany({
-      // Use this.db
       where: { userId: userId },
     });
 

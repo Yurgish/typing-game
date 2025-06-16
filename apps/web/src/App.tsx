@@ -10,7 +10,6 @@ import { trpc } from './utils/trpc';
 function App() {
   const { data: session, isPending } = authClient.useSession();
   const { data } = useQuery(trpc.userProgress.getUserActivityHeatmap.queryOptions());
-  console.log('Heatmap Data:', data);
   return (
     <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '4px' }} className="bg-grad w-full">
       <SocialSignInButton provider="google" />
@@ -30,7 +29,21 @@ function App() {
         </Button>
       )}
       <Keyboard size="full" />
-      {/* <CalendarHeatmap values={data?.heatmapData} /> */}
+      {data && session && (
+        <div className="w-1/6">
+          <CalendarHeatmap
+            endDate={new Date(Date.now() - 24 * 60 * 60 * 1000)}
+            values={
+              data?.heatmapData
+                ? Object.entries(data.heatmapData).map(([date, value]) => ({
+                    date,
+                    count: value.lessons
+                  }))
+                : []
+            }
+          />
+        </div>
+      )}
     </div>
   );
 }
