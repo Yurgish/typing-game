@@ -3,10 +3,10 @@ import '@repo/ui/globals.css';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 
-import App from './App.tsx';
 import MainLayout from './layouts/MainLayout.tsx';
+import Achivments from './pages/Achievements.tsx';
 import Lesson from './pages/Lesson.tsx';
 import LessonResults from './pages/LessonResults.tsx';
 import Lessons from './pages/Lessons.tsx';
@@ -19,12 +19,12 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <Routes>
           <Route element={<MainLayout />}>
-            <Route path="/" element={<App />} />
+            <Route path="/" element={<Navigate to="/lessons" replace />} />
             <Route path="/lessons" element={<Lessons />} />
             <Route path="/lesson/:lessonId" element={<Lesson />} />
             <Route path="/lesson/:lessonId/results" element={<LessonResults />} />
             <Route path="/profile" element={<Profile />} />
-            {/* <Route path="/profile/achivments" element={<Achivments />} /> */}
+            <Route path="/profile/achievements" element={<Achivments />} />
             <Route path="*" element={<div>404 Not Found</div>} />
           </Route>
         </Routes>

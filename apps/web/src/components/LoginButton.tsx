@@ -21,9 +21,14 @@ const LoginButton = () => {
 
   if (location.pathname === '/profile') {
     return (
-      <Button variant={'ghost'} className="text-lg" onClick={() => navigate('/lessons')}>
-        Back to Lessons
-      </Button>
+      <div className="flex gap-2">
+        <Button variant={'ghost'} className="text-lg" onClick={() => navigate('/lessons')}>
+          Back to Lessons
+        </Button>
+        <Button variant={'ghost'} className="text-lg" onClick={() => authClient.signOut()}>
+          Log out
+        </Button>
+      </div>
     );
   }
 
@@ -33,7 +38,7 @@ const LoginButton = () => {
     </Button>
   ) : (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant={'ghost'} className="text-lg">
           Sign Up
         </Button>

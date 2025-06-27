@@ -9,6 +9,8 @@ import {
   CarouselPrevious
 } from '@repo/ui/components/ui/carousel';
 import { useQuery } from '@tanstack/react-query';
+import { Trophy } from 'lucide-react';
+import { useEffect } from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import { useNavigate } from 'react-router';
 
@@ -49,6 +51,12 @@ const Profile = () => {
 
   const xpOnThisLevel = totalExperience - prevLevelXp; // remake on server side, so we can use it directly
 
+  useEffect(() => {
+    if (!session) {
+      navigate('/lessons');
+    }
+  }, [navigate, session]);
+
   return (
     <div className="min-w-[1200px] pt-20">
       <div className="flex items-center justify-between">
@@ -85,9 +93,14 @@ const Profile = () => {
                   : []
               }
             />
-            <Button variant={'secondary'} onClick={startLastLesson} className="mt-4 self-end text-base">
-              Continue learning?
-            </Button>
+            <div className="mt-4 self-end">
+              <Button variant={'secondary'} onClick={startLastLesson} className="mr-4 text-base">
+                Continue learning?
+              </Button>
+              <Button onClick={() => navigate('/profile/achievements')} className="text-base">
+                <Trophy />
+              </Button>
+            </div>
           </div>
         )}
       </div>

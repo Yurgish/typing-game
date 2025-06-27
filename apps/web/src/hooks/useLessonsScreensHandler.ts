@@ -88,14 +88,15 @@ export const useLessonsScreensHandler = () => {
     }
   }, [currentScreen, setTargetKeyCode, setTargetText]);
 
-  const handleScreenComplete = useCallback(async () => {
+  //remake
+  const handleScreenComplete = useCallback(() => {
     if (!lesson || !currentScreen) return;
 
     const metrics = addScreenMetricsToLesson(currentScreen.order, currentScreen.type as LearningMode);
 
     if (metrics) {
       try {
-        const data = await saveScreenMetricMutation.mutateAsync({
+        const data = saveScreenMetricMutation.mutateAsync({
           lessonId: lesson.id,
           screenMetric: metrics
         });
@@ -106,7 +107,7 @@ export const useLessonsScreensHandler = () => {
           errorCount: counts.errorCount
         }));
 
-        await updateCharacterMetricsMutation.mutateAsync(aggregatedDataForBackend);
+        updateCharacterMetricsMutation.mutateAsync(aggregatedDataForBackend);
 
         console.log('Screen metrics saved:', data);
       } catch (error) {
@@ -129,7 +130,7 @@ export const useLessonsScreensHandler = () => {
       setLessonComplete(true);
 
       try {
-        const data = await saveLessonProgressMutation.mutateAsync({
+        const data = saveLessonProgressMutation.mutateAsync({
           lessonId: updatedLessonMetrics.lessonId,
           currentScreenOrder: currentScreen.order,
           isCompleted: true,
