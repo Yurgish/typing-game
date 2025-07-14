@@ -11,9 +11,9 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { Trophy } from 'lucide-react';
 import { useEffect } from 'react';
-import CalendarHeatmap from 'react-calendar-heatmap';
 import { useNavigate } from 'react-router';
 
+import HeatMap from '@/components/HeatMap';
 import ProgressBar from '@/components/ProgressBar';
 import { authClient } from '@/lib/auth';
 import { LEVEL_THRESHOLDS } from '@/lib/constansts';
@@ -51,11 +51,11 @@ const Profile = () => {
 
   const xpOnThisLevel = totalExperience - prevLevelXp; // remake on server side, so we can use it directly
 
-  useEffect(() => {
-    if (!session) {
-      navigate('/lessons');
-    }
-  }, [navigate, session]);
+  // useEffect(() => {
+  //   if (!session) {
+  //     navigate('/lessons');
+  //   }
+  // }, [navigate, session]);
 
   return (
     <div className="min-w-[1200px] pt-20">
@@ -81,18 +81,7 @@ const Profile = () => {
         </div>
         {heatmap && session && (
           <div className="flex w-[50%] flex-col">
-            <h1 className="mb-4 text-2xl">Recent Activity</h1>
-            <CalendarHeatmap
-              endDate={new Date(Date.now() - 24 * 60 * 60 * 1000)}
-              values={
-                heatmap?.heatmapData
-                  ? Object.entries(heatmap.heatmapData).map(([date, value]) => ({
-                      date,
-                      count: value.lessons
-                    }))
-                  : []
-              }
-            />
+            <HeatMap heatmap={heatmap} />
             <div className="mt-4 self-end">
               <Button variant={'secondary'} onClick={startLastLesson} className="mr-4 text-base">
                 Continue learning?

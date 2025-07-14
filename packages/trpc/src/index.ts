@@ -22,8 +22,6 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  console.log("Inside protectedProcedure - ctx.session:", ctx.session);
-  console.log("Inside protectedProcedure - ctx.session.user:", ctx.session?.user);
   if (!ctx.session || !ctx.session.user) {
     console.error("UNAUTHORIZED: Session or user is missing.");
     throw new TRPCError({ code: "UNAUTHORIZED" });

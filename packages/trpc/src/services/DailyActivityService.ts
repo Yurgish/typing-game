@@ -4,14 +4,9 @@ import { prisma } from "@repo/database/prisma";
 export class DailyActivityService {
   private db = prisma;
 
-  /**
-   * Приводить дату до початку дня (00:00:00.000).
-   * @param date Дата для нормалізації.
-   * @returns Нормалізована дата.
-   */
   public normalizeDate(date: Date): Date {
     const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
+    d.setUTCHours(0, 0, 0, 0);
     return d;
   }
 
@@ -21,6 +16,7 @@ export class DailyActivityService {
     activityType: "screen" | "lesson"
   ): Promise<UserDailyActivity> {
     const today = this.normalizeDate(new Date());
+    console.log(`${today.toISOString()} - ${new Date().toISOString()}`);
 
     const updateData: Prisma.UserDailyActivityUpdateInput = { xpEarnedToday: { increment: xpEarned } };
     if (activityType === "screen") {

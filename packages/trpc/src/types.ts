@@ -23,3 +23,5 @@ export type CharacterMetricType = RouterOutputs["userProgress"]["getCharacterMet
 export type ScreenType = LessonType["screens"][number];
 
 export type ScreenContentType = ScreenType["content"];
+
+export type HeatMapType = RouterOutputs["userProgress"]["getUserActivityHeatmap"];
