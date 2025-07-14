@@ -97,7 +97,7 @@ const HeatMap = ({ heatmap }: { heatmap: HeatMapType }) => {
           const countLabel =
             value?.count && value.count > 0 ? `${value.count} ${dataType === 'xp' ? 'XP' : dataType}` : 'No activity';
           return (
-            <Tooltip key={index}>
+            <Tooltip key={index} delayDuration={300}>
               <TooltipTrigger asChild>{React.cloneElement(element as React.ReactElement)}</TooltipTrigger>
               <TooltipContent className="text-sm">{`${dateLabel}: ${countLabel}`}</TooltipContent>
             </Tooltip>
