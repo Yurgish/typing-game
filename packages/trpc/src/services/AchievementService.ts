@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database/prisma";
+import { PrismaClient } from "@repo/db/generated/client";
 
 import { Achievement, AchievementConditionData, ACHIEVEMENTS } from "../constants/achievements";
 
@@ -22,7 +22,7 @@ import { Achievement, AchievementConditionData, ACHIEVEMENTS } from "../constant
  * ```
  */
 export class AchievementService {
-  private db = prisma;
+  constructor(private db: PrismaClient) {}
 
   /**
    * Checks if a user has unlocked any new achievements and awards them.

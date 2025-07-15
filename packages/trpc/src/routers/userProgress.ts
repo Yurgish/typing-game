@@ -48,7 +48,7 @@ const saveSingleScreenInputSchema = z.object({
 export const userProgressRouter = router({
   saveLessonProgress: protectedProcedure.input(saveLessonProgressInputSchema).mutation(async ({ input, ctx }) => {
     const { userId } = ctx.session;
-    const userProgressService = new UserProgressService();
+    const userProgressService = new UserProgressService(ctx.prisma);
 
     const result = await userProgressService.saveLessonProgress(userId, input);
 
@@ -57,7 +57,7 @@ export const userProgressRouter = router({
 
   saveScreenMetric: protectedProcedure.input(saveSingleScreenInputSchema).mutation(async ({ input, ctx }) => {
     const { userId } = ctx.session;
-    const userProgressService = new UserProgressService();
+    const userProgressService = new UserProgressService(ctx.prisma);
 
     const result = await userProgressService.saveScreenMetric(userId, input);
 
@@ -133,7 +133,7 @@ export const userProgressRouter = router({
 
   getUserXpAndLevel: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
-    const userStatsService = new UserStatsService();
+    const userStatsService = new UserStatsService(ctx.prisma);
     const userStats = await userStatsService.getUserStats(userId);
 
     const { currentLevel, xpToNextLevel } = calculateLevel(userStats.totalExperience);
@@ -147,7 +147,7 @@ export const userProgressRouter = router({
 
   getAchievements: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
-    const achievementService = new AchievementService();
+    const achievementService = new AchievementService(ctx.prisma);
     return achievementService.getUserAchievements(userId);
   }),
 
@@ -213,7 +213,7 @@ export const userProgressRouter = router({
 
   getUserActivityHeatmap: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
-    const dailyActivityService = new DailyActivityService();
+    const dailyActivityService = new DailyActivityService(ctx.prisma);
 
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);

@@ -1,8 +1,7 @@
-import { Prisma, UserDailyActivity, UserStats } from "@repo/database";
-import { prisma } from "@repo/database/prisma";
+import { Prisma, PrismaClient, UserDailyActivity, UserStats } from "@repo/database";
 
 export class DailyActivityService {
-  private db = prisma;
+  constructor(private db: PrismaClient) {}
 
   public normalizeDate(date: Date): Date {
     const d = new Date(date);

@@ -1,11 +1,10 @@
-import { Prisma, UserStats } from "@repo/database";
-import { prisma } from "@repo/database/prisma";
+import { Prisma, PrismaClient, UserStats } from "@repo/database";
 
 import { FullMetricData, LessonDifficulty } from "../types";
 import { calculateLevel } from "../utils/xpCalculator";
 
 export class UserStatsService {
-  private db = prisma;
+  constructor(private db: PrismaClient) {}
 
   public async initializeUserStats(userId: string): Promise<UserStats> {
     const userStats = await this.db.userStats.upsert({

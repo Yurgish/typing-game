@@ -1,4 +1,4 @@
-import { prisma } from "@repo/database/prisma";
+import { PrismaClient } from "@repo/db/generated/client";
 
 import { FullMetricData, LearningMode, LessonDifficulty } from "../types";
 import { determineXpAndMetricsUpdate } from "../utils/xpCalculator";
@@ -23,10 +23,15 @@ type SaveScreenMetricInput = {
 };
 
 export class UserProgressService {
-  private db = prisma;
-  private userStatsService = new UserStatsService();
-  private achievementService = new AchievementService();
-  private dailyActivityService = new DailyActivityService();
+  private userStatsService: UserStatsService;
+  private achievementService: AchievementService;
+  private dailyActivityService: DailyActivityService;
+
+  constructor(private db: PrismaClient) {
+    this.userStatsService = new UserStatsService(db);
+    this.achievementService = new AchievementService(db);
+    this.dailyActivityService = new DailyActivityService(db);
+  }
 
   private async getLessonDifficulty(lessonId: string): Promise<LessonDifficulty> {
     const lesson = await this.db.lesson.findUnique({
