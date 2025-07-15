@@ -10,6 +10,9 @@ type TypingState = {
   nextKeyCode: string | null;
   nextCharIndex: number | null;
   isEndOfInputText: boolean;
+};
+
+type TypingActions = {
   setTargetKeyCode: (keyCode: string) => void;
   setTargetText: (text: string) => void;
   addCharacter: (char: string) => void;
@@ -17,14 +20,18 @@ type TypingState = {
   reset: () => void;
 };
 
-export const useTypingStore = create<TypingState>((set) => ({
+const initialState: TypingState = {
   targetText: '',
   inputText: '',
   currentWordIndex: 0,
   nextChar: '',
   nextKeyCode: '',
   nextCharIndex: 0,
-  isEndOfInputText: false,
+  isEndOfInputText: false
+};
+
+export const useTypingStore = create<TypingState & TypingActions>((set) => ({
+  ...initialState,
   setTargetText: (text) =>
     set({
       targetText: text,
@@ -99,12 +106,5 @@ export const useTypingStore = create<TypingState>((set) => ({
       };
     }),
 
-  reset: () =>
-    set({
-      inputText: '',
-      currentWordIndex: 0,
-      nextChar: '',
-      nextCharIndex: 0,
-      isEndOfInputText: false
-    })
+  reset: () => set(initialState)
 }));

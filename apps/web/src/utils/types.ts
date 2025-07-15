@@ -1,4 +1,5 @@
 import type {
+  FullMetricData,
   HeatMapType,
   LessonType,
   ScreenContentType,
@@ -29,4 +30,4 @@ export type LessonWithScreenId = Omit<LessonType, 'screens'> & {
   screens: ScreenWithId[];
 };
 
-export { HeatMapType, ScreenMetricsReturnedType, UserLessonProgressType };
+export { FullMetricData, HeatMapType, ScreenMetricsReturnedType, UserLessonProgressType };

@@ -98,7 +98,11 @@ export const useLessonsScreensHandler = () => {
       try {
         const data = saveScreenMetricMutation.mutateAsync({
           lessonId: lesson.id,
-          screenMetric: metrics
+          screenMetric: {
+            type: currentScreen.type as LearningMode,
+            order: currentScreen.order,
+            metrics: metrics
+          }
         });
 
         const aggregatedDataForBackend = Array.from(screenCharacterMetrics.entries()).map(([character, counts]) => ({
@@ -134,14 +138,16 @@ export const useLessonsScreensHandler = () => {
           lessonId: updatedLessonMetrics.lessonId,
           currentScreenOrder: currentScreen.order,
           isCompleted: true,
-          totalRawWPM: updatedLessonMetrics.totalRawWPM,
-          totalAdjustedWPM: updatedLessonMetrics.totalAdjustedWPM,
-          totalAccuracy: updatedLessonMetrics.totalAccuracy,
-          totalBackspaces: updatedLessonMetrics.totalBackspaces,
-          totalErrors: updatedLessonMetrics.totalErrors,
-          totalTimeTaken: updatedLessonMetrics.totalTimeTaken,
-          totalTypedCharacters: updatedLessonMetrics.totalTypedCharacters,
-          totalCorrectCharacters: updatedLessonMetrics.totalCorrectCharacters
+          metrics: {
+            rawWPM: updatedLessonMetrics.totalRawWPM,
+            adjustedWPM: updatedLessonMetrics.totalAdjustedWPM,
+            accuracy: updatedLessonMetrics.totalAccuracy,
+            backspaces: updatedLessonMetrics.totalBackspaces,
+            errors: updatedLessonMetrics.totalErrors,
+            timeTaken: updatedLessonMetrics.totalTimeTaken,
+            typedCharacters: updatedLessonMetrics.totalTypedCharacters,
+            correctCharacters: updatedLessonMetrics.totalCorrectCharacters
+          }
         });
         console.log('Lesson progress saved:', data);
       } catch (error) {

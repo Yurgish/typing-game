@@ -9,14 +9,14 @@ model UserLessonProgress {
   isCompleted        Boolean   @default(false)
   completedAt        DateTime?
 
-  totalRawWPM            Float?
-  totalAdjustedWPM       Float?
-  totalAccuracy          Float?
-  totalBackspaces        Int?
-  totalErrors            Int?
-  totalTimeTaken         Int?
-  totalTypedCharacters   Int?
-  totalCorrectCharacters Int?
+  rawWPM            Float?
+  adjustedWPM       Float?
+  accuracy          Float?
+  backspaces        Int?
+  errors            Int?
+  timeTaken         Int?
+  typedCharacters   Int?
+  correctCharacters Int?
 
   screenMetrics ScreenMetrics[]
 

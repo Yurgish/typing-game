@@ -4,20 +4,25 @@ type CurrentLessonState = {
   currentLessonId: string | null;
   currentScreenOrder: number | null;
   isLessonComplete: boolean;
+};
+
+type CurrentLessonActions = {
   setCurrentLessonId: (id: string) => void;
   setCurrentScreenOrder: (order: number) => void;
   setLessonComplete: (val: boolean) => void;
   resetLessonState: () => void;
 };
 
-export const useCurrentLessonStore = create<CurrentLessonState>((set) => ({
+const initialState: CurrentLessonState = {
   currentLessonId: null,
   currentScreenOrder: null,
-  isLessonComplete: false,
-  currentLessonData: null,
+  isLessonComplete: false
+};
 
+export const useCurrentLessonStore = create<CurrentLessonState & CurrentLessonActions>((set) => ({
+  ...initialState,
   setCurrentLessonId: (id) => set({ currentLessonId: id, isLessonComplete: false }),
   setCurrentScreenOrder: (order) => set({ currentScreenOrder: order }),
   setLessonComplete: (val) => set({ isLessonComplete: val }),
-  resetLessonState: () => set({ currentLessonId: null, currentScreenOrder: null, isLessonComplete: false })
+  resetLessonState: () => set(initialState)
 }));

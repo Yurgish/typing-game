@@ -1,8 +1,7 @@
 import { Prisma, UserStats } from "@repo/database";
 import { prisma } from "@repo/database/prisma";
 
-import { LessonDifficulty } from "../types";
-import { MetricData } from "../utils/metricsComparator";
+import { FullMetricData, LessonDifficulty } from "../types";
 import { calculateLevel } from "../utils/xpCalculator";
 
 export class UserStatsService {
@@ -26,7 +25,7 @@ export class UserStatsService {
     userId: string,
     xpEarned: number,
     lessonDifficulty: LessonDifficulty,
-    currentLessonMetrics: MetricData,
+    currentLessonMetrics: FullMetricData,
     wasFirstCompletion: boolean,
     wasPerfectCompletion: boolean
   ): Promise<UserStats> {

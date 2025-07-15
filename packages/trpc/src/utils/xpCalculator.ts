@@ -1,5 +1,11 @@
-import { LessonDifficulty } from "../../src/types";
-import { MetricData } from "./metricsComparator";
+import { FullMetricData, LessonDifficulty } from "../../src/types";
+import { areNewMetricsBetter, MetricData } from "./metricsComparator";
+
+type XpCalculationResult = {
+  xpEarned: number;
+  metricsToUpdate: Partial<FullMetricData>;
+  isBetterPerformance: boolean;
+};
 
 const LEVEL_THRESHOLDS = [
   0, // Level 1
@@ -29,14 +35,8 @@ const getMultipliedXP = (xp: number, difficulty: LessonDifficulty): number => {
   }
 };
 
-/**
- * Розраховує XP за проходження одного екрану.
- * @param metrics Метрики проходження екрану.
- * @param difficulty Складність уроку.
- * @returns Обчислені XP за екран.
- */
 export function calculateXpForScreen(
-  metrics: MetricData,
+  metrics: FullMetricData,
   difficulty: LessonDifficulty = LessonDifficulty.BEGINNER
 ): number {
   const accuracyBonus = metrics.accuracy * 0.5;
@@ -67,10 +67,10 @@ export function calculateXpForLessonCompletion(
 }
 
 export function calculateXpDifference(
-  newMetrics: MetricData,
-  oldMetrics: MetricData,
+  newMetrics: FullMetricData,
+  oldMetrics: FullMetricData,
   difficulty: LessonDifficulty,
-  calculateFn: (metrics: MetricData, difficulty: LessonDifficulty) => number
+  calculateFn: (metrics: FullMetricData, difficulty: LessonDifficulty) => number
 ): number {
   const xpNew = calculateFn(newMetrics, difficulty);
   const xpOld = calculateFn(oldMetrics, difficulty);
@@ -106,4 +106,79 @@ export function calculateLevel(totalExperience: number) {
     currentLevel: currentLevel,
     xpToNextLevel: xpNeededForNextLevel,
   };
+}
+
+export function determineXpAndMetricsUpdate(
+  currentMetrics: FullMetricData,
+  existingMetrics: FullMetricData | null | undefined,
+  lessonDifficulty: LessonDifficulty,
+  type: "lesson" | "screen"
+): XpCalculationResult {
+  let xpEarned = 0;
+  let metricsToUpdate: Partial<FullMetricData> = {};
+  let isBetterPerformance = false;
+
+  const calculateBaseXpFn = type === "lesson" ? calculateXpForLessonCompletion : calculateXpForScreen;
+
+  if (!existingMetrics) {
+    metricsToUpdate = currentMetrics;
+    xpEarned = calculateBaseXpFn(currentMetrics, lessonDifficulty);
+    isBetterPerformance = true;
+  } else {
+    const newMetricsForComparison: MetricData = {
+      adjustedWPM: currentMetrics.adjustedWPM,
+      accuracy: currentMetrics.accuracy,
+      errors: currentMetrics.errors,
+      backspaces: currentMetrics.backspaces,
+      timeTaken: currentMetrics.timeTaken,
+    };
+    const existingMetricsForComparison: MetricData = {
+      adjustedWPM: existingMetrics.adjustedWPM ?? 0,
+      accuracy: existingMetrics.accuracy ?? 0,
+      errors: existingMetrics.errors ?? 0,
+      backspaces: existingMetrics.backspaces ?? 0,
+      timeTaken: existingMetrics.timeTaken ?? 0,
+    };
+
+    if (areNewMetricsBetter(newMetricsForComparison, existingMetricsForComparison)) {
+      metricsToUpdate = currentMetrics;
+      xpEarned = calculateXpGainOnReattempt(currentMetrics, existingMetrics, lessonDifficulty, calculateBaseXpFn);
+      isBetterPerformance = true;
+    } else {
+      xpEarned = BASE_XP_ON_REATTEMPT;
+      isBetterPerformance = false;
+    }
+  }
+
+  return { xpEarned, metricsToUpdate, isBetterPerformance };
+}
+
+export function calculateXpGainOnReattempt(
+  newMetrics: FullMetricData,
+  oldMetrics: FullMetricData,
+  difficulty: LessonDifficulty,
+  calculateFn: (metrics: FullMetricData, difficulty: LessonDifficulty) => number
+): number {
+  const newMetricsForComparison: MetricData = {
+    adjustedWPM: newMetrics.adjustedWPM,
+    accuracy: newMetrics.accuracy,
+    errors: newMetrics.errors,
+    backspaces: newMetrics.backspaces,
+    timeTaken: newMetrics.timeTaken,
+  };
+  const oldMetricsForComparison: MetricData = {
+    adjustedWPM: oldMetrics.adjustedWPM,
+    accuracy: oldMetrics.accuracy,
+    errors: oldMetrics.errors,
+    backspaces: oldMetrics.backspaces,
+    timeTaken: oldMetrics.timeTaken,
+  };
+
+  if (areNewMetricsBetter(newMetricsForComparison, oldMetricsForComparison)) {
+    const xpNew = calculateFn(newMetrics, difficulty);
+    const xpOld = calculateFn(oldMetrics, difficulty);
+    return Math.max(BASE_XP_ON_REATTEMPT, xpNew - xpOld);
+  }
+
+  return BASE_XP_ON_REATTEMPT;
 }

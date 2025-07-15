@@ -16,7 +16,6 @@ export class DailyActivityService {
     activityType: "screen" | "lesson"
   ): Promise<UserDailyActivity> {
     const today = this.normalizeDate(new Date());
-    console.log(`${today.toISOString()} - ${new Date().toISOString()}`);
 
     const updateData: Prisma.UserDailyActivityUpdateInput = { xpEarnedToday: { increment: xpEarned } };
     if (activityType === "screen") {

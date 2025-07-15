@@ -25,3 +25,14 @@ export type ScreenType = LessonType["screens"][number];
 export type ScreenContentType = ScreenType["content"];
 
 export type HeatMapType = RouterOutputs["userProgress"]["getUserActivityHeatmap"];
+
+export type FullMetricData = {
+  rawWPM: number;
+  adjustedWPM: number;
+  accuracy: number;
+  backspaces: number;
+  errors: number;
+  timeTaken: number;
+  typedCharacters: number;
+  correctCharacters: number;
+};

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { calculateWPM } from '@/utils/metrics';
 import { LearningMode } from '@/utils/types';
 
+// --- State Types ---
 export type ScreenMetricsData = {
   order: number;
   type: LearningMode;
@@ -11,7 +12,7 @@ export type ScreenMetricsData = {
   accuracy: number;
   backspaces: number;
   errors: number;
-  timeTaken: number; // in milliseconds
+  timeTaken: number;
   typedCharacters: number;
   correctCharacters: number;
 };
@@ -23,7 +24,7 @@ export type LessonMetricsData = {
   totalAccuracy: number;
   totalBackspaces: number;
   totalErrors: number;
-  totalTimeTaken: number; // in milliseconds
+  totalTimeTaken: number;
   totalTypedCharacters: number;
   totalCorrectCharacters: number;
   screenMetrics: ScreenMetricsData[];
@@ -36,63 +37,73 @@ type TypingMetricsState = {
   typedCharacters: number;
   correctCharacters: number;
   currentScreenTargetTextLength: number;
-
   currentScreenRawWPM: number;
   currentScreenAdjustedWPM: number;
   currentScreenAccuracy: number;
   currentScreenTimeTaken: number;
-
   currentLessonMetrics: LessonMetricsData | null;
-
   isScreenTimerRunning: boolean;
-
   screenCharacterMetrics: Map<string, { correctCount: number; errorCount: number }>;
+};
 
+type TypingMetricsActions = {
   startScreenTimer: () => void;
   resetScreenTimerState: () => void;
-
   incrementErrors: () => void;
   incrementBackspaces: () => void;
   addTypedCharacter: (isCorrect: boolean) => void;
   setCurrentScreenTargetTextLength: (length: number) => void;
-
   addScreenMetricsToLesson: (screenOrder: number, screenType: LearningMode) => ScreenMetricsData | null;
   resetScreenMetrics: () => void;
   resetLessonMetrics: (lessonId: string) => void;
   updateCalculatedScreenMetrics: () => void;
   updateTotalLessonMetrics: () => LessonMetricsData | null;
-
   addCharacterMetric: (character: string, isCorrect: boolean) => void;
 };
 
-export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
+// --- Initial State ---
+const initialScreenMetricsState: Omit<TypingMetricsState, 'currentLessonMetrics'> = {
   screenStartTime: null,
   errors: 0,
   backspaces: 0,
   typedCharacters: 0,
   correctCharacters: 0,
   currentScreenTargetTextLength: 0,
-
   currentScreenRawWPM: 0,
   currentScreenAdjustedWPM: 0,
   currentScreenAccuracy: 0,
   currentScreenTimeTaken: 0,
-
-  currentLessonMetrics: null,
-
   isScreenTimerRunning: false,
+  screenCharacterMetrics: new Map()
+};
 
-  screenCharacterMetrics: new Map(),
+const createInitialLessonMetrics = (lessonId: string): LessonMetricsData => ({
+  lessonId,
+  totalRawWPM: 0,
+  totalAdjustedWPM: 0,
+  totalAccuracy: 0,
+  totalBackspaces: 0,
+  totalErrors: 0,
+  totalTimeTaken: 0,
+  totalTypedCharacters: 0,
+  totalCorrectCharacters: 0,
+  screenMetrics: []
+});
+
+const getInitialTypingMetricsState = (): TypingMetricsState => ({
+  ...initialScreenMetricsState,
+  currentLessonMetrics: null
+});
+
+export const useTypingMetricsStore = create<TypingMetricsState & TypingMetricsActions>()((set, get) => ({
+  ...getInitialTypingMetricsState(),
 
   startScreenTimer: () => set({ screenStartTime: Date.now(), isScreenTimerRunning: true }),
   resetScreenTimerState: () => set({ screenStartTime: null, isScreenTimerRunning: false }),
 
-  incrementErrors: () => {
-    set((state) => ({ errors: state.errors + 1 }));
-  },
-  incrementBackspaces: () => {
-    set((state) => ({ backspaces: state.backspaces + 1 }));
-  },
+  incrementErrors: () => set((state) => ({ errors: state.errors + 1 })),
+  incrementBackspaces: () => set((state) => ({ backspaces: state.backspaces + 1 })),
+
   addTypedCharacter: (isCorrect: boolean) => {
     if (get().currentScreenTargetTextLength === get().typedCharacters) return;
     set((state) => ({
@@ -104,7 +115,7 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
 
   addCharacterMetric: (character: string, isCorrect: boolean) => {
     set((state) => {
-      const updatedMetrics = new Map(state.screenCharacterMetrics); // new map every time, kinda bad
+      const updatedMetrics = new Map(state.screenCharacterMetrics);
       const currentCounts = updatedMetrics.get(character) || { correctCount: 0, errorCount: 0 };
 
       if (isCorrect) {
@@ -112,8 +123,8 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       } else {
         currentCounts.errorCount++;
       }
-      updatedMetrics.set(character, currentCounts);
 
+      updatedMetrics.set(character, currentCounts);
       return { screenCharacterMetrics: updatedMetrics };
     });
   },
@@ -123,7 +134,6 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
   updateCalculatedScreenMetrics: () => {
     set((state) => {
       if (!state.screenStartTime) return {};
-
       const timeElapsed = Date.now() - state.screenStartTime;
       const { rawWPM, adjustedWPM, accuracy } = calculateWPM(
         state.typedCharacters,
@@ -182,36 +192,9 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
     return metrics;
   },
 
-  resetScreenMetrics: () =>
-    set({
-      errors: 0,
-      backspaces: 0,
-      typedCharacters: 0,
-      correctCharacters: 0,
-      screenStartTime: null,
-      currentScreenTargetTextLength: 0,
-      currentScreenRawWPM: 0,
-      currentScreenAdjustedWPM: 0,
-      currentScreenAccuracy: 0,
-      currentScreenTimeTaken: 0,
-      screenCharacterMetrics: new Map()
-    }),
+  resetScreenMetrics: () => set(initialScreenMetricsState),
 
-  resetLessonMetrics: (lessonId: string) =>
-    set({
-      currentLessonMetrics: {
-        lessonId,
-        totalRawWPM: 0,
-        totalAdjustedWPM: 0,
-        totalAccuracy: 0,
-        totalBackspaces: 0,
-        totalErrors: 0,
-        totalTimeTaken: 0,
-        screenMetrics: [],
-        totalTypedCharacters: 0,
-        totalCorrectCharacters: 0
-      }
-    }),
+  resetLessonMetrics: (lessonId: string) => set({ currentLessonMetrics: createInitialLessonMetrics(lessonId) }),
 
   updateTotalLessonMetrics: () => {
     const state = get();
@@ -246,7 +229,6 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
         correctCharacters: 0
       }
     );
-
     const updatedMetrics: LessonMetricsData = {
       ...state.currentLessonMetrics,
       totalRawWPM: parseFloat((sum.rawWPM / count).toFixed(2)),
@@ -258,9 +240,7 @@ export const useTypingMetricsStore = create<TypingMetricsState>((set, get) => ({
       totalTypedCharacters: sum.typedCharacters,
       totalCorrectCharacters: sum.correctCharacters
     };
-
     set({ currentLessonMetrics: updatedMetrics });
-
     return updatedMetrics;
   }
 }));

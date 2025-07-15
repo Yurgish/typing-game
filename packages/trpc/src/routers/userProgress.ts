@@ -2,37 +2,34 @@ import { z } from "zod";
 
 import { AchievementService } from "../../src/services/AchievementService";
 import { DailyActivityService } from "../../src/services/DailyActivityService";
-import { UserProgressService } from "../../src/services/LessonProgressService";
+import { UserProgressService } from "../../src/services/UserProgressService";
 import { UserStatsService } from "../../src/services/UserStatsService";
 import { calculateLevel } from "../../src/utils/xpCalculator";
 import { protectedProcedure, router } from "../index";
 import { LearningMode } from "../types";
 
-const screenMetricInputSchema = z.object({
-  order: z.number(),
-  type: z.nativeEnum(LearningMode),
+const fullMetricDataSchema = z.object({
   rawWPM: z.number(),
   adjustedWPM: z.number(),
   accuracy: z.number(),
-  backspaces: z.number(),
-  errors: z.number(),
-  timeTaken: z.number(),
-  typedCharacters: z.number(),
-  correctCharacters: z.number(),
+  backspaces: z.number().int(),
+  errors: z.number().int(),
+  timeTaken: z.number().int(),
+  typedCharacters: z.number().int(),
+  correctCharacters: z.number().int(),
+});
+
+const screenMetricInputSchema = z.object({
+  order: z.number(),
+  type: z.nativeEnum(LearningMode),
+  metrics: fullMetricDataSchema,
 });
 
 const saveLessonProgressInputSchema = z.object({
   lessonId: z.string(),
   currentScreenOrder: z.number(),
   isCompleted: z.boolean(),
-  totalRawWPM: z.number(),
-  totalAdjustedWPM: z.number(),
-  totalAccuracy: z.number(),
-  totalBackspaces: z.number().int(),
-  totalErrors: z.number().int(),
-  totalTimeTaken: z.number().int(),
-  totalTypedCharacters: z.number().int(),
-  totalCorrectCharacters: z.number().int(),
+  metrics: fullMetricDataSchema,
 });
 
 export const updateCharacterMetricsInputSchema = z.array(
@@ -51,33 +48,18 @@ const saveSingleScreenInputSchema = z.object({
 export const userProgressRouter = router({
   saveLessonProgress: protectedProcedure.input(saveLessonProgressInputSchema).mutation(async ({ input, ctx }) => {
     const { userId } = ctx.session;
-
     const userProgressService = new UserProgressService();
 
-    const result = await userProgressService.saveLessonProgress(
-      userId,
-      input.lessonId,
-      input.currentScreenOrder,
-      input.isCompleted,
-      input.totalRawWPM,
-      input.totalAdjustedWPM,
-      input.totalAccuracy,
-      input.totalBackspaces,
-      input.totalErrors,
-      input.totalTimeTaken,
-      input.totalTypedCharacters,
-      input.totalCorrectCharacters
-    );
+    const result = await userProgressService.saveLessonProgress(userId, input);
 
     return result;
   }),
 
   saveScreenMetric: protectedProcedure.input(saveSingleScreenInputSchema).mutation(async ({ input, ctx }) => {
     const { userId } = ctx.session;
-    const { lessonId, screenMetric } = input;
-
     const userProgressService = new UserProgressService();
-    const result = await userProgressService.saveScreenMetric(userId, lessonId, screenMetric);
+
+    const result = await userProgressService.saveScreenMetric(userId, input);
 
     return result;
   }),
@@ -211,7 +193,7 @@ export const userProgressRouter = router({
 
     const metricsWithRatio = characterMetrics.map((metric) => {
       const totalTyped = metric.correctCount + metric.errorCount;
-      // Уникаємо ділення на нуль
+
       const errorRatio = totalTyped > 0 ? metric.errorCount / totalTyped : 0;
       const accuracy = totalTyped > 0 ? metric.correctCount / totalTyped : 0;
 
