@@ -1,15 +1,14 @@
 import { Button } from '@repo/ui/components/ui/button';
+import Keyboard from '@web/components/Keyboard';
+import KeyIntroduction from '@web/components/KeyIntroduction';
+import RealTimeMetrics from '@web/components/RealTimeMetrics';
+import SequenceOfLetters from '@web/components/SequenceOfLetters';
+import TypingText from '@web/components/TypingText';
+import { useTypingMetricsStore } from '@web/stores/useTypingMetricsStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
+import { LearningMode, Lesson, Screen } from '@web/utils/types';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-
-import Keyboard from '@/components/Keyboard';
-import KeyIntroduction from '@/components/KeyIntroduction';
-import RealTimeMetrics from '@/components/RealTimeMetrics';
-import SequenceOfLetters from '@/components/SequenceOfLetters';
-import TypingText from '@/components/TypingText';
-import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
-import { useTypingStore } from '@/stores/useTypingStore';
-import { LearningMode, Lesson, Screen } from '@/utils/types';
 
 const screenVariants = {
   hidden: { clipPath: 'polygon(0 0, 100% 0, 100% 0, 0 0)' },

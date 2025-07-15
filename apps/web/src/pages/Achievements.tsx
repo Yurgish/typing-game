@@ -1,8 +1,7 @@
 import { cn } from '@repo/ui/lib/utils'; // якщо є утиліта для класів
 import { useQuery } from '@tanstack/react-query';
+import { trpc } from '@web/utils/trpc';
 import { BadgeCheck, Lock } from 'lucide-react';
-
-import { trpc } from '@/utils/trpc';
 
 const Achievements = () => {
   const { data: achievements, isLoading, error } = useQuery(trpc.userProgress.getAchievements.queryOptions());

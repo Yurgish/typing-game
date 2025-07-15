@@ -1,12 +1,11 @@
-import { z } from "zod";
-
-import { AchievementService } from "../../src/services/AchievementService";
-import { DailyActivityService } from "../../src/services/DailyActivityService";
-import { UserProgressService } from "../../src/services/UserProgressService";
-import { UserStatsService } from "../../src/services/UserStatsService";
-import { calculateLevel } from "../../src/utils/xpCalculator";
-import { protectedProcedure, router } from "../index";
-import { LearningMode } from "../types";
+import { AchievementService } from '@api/services/AchievementService';
+import { DailyActivityService } from '@api/services/DailyActivityService';
+import { UserProgressService } from '@api/services/UserProgressService';
+import { UserStatsService } from '@api/services/UserStatsService';
+import { protectedProcedure, router } from '@api/trpc';
+import { LearningMode } from '@api/types';
+import { calculateLevel } from '@api/utils/xpCalculator';
+import { z } from 'zod';
 
 const fullMetricDataSchema = z.object({
   rawWPM: z.number(),
@@ -16,33 +15,33 @@ const fullMetricDataSchema = z.object({
   errors: z.number().int(),
   timeTaken: z.number().int(),
   typedCharacters: z.number().int(),
-  correctCharacters: z.number().int(),
+  correctCharacters: z.number().int()
 });
 
 const screenMetricInputSchema = z.object({
   order: z.number(),
   type: z.nativeEnum(LearningMode),
-  metrics: fullMetricDataSchema,
+  metrics: fullMetricDataSchema
 });
 
 const saveLessonProgressInputSchema = z.object({
   lessonId: z.string(),
   currentScreenOrder: z.number(),
   isCompleted: z.boolean(),
-  metrics: fullMetricDataSchema,
+  metrics: fullMetricDataSchema
 });
 
 export const updateCharacterMetricsInputSchema = z.array(
   z.object({
     character: z.string().length(1),
     correctCount: z.number().int().min(0),
-    errorCount: z.number().int().min(0),
+    errorCount: z.number().int().min(0)
   })
 );
 
 const saveSingleScreenInputSchema = z.object({
   lessonId: z.string(),
-  screenMetric: screenMetricInputSchema,
+  screenMetric: screenMetricInputSchema
 });
 
 export const userProgressRouter = router({
@@ -71,12 +70,12 @@ export const userProgressRouter = router({
       where: {
         userId_lessonId: {
           userId: userId,
-          lessonId: input.lessonId,
-        },
+          lessonId: input.lessonId
+        }
       },
       include: {
-        screenMetrics: true,
-      },
+        screenMetrics: true
+      }
     });
     return progress;
   }),
@@ -86,11 +85,11 @@ export const userProgressRouter = router({
 
     const allProgress = await ctx.prisma.userLessonProgress.findMany({
       where: {
-        userId: userId,
+        userId: userId
       },
       include: {
-        screenMetrics: true,
-      },
+        screenMetrics: true
+      }
     });
     return allProgress;
   }),
@@ -101,14 +100,14 @@ export const userProgressRouter = router({
     const completedProgresses = await ctx.prisma.userLessonProgress.findMany({
       where: {
         userId: userId,
-        isCompleted: true,
+        isCompleted: true
       },
       include: {
-        screenMetrics: true,
+        screenMetrics: true
       },
       orderBy: {
-        completedAt: "desc",
-      },
+        completedAt: 'desc'
+      }
     });
     return completedProgresses;
   }),
@@ -118,16 +117,16 @@ export const userProgressRouter = router({
 
     return ctx.prisma.userLessonProgress.findFirst({
       where: {
-        userId: userId,
+        userId: userId
       },
       orderBy: {
         lesson: {
-          order: "desc",
-        },
+          order: 'desc'
+        }
       },
       include: {
-        lesson: true,
-      },
+        lesson: true
+      }
     });
   }),
 
@@ -141,7 +140,7 @@ export const userProgressRouter = router({
     return {
       totalExperience: userStats.totalExperience,
       currentLevel: currentLevel,
-      xpToNextLevel: xpToNextLevel,
+      xpToNextLevel: xpToNextLevel
     };
   }),
 
@@ -161,19 +160,19 @@ export const userProgressRouter = router({
             where: {
               userId_character: {
                 userId: userId,
-                character: character,
-              },
+                character: character
+              }
             },
             update: {
               correctCount: { increment: correctCount },
-              errorCount: { increment: errorCount },
+              errorCount: { increment: errorCount }
             },
             create: {
               userId: userId,
               character: character,
               correctCount: correctCount,
-              errorCount: errorCount,
-            },
+              errorCount: errorCount
+            }
           });
         })
       );
@@ -184,11 +183,11 @@ export const userProgressRouter = router({
     const { userId } = ctx.session;
     const characterMetrics = await ctx.prisma.characterMetric.findMany({
       where: {
-        userId: userId,
+        userId: userId
       },
       orderBy: {
-        errorCount: "desc",
-      },
+        errorCount: 'desc'
+      }
     });
 
     const metricsWithRatio = characterMetrics.map((metric) => {
@@ -202,7 +201,7 @@ export const userProgressRouter = router({
         errorRatio: parseFloat(errorRatio.toFixed(4)),
         accuracy: parseFloat(accuracy.toFixed(4)),
         errorPercentage: parseFloat((errorRatio * 100).toFixed(2)),
-        accuracyPercentage: parseFloat((accuracy * 100).toFixed(2)),
+        accuracyPercentage: parseFloat((accuracy * 100).toFixed(2))
       };
     });
 
@@ -223,12 +222,12 @@ export const userProgressRouter = router({
 
     const userStats = await ctx.prisma.userStats.findUnique({
       where: { userId: userId },
-      select: { currentStreak: true, longestStreak: true },
+      select: { currentStreak: true, longestStreak: true }
     });
 
     const formattedActivity = activity.reduce(
       (acc: { [key: string]: { lessons: number; screens: number; xp: number } }, entry) => {
-        const dateKey = entry.date.toISOString().split("T")[0] as string;
+        const dateKey = entry.date.toISOString().split('T')[0] as string;
         acc[dateKey] = { lessons: entry.lessonsCompleted, screens: entry.screensCompleted, xp: entry.xpEarnedToday };
         return acc;
       },
@@ -238,7 +237,7 @@ export const userProgressRouter = router({
     return {
       heatmapData: formattedActivity,
       currentStreak: userStats?.currentStreak || 0,
-      longestStreak: userStats?.longestStreak || 0,
+      longestStreak: userStats?.longestStreak || 0
     };
-  }),
+  })
 });

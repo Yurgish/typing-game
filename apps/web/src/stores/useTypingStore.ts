@@ -1,6 +1,5 @@
+import { findCharByKeyCode, findKeyCodeByChar } from '@web/utils/keyboard';
 import { create } from 'zustand';
-
-import { findCharByKeyCode, findKeyCodeByChar } from '@/utils/keyboard';
 
 type TypingState = {
   targetText: string;

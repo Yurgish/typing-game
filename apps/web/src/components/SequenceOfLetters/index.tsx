@@ -1,6 +1,5 @@
+import { useTypingStore } from '@web/stores/useTypingStore';
 import { motion } from 'framer-motion';
-
-import { useTypingStore } from '@/stores/useTypingStore';
 
 const letterGap = 8;
 const letterWidth = 48;

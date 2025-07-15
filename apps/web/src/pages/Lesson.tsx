@@ -1,6 +1,5 @@
+import { useLessonsScreensHandler } from '@web/hooks/useLessonsScreensHandler';
 import { motion } from 'framer-motion';
-
-import { useLessonsScreensHandler } from '@/hooks/useLessonsScreensHandler';
 
 import LessonScreen from './LessonScreen';
 

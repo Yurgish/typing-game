@@ -1,9 +1,8 @@
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/ui/alert';
+import { useKeyboardStore } from '@web/stores/useKeyboardStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
+import { findKeyCodeByChar } from '@web/utils/keyboard';
 import { useEffect, useState } from 'react';
-
-import { useKeyboardStore } from '@/stores/useKeyboardStore';
-import { useTypingStore } from '@/stores/useTypingStore';
-import { findKeyCodeByChar } from '@/utils/keyboard';
 
 import Key from '../Keyboard/Key';
 

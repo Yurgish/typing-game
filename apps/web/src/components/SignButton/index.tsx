@@ -1,7 +1,6 @@
 import { Button } from '@repo/ui/components/ui/button';
-
-import { signIn } from '@/lib/auth';
-import { env } from '@/lib/config';
+import { signIn } from '@web/lib/auth';
+import { env } from '@web/lib/config';
 
 interface SocialSignInButtonProps {
   provider: 'google' | 'github';

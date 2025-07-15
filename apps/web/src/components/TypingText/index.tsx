@@ -1,4 +1,4 @@
-import { useTypingStore } from '@/stores/useTypingStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
 
 import Word from './Word';
 

@@ -1,9 +1,7 @@
+import { calculateWPM } from '@web/utils/metrics';
+import { LearningMode } from '@web/utils/types';
 import { create } from 'zustand';
 
-import { calculateWPM } from '@/utils/metrics';
-import { LearningMode } from '@/utils/types';
-
-// --- State Types ---
 export type ScreenMetricsData = {
   order: number;
   type: LearningMode;
@@ -61,7 +59,6 @@ type TypingMetricsActions = {
   addCharacterMetric: (character: string, isCorrect: boolean) => void;
 };
 
-// --- Initial State ---
 const initialScreenMetricsState: Omit<TypingMetricsState, 'currentLessonMetrics'> = {
   screenStartTime: null,
   errors: 0,

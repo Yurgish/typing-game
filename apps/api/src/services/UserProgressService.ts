@@ -1,10 +1,10 @@
-import { PrismaClient } from "@repo/db/generated/client";
+import { FullMetricData, LearningMode, LessonDifficulty } from '@api/types';
+import { determineXpAndMetricsUpdate } from '@api/utils/xpCalculator';
+import { PrismaClient } from '@repo/database';
 
-import { FullMetricData, LearningMode, LessonDifficulty } from "../types";
-import { determineXpAndMetricsUpdate } from "../utils/xpCalculator";
-import { AchievementService } from "./AchievementService";
-import { DailyActivityService } from "./DailyActivityService";
-import { UserStatsService } from "./UserStatsService";
+import { AchievementService } from './AchievementService';
+import { DailyActivityService } from './DailyActivityService';
+import { UserStatsService } from './UserStatsService';
 
 type SaveLessonProgressInput = {
   lessonId: string;
@@ -35,7 +35,7 @@ export class UserProgressService {
 
   private async getLessonDifficulty(lessonId: string): Promise<LessonDifficulty> {
     const lesson = await this.db.lesson.findUnique({
-      where: { id: lessonId },
+      where: { id: lessonId }
     });
     if (lesson?.difficulty && Object.values(LessonDifficulty).includes(lesson.difficulty as LessonDifficulty)) {
       return lesson.difficulty as LessonDifficulty;
@@ -50,8 +50,8 @@ export class UserProgressService {
       where: {
         userId_lessonId: {
           userId: userId,
-          lessonId: lessonId,
-        },
+          lessonId: lessonId
+        }
       },
       select: {
         id: true,
@@ -64,8 +64,8 @@ export class UserProgressService {
         errors: true,
         timeTaken: true,
         typedCharacters: true,
-        correctCharacters: true,
-      },
+        correctCharacters: true
+      }
     });
 
     let newCurrentScreenOrder = currentScreenOrder;
@@ -87,7 +87,7 @@ export class UserProgressService {
           errors: existingProgress.errors ?? 0,
           timeTaken: existingProgress.timeTaken ?? 0,
           typedCharacters: existingProgress.typedCharacters ?? 0,
-          correctCharacters: existingProgress.correctCharacters ?? 0,
+          correctCharacters: existingProgress.correctCharacters ?? 0
         }
       : null;
 
@@ -96,7 +96,7 @@ export class UserProgressService {
         currentLessonMetrics,
         transformedExistingProgress,
         lessonDifficulty,
-        "lesson"
+        'lesson'
       );
       xpEarned = calculatedXp;
       updateLessonMetricsData = metricsToUpdate;
@@ -107,14 +107,14 @@ export class UserProgressService {
     if (existingProgress) {
       updatedProgress = await this.db.userLessonProgress.update({
         where: {
-          id: existingProgress.id,
+          id: existingProgress.id
         },
         data: {
           currentScreenOrder: newCurrentScreenOrder,
           isCompleted: isCompleted,
           completedAt: isCompleted ? new Date() : undefined,
-          ...updateLessonMetricsData,
-        },
+          ...updateLessonMetricsData
+        }
       });
     } else {
       updatedProgress = await this.db.userLessonProgress.create({
@@ -124,8 +124,8 @@ export class UserProgressService {
           currentScreenOrder: currentScreenOrder,
           isCompleted: isCompleted,
           completedAt: isCompleted ? new Date() : undefined,
-          ...updateLessonMetricsData,
-        },
+          ...updateLessonMetricsData
+        }
       });
     }
 
@@ -142,12 +142,12 @@ export class UserProgressService {
 
     const newAchievements = await this.achievementService.checkAndAwardAchievements(userId, updatedUserStats);
 
-    await this.dailyActivityService.updateDailyActivity(userId, xpEarned, "lesson");
+    await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'lesson');
 
     return {
       updatedProgress,
       newAchievements,
-      xpEarned,
+      xpEarned
     };
   }
 
@@ -160,21 +160,21 @@ export class UserProgressService {
       where: {
         userId_lessonId: {
           userId,
-          lessonId,
-        },
+          lessonId
+        }
       },
       update: {},
       create: {
         userId,
         lessonId,
         currentScreenOrder: screenMetric.order,
-        isCompleted: false,
+        isCompleted: false
       },
       include: {
         screenMetrics: {
-          where: { screenOrder: screenMetric.order },
-        },
-      },
+          where: { screenOrder: screenMetric.order }
+        }
+      }
     });
 
     const existingScreenMetric = progress.screenMetrics[0];
@@ -189,7 +189,7 @@ export class UserProgressService {
       currentScreenMetrics,
       existingScreenMetric || null,
       lessonDifficulty,
-      "screen"
+      'screen'
     );
     xpEarned = calculatedXp;
     updateData = metricsToUpdate;
@@ -198,33 +198,32 @@ export class UserProgressService {
       where: {
         userLessonProgressId_screenOrder: {
           userLessonProgressId: progress.id,
-          screenOrder: screenMetric.order,
-        },
+          screenOrder: screenMetric.order
+        }
       },
       update: updateData,
       create: {
         userLessonProgressId: progress.id,
         screenOrder: screenMetric.order,
-        screenType: screenMetric.type, // screenType зберігається лише при створенні
-        ...currentScreenMetrics, // При створенні використовуємо всі поточні метрики
-      },
+        screenType: screenMetric.type,
+        ...currentScreenMetrics
+      }
     });
 
     const newCurrentScreenOrder = Math.max(progress.currentScreenOrder || 0, screenMetric.order);
 
     await this.db.userLessonProgress.update({
       where: {
-        id: progress.id,
+        id: progress.id
       },
       data: {
-        currentScreenOrder: newCurrentScreenOrder,
-      },
+        currentScreenOrder: newCurrentScreenOrder
+      }
     });
 
-    // Виклики до інших сервісів
     await this.userStatsService.handleScreenXPAggregation(userId, xpEarned);
 
-    await this.dailyActivityService.updateDailyActivity(userId, xpEarned, "screen");
+    await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'screen');
 
     return { updatedScreenMetricRecord, xpEarned };
   }

@@ -8,9 +8,8 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@repo/ui/components/ui/dialog';
+import { authClient } from '@web/lib/auth';
 import { useLocation, useNavigate } from 'react-router';
-
-import { authClient } from '@/lib/auth';
 
 import SocialSignInButton from './SignButton';
 

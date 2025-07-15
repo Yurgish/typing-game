@@ -1,5 +1,5 @@
-import { FullMetricData, LessonDifficulty } from "../../src/types";
-import { areNewMetricsBetter, MetricData } from "./metricsComparator";
+import { FullMetricData, LessonDifficulty } from '@api/types';
+import { areNewMetricsBetter, MetricData } from '@api/utils/metricsComparator';
 
 type XpCalculationResult = {
   xpEarned: number;
@@ -17,7 +17,7 @@ const LEVEL_THRESHOLDS = [
   10500, // Level 7 (need 3000 XP from Level 6)
   14000, // Level 8 (need 3500 XP from Level 7)
   18000, // Level 9 (need 4000 XP from Level 8)
-  22500, // Level 10 (need 4500 XP from Level 9) - Maximum defined level
+  22500 // Level 10 (need 4500 XP from Level 9) - Maximum defined level
 ];
 
 export const BASE_XP_ON_REATTEMPT = 10;
@@ -104,7 +104,7 @@ export function calculateLevel(totalExperience: number) {
 
   return {
     currentLevel: currentLevel,
-    xpToNextLevel: xpNeededForNextLevel,
+    xpToNextLevel: xpNeededForNextLevel
   };
 }
 
@@ -112,13 +112,13 @@ export function determineXpAndMetricsUpdate(
   currentMetrics: FullMetricData,
   existingMetrics: FullMetricData | null | undefined,
   lessonDifficulty: LessonDifficulty,
-  type: "lesson" | "screen"
+  type: 'lesson' | 'screen'
 ): XpCalculationResult {
   let xpEarned = 0;
   let metricsToUpdate: Partial<FullMetricData> = {};
   let isBetterPerformance = false;
 
-  const calculateBaseXpFn = type === "lesson" ? calculateXpForLessonCompletion : calculateXpForScreen;
+  const calculateBaseXpFn = type === 'lesson' ? calculateXpForLessonCompletion : calculateXpForScreen;
 
   if (!existingMetrics) {
     metricsToUpdate = currentMetrics;
@@ -130,14 +130,14 @@ export function determineXpAndMetricsUpdate(
       accuracy: currentMetrics.accuracy,
       errors: currentMetrics.errors,
       backspaces: currentMetrics.backspaces,
-      timeTaken: currentMetrics.timeTaken,
+      timeTaken: currentMetrics.timeTaken
     };
     const existingMetricsForComparison: MetricData = {
       adjustedWPM: existingMetrics.adjustedWPM ?? 0,
       accuracy: existingMetrics.accuracy ?? 0,
       errors: existingMetrics.errors ?? 0,
       backspaces: existingMetrics.backspaces ?? 0,
-      timeTaken: existingMetrics.timeTaken ?? 0,
+      timeTaken: existingMetrics.timeTaken ?? 0
     };
 
     if (areNewMetricsBetter(newMetricsForComparison, existingMetricsForComparison)) {
@@ -164,14 +164,14 @@ export function calculateXpGainOnReattempt(
     accuracy: newMetrics.accuracy,
     errors: newMetrics.errors,
     backspaces: newMetrics.backspaces,
-    timeTaken: newMetrics.timeTaken,
+    timeTaken: newMetrics.timeTaken
   };
   const oldMetricsForComparison: MetricData = {
     adjustedWPM: oldMetrics.adjustedWPM,
     accuracy: oldMetrics.accuracy,
     errors: oldMetrics.errors,
     backspaces: oldMetrics.backspaces,
-    timeTaken: oldMetrics.timeTaken,
+    timeTaken: oldMetrics.timeTaken
   };
 
   if (areNewMetricsBetter(newMetricsForComparison, oldMetricsForComparison)) {

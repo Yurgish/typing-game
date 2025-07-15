@@ -1,12 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useCurrentLessonStore } from '@web/stores/useCurrentLessonStore';
+import { useTypingMetricsStore } from '@web/stores/useTypingMetricsStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
+import { trpc } from '@web/utils/trpc';
+import { LearningMode, Screen } from '@web/utils/types';
 import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
-
-import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
-import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
-import { useTypingStore } from '@/stores/useTypingStore';
-import { trpc } from '@/utils/trpc';
-import { LearningMode, Screen } from '@/utils/types';
 
 import { useTypingHandler } from './useTypingHandler';
 

@@ -1,6 +1,5 @@
-import { PrismaClient } from "@repo/db/generated/client";
-
-import { Achievement, AchievementConditionData, ACHIEVEMENTS } from "../constants/achievements";
+import { Achievement, AchievementConditionData, ACHIEVEMENTS } from '@api/lib/contstants';
+import { PrismaClient } from '@repo/database';
 
 /**
  * Service for managing user achievements.
@@ -34,7 +33,7 @@ export class AchievementService {
   public async checkAndAwardAchievements(userId: string, userStats: AchievementConditionData): Promise<string[]> {
     const unlockedAchievements = await this.db.userAchievement.findMany({
       where: { userId: userId },
-      select: { achievementId: true },
+      select: { achievementId: true }
     });
 
     const unlockedAchievementIds = new Set(unlockedAchievements.map((ua) => ua.achievementId));
@@ -46,8 +45,8 @@ export class AchievementService {
           data: {
             userId: userId,
             achievementId: achievement.id,
-            unlockedAt: new Date(),
-          },
+            unlockedAt: new Date()
+          }
         });
         newlyUnlockedAchievementNames.push(achievement.name);
         unlockedAchievementIds.add(achievement.id);
@@ -66,7 +65,7 @@ export class AchievementService {
     userId: string
   ): Promise<(Achievement & { unlocked: boolean; unlockedAt: Date | null })[]> {
     const userUnlockedAchievements = await this.db.userAchievement.findMany({
-      where: { userId: userId },
+      where: { userId: userId }
     });
 
     const unlockedAchievementMap = new Map<string, Date>();
@@ -77,7 +76,7 @@ export class AchievementService {
       return {
         ...ach,
         unlocked: !!unlockedAt,
-        unlockedAt: unlockedAt || null,
+        unlockedAt: unlockedAt || null
       };
     });
 

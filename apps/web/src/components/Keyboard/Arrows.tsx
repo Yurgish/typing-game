@@ -1,4 +1,4 @@
-import { useKeyboardStore } from '@/stores/useKeyboardStore';
+import { useKeyboardStore } from '@web/stores/useKeyboardStore';
 
 import Key from './Key';
 import { arrowsLabels } from './keyboardLabels';

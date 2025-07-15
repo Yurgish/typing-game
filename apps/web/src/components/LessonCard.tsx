@@ -1,12 +1,11 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui/components/ui/hover-card';
+import { useCurrentLessonStore } from '@web/stores/useCurrentLessonStore';
+import { formatTime } from '@web/utils/metrics';
+import { getScreenCustomId } from '@web/utils/transformation';
+import { LearningMode, Lesson, UserLessonProgressType } from '@web/utils/types';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router';
-
-import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
-import { formatTime } from '@/utils/metrics';
-import { getScreenCustomId } from '@/utils/transformation';
-import { LearningMode, Lesson, UserLessonProgressType } from '@/utils/types';
 
 interface LessonCardProps {
   lesson: Lesson;

@@ -9,16 +9,14 @@ import {
   CarouselPrevious
 } from '@repo/ui/components/ui/carousel';
 import { useQuery } from '@tanstack/react-query';
+import HeatMap from '@web/components/HeatMap';
+import ProgressBar from '@web/components/ProgressBar';
+import { authClient } from '@web/lib/auth';
+import { LEVEL_THRESHOLDS } from '@web/lib/constansts';
+import { useCurrentLessonStore } from '@web/stores/useCurrentLessonStore';
+import { trpc } from '@web/utils/trpc';
 import { Trophy } from 'lucide-react';
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
-
-import HeatMap from '@/components/HeatMap';
-import ProgressBar from '@/components/ProgressBar';
-import { authClient } from '@/lib/auth';
-import { LEVEL_THRESHOLDS } from '@/lib/constansts';
-import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
-import { trpc } from '@/utils/trpc';
 
 const Profile = () => {
   const { data: session } = authClient.useSession();

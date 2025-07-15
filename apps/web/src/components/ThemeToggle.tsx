@@ -1,4 +1,4 @@
-import { useThemeStore } from '@/stores/useThemeStore';
+import { useThemeStore } from '@web/stores/useThemeStore';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useThemeStore();

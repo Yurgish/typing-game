@@ -2,8 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@repo/ui": ["../../packages/ui/src/*"]
+      "@web/*": ["./src/*"],
+      "@api/*": ["../api/src/*"],
+      "@repo/ui/*": ["../../packages/ui/src/*"]
     },
 
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",

@@ -1,6 +1,5 @@
+import { Shortcut, useKeyboardStore } from '@web/stores/useKeyboardStore';
 import { useEffect } from 'react';
-
-import { Shortcut, useKeyboardStore } from '@/stores/useKeyboardStore';
 
 function isShortcutPressed(
   shortcutKeys: string[],

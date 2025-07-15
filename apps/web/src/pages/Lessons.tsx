@@ -1,8 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
-
-import LessonCard from '@/components/LessonCard';
-import { trpc } from '@/utils/trpc';
+import LessonCard from '@web/components/LessonCard';
+import { trpc } from '@web/utils/trpc';
 
 const Lessons = () => {
   const { data: lessons, isLoading: isLoadingLessons } = useQuery({

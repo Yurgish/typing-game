@@ -1,12 +1,11 @@
 import { Button } from '@repo/ui/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
+import { useCurrentLessonStore } from '@web/stores/useCurrentLessonStore';
+import { useTypingMetricsStore } from '@web/stores/useTypingMetricsStore';
+import { formatTime } from '@web/utils/metrics';
+import { trpc } from '@web/utils/trpc';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router';
-
-import { useCurrentLessonStore } from '@/stores/useCurrentLessonStore';
-import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
-import { formatTime } from '@/utils/metrics';
-import { trpc } from '@/utils/trpc';
 
 const LessonMetricsScreen = () => {
   const { lessonId } = useParams<{ lessonId: string }>();

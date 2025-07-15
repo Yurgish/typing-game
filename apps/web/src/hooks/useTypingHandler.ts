@@ -1,8 +1,7 @@
+import { useKeyboardStore } from '@web/stores/useKeyboardStore';
+import { useTypingMetricsStore } from '@web/stores/useTypingMetricsStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
 import { useEffect } from 'react';
-
-import { useKeyboardStore } from '@/stores/useKeyboardStore';
-import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
-import { useTypingStore } from '@/stores/useTypingStore';
 
 export function useTypingHandler() {
   const { lastPressedKey } = useKeyboardStore();

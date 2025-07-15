@@ -1,7 +1,6 @@
+import { useKeyboardStore } from '@web/stores/useKeyboardStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
 import { useMemo } from 'react';
-
-import { useKeyboardStore } from '@/stores/useKeyboardStore';
-import { useTypingStore } from '@/stores/useTypingStore';
 
 import ArrowKeys from './Arrows';
 import Key from './Key';

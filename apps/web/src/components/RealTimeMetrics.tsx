@@ -1,10 +1,9 @@
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui/components/ui/hover-card';
+import { useTypingMetricsStore } from '@web/stores/useTypingMetricsStore';
+import { useTypingStore } from '@web/stores/useTypingStore';
+import { formatTime } from '@web/utils/metrics';
 import { motion } from 'framer-motion';
 import React from 'react';
-
-import { useTypingMetricsStore } from '@/stores/useTypingMetricsStore';
-import { useTypingStore } from '@/stores/useTypingStore';
-import { formatTime } from '@/utils/metrics';
 
 interface RealTimeMetricsProps {
   screensInLesson: number;

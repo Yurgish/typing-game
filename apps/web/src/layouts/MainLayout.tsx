@@ -1,9 +1,8 @@
+import LoginButton from '@web/components/LoginButton';
+import { ThemeToggle } from '@web/components/ThemeToggle';
+import { useKeyboardHandler } from '@web/hooks/useKeyboardHandler';
+import { useApplyTheme } from '@web/stores/useThemeStore';
 import { Outlet } from 'react-router';
-
-import LoginButton from '@/components/LoginButton';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useKeyboardHandler } from '@/hooks/useKeyboardHandler';
-import { useApplyTheme } from '@/stores/useThemeStore';
 
 export default function MainLayout() {
   useKeyboardHandler();

@@ -1,10 +1,9 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@repo/ui/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@repo/ui/components/ui/tooltip';
+import { HeatMapType } from '@web/utils/types';
 import { useCallback, useMemo, useState } from 'react';
 import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
-
-import { HeatMapType } from '@/utils/types';
 
 const DATA_TYPES = [
   { value: 'lessons', label: 'Lessons' },

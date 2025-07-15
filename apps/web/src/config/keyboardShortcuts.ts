@@ -1,4 +1,4 @@
-import { Shortcut } from '@/stores/useKeyboardStore';
+import { Shortcut } from '@web/stores/useKeyboardStore';
 
 export const globalShortcuts: Shortcut[] = [
   {

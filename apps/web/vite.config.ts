@@ -11,12 +11,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@web': path.resolve(__dirname, './src'),
       '@api': path.resolve(__dirname, '../api/src'),
-      '@repo/ui': path.resolve(__dirname, '../../packages/ui/src'),
-      '@repo/trpc': path.resolve(__dirname, '../../packages/trcp/src'),
-      '@repo/database': path.resolve(__dirname, '../../packages/database/src')
-      // remake types
+      '@repo/ui': path.resolve(__dirname, '../../packages/ui/src')
     }
   }
 });

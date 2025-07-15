@@ -1,7 +1,6 @@
-import { Prisma, PrismaClient, UserStats } from "@repo/database";
-
-import { FullMetricData, LessonDifficulty } from "../types";
-import { calculateLevel } from "../utils/xpCalculator";
+import { FullMetricData, LessonDifficulty } from '@api/types';
+import { calculateLevel } from '@api/utils/xpCalculator';
+import { Prisma, PrismaClient, UserStats } from '@repo/database';
 
 export class UserStatsService {
   constructor(private db: PrismaClient) {}
@@ -9,12 +8,12 @@ export class UserStatsService {
   public async initializeUserStats(userId: string): Promise<UserStats> {
     const userStats = await this.db.userStats.upsert({
       where: {
-        userId: userId,
+        userId: userId
       },
       update: {},
       create: {
-        userId: userId,
-      },
+        userId: userId
+      }
     });
 
     return userStats;
@@ -106,14 +105,14 @@ export class UserStatsService {
 
     let updatedStats = await this.db.userStats.update({
       where: { userId: userId },
-      data: updateData,
+      data: updateData
     });
 
     const { currentLevel: newNumericLevel } = calculateLevel(updatedStats.totalExperience);
     if (newNumericLevel !== updatedStats.currentLevel) {
       updatedStats = await this.db.userStats.update({
         where: { userId: userId },
-        data: { currentLevel: newNumericLevel },
+        data: { currentLevel: newNumericLevel }
       });
     }
 
@@ -128,15 +127,15 @@ export class UserStatsService {
     let updatedStats = await this.db.userStats.update({
       where: { userId: userId },
       data: {
-        totalExperience: { increment: xpEarned },
-      },
+        totalExperience: { increment: xpEarned }
+      }
     });
 
     const { currentLevel: newNumericLevel } = calculateLevel(updatedStats.totalExperience);
     if (newNumericLevel !== updatedStats.currentLevel) {
       updatedStats = await this.db.userStats.update({
         where: { userId: userId },
-        data: { currentLevel: newNumericLevel },
+        data: { currentLevel: newNumericLevel }
       });
     }
     return updatedStats;

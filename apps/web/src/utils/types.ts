@@ -6,7 +6,7 @@ import type {
   ScreenMetricsReturnedType,
   ScreenType,
   UserLessonProgressType
-} from '@repo/trpc/types';
+} from '@api/types';
 
 export type Lesson = LessonType;
 export type Screen = ScreenType;
