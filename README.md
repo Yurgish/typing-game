@@ -88,14 +88,30 @@ Dyploma
 ├─ .npmrc
 ├─ apps
 │  ├─ api
-│  │  ├─ .prettierrc.cjs
+│  │  ├─ .prettierrc.js
 │  │  ├─ eslint.config.js
 │  │  ├─ package.json
 │  │  ├─ src
 │  │  │  ├─ index.ts
-│  │  │  └─ lib
-│  │  │     ├─ auth.ts
-│  │  │     └─ config.ts
+│  │  │  ├─ lib
+│  │  │  │  ├─ auth.ts
+│  │  │  │  ├─ config.ts
+│  │  │  │  ├─ context.ts
+│  │  │  │  └─ contstants.ts
+│  │  │  ├─ routers
+│  │  │  │  ├─ index.ts
+│  │  │  │  ├─ lessons.ts
+│  │  │  │  └─ userProgress.ts
+│  │  │  ├─ services
+│  │  │  │  ├─ AchievementService.ts
+│  │  │  │  ├─ DailyActivityService.ts
+│  │  │  │  ├─ UserProgressService.ts
+│  │  │  │  └─ UserStatsService.ts
+│  │  │  ├─ trpc.ts
+│  │  │  ├─ types.ts
+│  │  │  └─ utils
+│  │  │     ├─ metricsComparator.ts
+│  │  │     └─ xpCalculator.ts
 │  │  └─ tsconfig.json
 │  └─ web
 │     ├─ .prettierrc.js
@@ -109,8 +125,8 @@ Dyploma
 │     │     └─ VCR_OSD_MONO_1.001.ttf
 │     ├─ README.md
 │     ├─ src
-│     │  ├─ App.tsx
 │     │  ├─ components
+│     │  │  ├─ HeatMap.tsx
 │     │  │  ├─ Keyboard
 │     │  │  │  ├─ Arrows.tsx
 │     │  │  │  ├─ index.tsx
@@ -139,7 +155,6 @@ Dyploma
 │     │  ├─ hooks
 │     │  │  ├─ useKeyboardHandler.ts
 │     │  │  ├─ useLessonsScreensHandler.ts
-│     │  │  ├─ useSaveProgress.ts
 │     │  │  └─ useTypingHandler.ts
 │     │  ├─ layouts
 │     │  │  └─ MainLayout.tsx
@@ -149,6 +164,7 @@ Dyploma
 │     │  │  └─ constansts.ts
 │     │  ├─ main.tsx
 │     │  ├─ pages
+│     │  │  ├─ Achievements.tsx
 │     │  │  ├─ Lesson.tsx
 │     │  │  ├─ LessonResults.tsx
 │     │  │  ├─ Lessons.tsx
@@ -223,28 +239,6 @@ Dyploma
 │  ├─ prettier-config
 │  │  ├─ index.js
 │  │  └─ package.json
-│  ├─ trpc
-│  │  ├─ eslint.config.js
-│  │  ├─ package.json
-│  │  ├─ src
-│  │  │  ├─ constants
-│  │  │  │  └─ achievements.ts
-│  │  │  ├─ context.ts
-│  │  │  ├─ index.ts
-│  │  │  ├─ routers
-│  │  │  │  ├─ index.ts
-│  │  │  │  ├─ lessons.ts
-│  │  │  │  └─ userProgress.ts
-│  │  │  ├─ services
-│  │  │  │  ├─ AchievementService.ts
-│  │  │  │  ├─ DailyActivityService.ts
-│  │  │  │  ├─ LessonProgressService.ts
-│  │  │  │  └─ UserStatsService.ts
-│  │  │  ├─ types.ts
-│  │  │  └─ utils
-│  │  │     ├─ metricsComparator.ts
-│  │  │     └─ xpCalculator.ts
-│  │  └─ tsconfig.json
 │  ├─ typescript-config
 │  │  ├─ base.json
 │  │  ├─ package.json
@@ -266,7 +260,9 @@ Dyploma
 │     │  │     ├─ carousel.tsx
 │     │  │     ├─ dialog.tsx
 │     │  │     ├─ hover-card.tsx
-│     │  │     └─ tabs.tsx
+│     │  │     ├─ select.tsx
+│     │  │     ├─ tabs.tsx
+│     │  │     └─ tooltip.tsx
 │     │  ├─ globals.css
 │     │  └─ lib
 │     │     └─ utils.ts
