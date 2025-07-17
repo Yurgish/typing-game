@@ -41,9 +41,9 @@ export const useLessonsScreensHandler = () => {
 
   const currentScreen: Screen | undefined = lesson?.screens.find((s) => s.order === currentScreenOrder);
 
-  const saveLessonProgressMutation = useMutation(trpc.userProgress.saveLessonProgress.mutationOptions());
-  const saveScreenMetricMutation = useMutation(trpc.userProgress.saveScreenMetric.mutationOptions());
-  const updateCharacterMetricsMutation = useMutation(trpc.userProgress.updateCharacterMetrics.mutationOptions());
+  const saveLessonProgressMutation = useMutation(trpc.lessonProgress.saveLessonProgress.mutationOptions());
+  const saveScreenMetricMutation = useMutation(trpc.lessonProgress.saveScreenMetric.mutationOptions());
+  const updateCharacterMetricsMutation = useMutation(trpc.characterMetrics.updateCharacterMetrics.mutationOptions());
 
   useEffect(() => {
     if (lessonId && isFirstRender.current) {

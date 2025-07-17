@@ -10,11 +10,11 @@ const Lessons = () => {
   });
 
   const { data: allUserProgress, isLoading: isLoadingProgress } = useQuery(
-    trpc.userProgress.getAllUserProgress.queryOptions()
+    trpc.lessonProgress.getAllUserProgress.queryOptions()
   );
 
   const { data: lastCompletedLessonProgress, isLoading: isLoadingLastLesson } = useQuery(
-    trpc.userProgress.getLastLessonByOrder.queryOptions()
+    trpc.lessonProgress.getLastLessonByOrder.queryOptions()
   );
 
   if (isLoadingLessons || isLoadingProgress || isLoadingLastLesson) {

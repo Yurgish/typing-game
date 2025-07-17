@@ -4,7 +4,7 @@ import { trpc } from '@web/utils/trpc';
 import { BadgeCheck, Lock } from 'lucide-react';
 
 const Achievements = () => {
-  const { data: achievements, isLoading, error } = useQuery(trpc.userProgress.getAchievements.queryOptions());
+  const { data: achievements, isLoading, error } = useQuery(trpc.achievements.getAchievements.queryOptions());
 
   if (isLoading) return <div>Downloading...</div>;
   if (error) return <div>Error loading achievements</div>;

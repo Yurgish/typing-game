@@ -55,6 +55,8 @@ export default function LessonScreen({
     return () => clearInterval(interval);
   }, [isEndOfInputText, screenStartTime, updateCalculatedScreenMetrics]);
 
+  if (!lesson) return null;
+
   return (
     <LayoutGroup>
       <motion.div className="relative flex w-full flex-col items-center justify-center gap-6">

@@ -20,11 +20,12 @@ import { useNavigate } from 'react-router';
 
 const Profile = () => {
   const { data: session } = authClient.useSession();
-  const { data: heatmap } = useQuery(trpc.userProgress.getUserActivityHeatmap.queryOptions());
-  const { data: experienceData } = useQuery(trpc.userProgress.getUserXpAndLevel.queryOptions());
-  const { data: charactersData } = useQuery(trpc.userProgress.getCharacterMetrics.queryOptions());
+
+  const { data: heatmap } = useQuery(trpc.activityHeatmap.getUserActivityHeatmap.queryOptions());
+  const { data: experienceData } = useQuery(trpc.userStats.getUserXpAndLevel.queryOptions());
+  const { data: charactersData } = useQuery(trpc.characterMetrics.getCharacterMetrics.queryOptions());
   const { refetch } = useQuery({
-    ...trpc.userProgress.getLastLessonByOrder.queryOptions(),
+    ...trpc.lessonProgress.getLastLessonByOrder.queryOptions(),
     enabled: false
   });
 

@@ -1,52 +1,35 @@
+import { LessonRepository } from '@api/repositories/lesson/lesson.repository';
 import { publicProcedure, router } from '@api/trpc';
 import { z } from 'zod';
 
+// remake later this LessonRepository in every add to context
+
 export const lessonRouter = router({
   getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.lesson.findMany();
+    const lessonRepository = new LessonRepository(ctx.prisma);
+    return lessonRepository.findMany();
   }),
   getByDifficulty: publicProcedure
     .input(z.object({ difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']) }))
     .query(async ({ input, ctx }) => {
-      return ctx.prisma.lesson.findMany({
-        where: {
-          difficulty: input.difficulty
-        }
-      });
+      const lessonRepository = new LessonRepository(ctx.prisma);
+      return lessonRepository.findByDifficulty(input.difficulty);
     }),
   getById: publicProcedure.input(z.string()).query(async ({ input: id, ctx }) => {
-    const lesson = await ctx.prisma.lesson.findUnique({
-      where: {
-        id: id
-      }
-    });
-
-    if (!lesson) {
-      throw new Error('Lesson not found');
-    }
-
-    return lesson;
+    const lessonRepository = new LessonRepository(ctx.prisma);
+    return lessonRepository.findUnique({ where: { id } });
   }),
+
   getNextLessonById: publicProcedure.input(z.string()).query(async ({ input: id, ctx }) => {
-    const currentLesson = await ctx.prisma.lesson.findUnique({
-      where: { id: id }
+    const lessonRepository = new LessonRepository(ctx.prisma);
+    const currentLesson = await lessonRepository.findUnique({
+      where: { id }
     });
 
     if (!currentLesson) {
       return null;
     }
 
-    const nextLesson = await ctx.prisma.lesson.findFirst({
-      where: {
-        order: {
-          gt: currentLesson.order + 1
-        }
-      },
-      orderBy: {
-        order: 'asc'
-      }
-    });
-
-    return nextLesson;
+    return lessonRepository.findNextLessonByOrder(currentLesson.order);
   })
 });
