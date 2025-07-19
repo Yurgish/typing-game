@@ -1,5 +1,5 @@
-import { Achievement, AchievementConditionData, ACHIEVEMENTS } from '@api/lib/contstants';
-import { PrismaClient } from '@repo/database';
+import { Achievement, AchievementConditionData, ACHIEVEMENTS } from '@api/core/lib/contstants';
+import { IAchievementRepository } from '@api/repositories/achivement/IAchievementRepository';
 
 /**
  * Service for managing user achievements.
@@ -21,7 +21,7 @@ import { PrismaClient } from '@repo/database';
  * ```
  */
 export class AchievementService {
-  constructor(private db: PrismaClient) {}
+  constructor(private achievementsRepository: IAchievementRepository) {}
 
   /**
    * Checks if a user has unlocked any new achievements and awards them.
@@ -31,23 +31,14 @@ export class AchievementService {
    * @returns An array of names of newly unlocked achievements.
    */
   public async checkAndAwardAchievements(userId: string, userStats: AchievementConditionData): Promise<string[]> {
-    const unlockedAchievements = await this.db.userAchievement.findMany({
-      where: { userId: userId },
-      select: { achievementId: true }
-    });
+    const unlockedAchievements = await this.achievementsRepository.findAllUserAchievements(userId);
 
     const unlockedAchievementIds = new Set(unlockedAchievements.map((ua) => ua.achievementId));
     const newlyUnlockedAchievementNames: string[] = [];
 
     for (const achievement of ACHIEVEMENTS) {
       if (!unlockedAchievementIds.has(achievement.id) && achievement.condition(userStats)) {
-        await this.db.userAchievement.create({
-          data: {
-            userId: userId,
-            achievementId: achievement.id,
-            unlockedAt: new Date()
-          }
-        });
+        await this.achievementsRepository.createUserAchievement(userId, achievement.id, new Date());
         newlyUnlockedAchievementNames.push(achievement.name);
         unlockedAchievementIds.add(achievement.id);
       }
@@ -64,10 +55,7 @@ export class AchievementService {
   public async getUserAchievements(
     userId: string
   ): Promise<(Achievement & { unlocked: boolean; unlockedAt: Date | null })[]> {
-    const userUnlockedAchievements = await this.db.userAchievement.findMany({
-      where: { userId: userId }
-    });
-
+    const userUnlockedAchievements = await this.achievementsRepository.findAllUserAchievements(userId);
     const unlockedAchievementMap = new Map<string, Date>();
     userUnlockedAchievements.forEach((ua) => unlockedAchievementMap.set(ua.achievementId, ua.unlockedAt));
 

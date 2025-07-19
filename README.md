@@ -98,18 +98,46 @@ Dyploma
 │  │  │  │  ├─ config.ts
 │  │  │  │  ├─ context.ts
 │  │  │  │  └─ contstants.ts
+│  │  │  ├─ repositories
+│  │  │  │  ├─ achivement
+│  │  │  │  │  ├─ achievement.repository.ts
+│  │  │  │  │  └─ IAchievementRepository.ts
+│  │  │  │  ├─ BaseRepository.ts
+│  │  │  │  ├─ characterMetric
+│  │  │  │  │  ├─ characterMetric.repository.ts
+│  │  │  │  │  └─ ICharacterMetricRepository.ts
+│  │  │  │  ├─ dailyActivity
+│  │  │  │  │  ├─ dailyActivity.repository.ts
+│  │  │  │  │  └─ IDailyActivityRepository.ts
+│  │  │  │  ├─ IBaseRepository.ts
+│  │  │  │  ├─ lesson
+│  │  │  │  │  ├─ ILessonRepository.ts
+│  │  │  │  │  └─ lesson.repository.ts
+│  │  │  │  ├─ userLessonProgress
+│  │  │  │  │  ├─ IUserLessonProgressRepository.ts
+│  │  │  │  │  └─ userLessonProgress.repository.ts
+│  │  │  │  └─ userStats
+│  │  │  │     ├─ IUserStatsRepository.ts
+│  │  │  │     └─ userStats.repository.ts
 │  │  │  ├─ routers
+│  │  │  │  ├─ achievementsRouter.ts
+│  │  │  │  ├─ activityHeatmapRouter.ts
+│  │  │  │  ├─ characterMetricsRouter.ts
 │  │  │  │  ├─ index.ts
+│  │  │  │  ├─ lessonProgressRouter.ts
 │  │  │  │  ├─ lessons.ts
-│  │  │  │  └─ userProgress.ts
+│  │  │  │  └─ userStatsRouter.ts
 │  │  │  ├─ services
 │  │  │  │  ├─ AchievementService.ts
 │  │  │  │  ├─ DailyActivityService.ts
 │  │  │  │  ├─ UserProgressService.ts
 │  │  │  │  └─ UserStatsService.ts
+│  │  │  ├─ shared
+│  │  │  │  └─ eventEmitter.ts
 │  │  │  ├─ trpc.ts
 │  │  │  ├─ types.ts
 │  │  │  └─ utils
+│  │  │     ├─ initializeDependencies.ts
 │  │  │     ├─ metricsComparator.ts
 │  │  │     └─ xpCalculator.ts
 │  │  └─ tsconfig.json

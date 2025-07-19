@@ -1,6 +1,5 @@
 import { UserStats } from '@repo/database';
 
-// remake for types from trpc
 export type AchievementConditionData = Pick<
   UserStats,
   | 'totalLessonsCompleted'

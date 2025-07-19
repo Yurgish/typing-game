@@ -1,4 +1,4 @@
-import { Context } from '@api/lib/context';
+import { Context } from '@api/core/lib/context';
 import { inferRouterInputs, inferRouterOutputs, initTRPC, TRPCError } from '@trpc/server';
 import superjson from 'superjson';
 import { ZodError } from 'zod';

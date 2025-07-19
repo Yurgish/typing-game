@@ -1,23 +1,10 @@
-import { FullMetricData, LessonDifficulty } from '@api/types';
+import { IUserStatsRepository } from '@api/repositories/userStats/IUserStatsRepository';
+import { FullMetricData } from '@api/types';
 import { calculateLevel } from '@api/utils/xpCalculator';
-import { Prisma, PrismaClient, UserStats } from '@repo/database';
+import { LessonDifficulty, Prisma, UserStats } from '@repo/database';
 
 export class UserStatsService {
-  constructor(private db: PrismaClient) {}
-
-  public async initializeUserStats(userId: string): Promise<UserStats> {
-    const userStats = await this.db.userStats.upsert({
-      where: {
-        userId: userId
-      },
-      update: {},
-      create: {
-        userId: userId
-      }
-    });
-
-    return userStats;
-  }
+  constructor(private userStatsRepository: IUserStatsRepository) {}
 
   public async handleLessonCompletionAggregation(
     userId: string,
@@ -27,13 +14,14 @@ export class UserStatsService {
     wasFirstCompletion: boolean,
     wasPerfectCompletion: boolean
   ): Promise<UserStats> {
-    const currentUserStats = await this.db.userStats.findUnique({ where: { userId: userId } });
+    const currentUserStats = await this.userStatsRepository.findByUserId(userId);
     if (!currentUserStats) {
       throw new Error(`UserStats not found for user ID: ${userId}. Please ensure UserStats are initialized.`);
     }
 
     const updateData: Prisma.UserStatsUpdateInput = {};
 
+    //this if also remake
     if (wasFirstCompletion) {
       updateData.totalLessonsCompleted = { increment: 1 };
 
@@ -103,17 +91,11 @@ export class UserStatsService {
       updateData.totalExperience = { increment: xpEarned };
     }
 
-    let updatedStats = await this.db.userStats.update({
-      where: { userId: userId },
-      data: updateData
-    });
+    let updatedStats = await this.userStatsRepository.updateAllData(userId, updateData);
 
     const { currentLevel: newNumericLevel } = calculateLevel(updatedStats.totalExperience);
     if (newNumericLevel !== updatedStats.currentLevel) {
-      updatedStats = await this.db.userStats.update({
-        where: { userId: userId },
-        data: { currentLevel: newNumericLevel }
-      });
+      updatedStats = await this.userStatsRepository.updateLevel(userId, newNumericLevel);
     }
 
     return updatedStats;
@@ -121,10 +103,10 @@ export class UserStatsService {
 
   public async handleScreenXPAggregation(userId: string, xpEarned: number): Promise<UserStats> {
     if (xpEarned <= 0) {
-      return await this.db.userStats.findUniqueOrThrow({ where: { userId: userId } });
+      return await this.userStatsRepository.findUniqueOrThrow({ where: { userId: userId } });
     }
 
-    let updatedStats = await this.db.userStats.update({
+    let updatedStats = await this.userStatsRepository.update({
       where: { userId: userId },
       data: {
         totalExperience: { increment: xpEarned }
@@ -133,16 +115,13 @@ export class UserStatsService {
 
     const { currentLevel: newNumericLevel } = calculateLevel(updatedStats.totalExperience);
     if (newNumericLevel !== updatedStats.currentLevel) {
-      updatedStats = await this.db.userStats.update({
-        where: { userId: userId },
-        data: { currentLevel: newNumericLevel }
-      });
+      updatedStats = await this.userStatsRepository.updateLevel(userId, newNumericLevel);
     }
     return updatedStats;
   }
 
   public async getUserStats(userId: string): Promise<UserStats> {
-    const userStats = await this.db.userStats.findUnique({ where: { userId: userId } });
+    const userStats = await this.userStatsRepository.findByUserId(userId);
     if (!userStats) {
       throw new Error(`UserStats not found for user ID: ${userId}`);
     }

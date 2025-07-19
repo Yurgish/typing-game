@@ -1,4 +1,3 @@
-import { UserProgressService } from '@api/services/UserProgressService';
 import { protectedProcedure, router } from '@api/trpc';
 import { LearningMode } from '@api/types';
 import { z } from 'zod';
@@ -35,13 +34,13 @@ const saveSingleScreenInputSchema = z.object({
 export const lessonProgressRouter = router({
   saveLessonProgress: protectedProcedure.input(saveLessonProgressInputSchema).mutation(async ({ input, ctx }) => {
     const { userId } = ctx.session;
-    const userProgressService = new UserProgressService(ctx.prisma);
+    const { userProgressService } = ctx.services;
     const result = await userProgressService.saveLessonProgress(userId, input);
     return result;
   }),
   saveScreenMetric: protectedProcedure.input(saveSingleScreenInputSchema).mutation(async ({ input, ctx }) => {
     const { userId } = ctx.session;
-    const userProgressService = new UserProgressService(ctx.prisma);
+    const { userProgressService } = ctx.services;
     const result = await userProgressService.saveScreenMetric(userId, input);
     return result;
   }),

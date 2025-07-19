@@ -6,25 +6,19 @@ export enum LearningMode {
   DEFAULT = 'DEFAULT'
 }
 
-export enum LessonDifficulty {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
-}
-
 export type LessonType = RouterOutputs['lesson']['getById'];
 
-export type UserLessonProgressType = RouterOutputs['userProgress']['getUserLessonProgress'];
+export type UserLessonProgressType = RouterOutputs['lessonProgress']['getUserLessonProgress'];
 
 export type ScreenMetricsReturnedType = NonNullable<UserLessonProgressType>['screenMetrics'][number];
 
-export type CharacterMetricType = RouterOutputs['userProgress']['getCharacterMetrics'][number];
+export type CharacterMetricType = RouterOutputs['characterMetrics']['getCharacterMetrics'][number];
 
-export type ScreenType = LessonType['screens'][number];
+export type ScreenType = NonNullable<LessonType>['screens'][number];
 
 export type ScreenContentType = ScreenType['content'];
 
-export type HeatMapType = RouterOutputs['userProgress']['getUserActivityHeatmap'];
+export type HeatMapType = RouterOutputs['activityHeatmap']['getUserActivityHeatmap'];
 
 export type FullMetricData = {
   rawWPM: number;

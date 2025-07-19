@@ -3,7 +3,7 @@ import { LessonDifficulty, PrismaClient } from '@repo/database';
 import { BaseRepository } from '../BaseRepository';
 import { ILessonRepository, LessonPayload } from './ILessonRepository';
 
-export class LessonRepository extends BaseRepository<'lesson', LessonPayload> implements ILessonRepository {
+export class LessonRepository extends BaseRepository<'lesson'> implements ILessonRepository {
   constructor(db: PrismaClient) {
     super(db, 'lesson');
   }
@@ -17,5 +17,10 @@ export class LessonRepository extends BaseRepository<'lesson', LessonPayload> im
       where: { order: { gt: currentOrder } },
       orderBy: { order: 'asc' }
     });
+  }
+
+  async getLessonDifficulty(lessonId: string): Promise<LessonDifficulty> {
+    const lesson = await this.findUnique({ where: { id: lessonId } });
+    return lesson?.difficulty ?? LessonDifficulty.BEGINNER;
   }
 }

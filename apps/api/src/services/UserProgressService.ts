@@ -1,10 +1,11 @@
-import { FullMetricData, LearningMode, LessonDifficulty } from '@api/types';
+import appEventEmitter from '@api/core/events/appEventEmmiter';
+import { ILessonRepository } from '@api/repositories/lesson/ILessonRepository';
+import { IScreenMetricsRepository } from '@api/repositories/screenMetric/IScreenMetricsRepository';
+import { IUserLessonProgressRepository } from '@api/repositories/userLessonProgress/IUserLessonProgressRepository';
+import { IUserStatsRepository } from '@api/repositories/userStats/IUserStatsRepository';
+import { FullMetricData, LearningMode } from '@api/types';
 import { determineXpAndMetricsUpdate } from '@api/utils/xpCalculator';
-import { PrismaClient } from '@repo/database';
-
-import { AchievementService } from './AchievementService';
-import { DailyActivityService } from './DailyActivityService';
-import { UserStatsService } from './UserStatsService';
+import { LessonDifficulty } from '@repo/database';
 
 type SaveLessonProgressInput = {
   lessonId: string;
@@ -23,50 +24,22 @@ type SaveScreenMetricInput = {
 };
 
 export class UserProgressService {
-  private userStatsService: UserStatsService;
-  private achievementService: AchievementService;
-  private dailyActivityService: DailyActivityService;
-
-  constructor(private db: PrismaClient) {
-    this.userStatsService = new UserStatsService(db);
-    this.achievementService = new AchievementService(db);
-    this.dailyActivityService = new DailyActivityService(db);
-  }
+  constructor(
+    private lessonRepository: ILessonRepository,
+    private userLessonProgressRepository: IUserLessonProgressRepository,
+    private screenMetricsRepository: IScreenMetricsRepository,
+    private userStatsRepository: IUserStatsRepository
+  ) {}
 
   private async getLessonDifficulty(lessonId: string): Promise<LessonDifficulty> {
-    const lesson = await this.db.lesson.findUnique({
-      where: { id: lessonId }
-    });
-    if (lesson?.difficulty && Object.values(LessonDifficulty).includes(lesson.difficulty as LessonDifficulty)) {
-      return lesson.difficulty as LessonDifficulty;
-    }
-    return LessonDifficulty.BEGINNER;
+    const difficulty = await this.lessonRepository.getLessonDifficulty(lessonId);
+    return difficulty;
   }
 
   public async saveLessonProgress(userId: string, input: SaveLessonProgressInput) {
     const { lessonId, currentScreenOrder, isCompleted, metrics: currentLessonMetrics } = input;
 
-    const existingProgress = await this.db.userLessonProgress.findUnique({
-      where: {
-        userId_lessonId: {
-          userId: userId,
-          lessonId: lessonId
-        }
-      },
-      select: {
-        id: true,
-        currentScreenOrder: true,
-        isCompleted: true,
-        rawWPM: true,
-        adjustedWPM: true,
-        accuracy: true,
-        backspaces: true,
-        errors: true,
-        timeTaken: true,
-        typedCharacters: true,
-        correctCharacters: true
-      }
-    });
+    const existingProgress = await this.userLessonProgressRepository.findByUserAndLesson(userId, lessonId);
 
     let newCurrentScreenOrder = currentScreenOrder;
     if (existingProgress && existingProgress.currentScreenOrder !== null) {
@@ -78,6 +51,7 @@ export class UserProgressService {
     let isFirstCompletion = false;
     const lessonDifficulty = await this.getLessonDifficulty(lessonId);
 
+    // this shit idk what to do with this, ill be hones with u, future me ;)
     const transformedExistingProgress: FullMetricData | null = existingProgress
       ? {
           rawWPM: existingProgress.rawWPM ?? 0,
@@ -103,50 +77,41 @@ export class UserProgressService {
       isFirstCompletion = !existingProgress?.isCompleted;
     }
 
-    let updatedProgress;
-    if (existingProgress) {
-      updatedProgress = await this.db.userLessonProgress.update({
-        where: {
-          id: existingProgress.id
-        },
-        data: {
-          currentScreenOrder: newCurrentScreenOrder,
-          isCompleted: isCompleted,
-          completedAt: isCompleted ? new Date() : undefined,
-          ...updateLessonMetricsData
-        }
-      });
-    } else {
-      updatedProgress = await this.db.userLessonProgress.create({
-        data: {
-          userId: userId,
-          lessonId: lessonId,
-          currentScreenOrder: currentScreenOrder,
-          isCompleted: isCompleted,
-          completedAt: isCompleted ? new Date() : undefined,
-          ...updateLessonMetricsData
-        }
-      });
-    }
+    const updatedProgress = await this.userLessonProgressRepository.upsertLessonProgress(userId, lessonId, {
+      currentScreenOrder: newCurrentScreenOrder,
+      isCompleted,
+      completedAt: isCompleted ? new Date() : undefined,
+      ...updateLessonMetricsData
+    });
 
     const wasPerfectCompletion = currentLessonMetrics.errors === 0 && currentLessonMetrics.backspaces === 0;
 
-    const updatedUserStats = await this.userStatsService.handleLessonCompletionAggregation(
+    appEventEmitter.emit(
+      'lessonCompleted',
       userId,
       xpEarned,
       lessonDifficulty,
       currentLessonMetrics,
       isFirstCompletion,
-      wasPerfectCompletion
+      wasPerfectCompletion,
+      'lesson'
     );
 
-    const newAchievements = await this.achievementService.checkAndAwardAchievements(userId, updatedUserStats);
+    // const updatedUserStats = await this.userStatsService.handleLessonCompletionAggregation(
+    //   userId,
+    //   xpEarned,
+    //   lessonDifficulty,
+    //   currentLessonMetrics,
+    //   isFirstCompletion,
+    //   wasPerfectCompletion
+    // );
 
-    await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'lesson');
+    // const newAchievements = await this.achievementService.checkAndAwardAchievements(userId, updatedUserStats);
+
+    // await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'lesson');
 
     return {
       updatedProgress,
-      newAchievements,
       xpEarned
     };
   }
@@ -154,37 +119,22 @@ export class UserProgressService {
   public async saveScreenMetric(userId: string, input: SaveScreenMetricInput) {
     const { lessonId, screenMetric } = input;
 
-    await this.userStatsService.initializeUserStats(userId); // Ensure user stats are initialized (remake later if needed)
+    await this.userStatsRepository.initializeUserStats(userId);
 
-    const progress = await this.db.userLessonProgress.upsert({
-      where: {
-        userId_lessonId: {
-          userId,
-          lessonId
-        }
-      },
-      update: {},
-      create: {
-        userId,
-        lessonId,
-        currentScreenOrder: screenMetric.order,
-        isCompleted: false
-      },
-      include: {
-        screenMetrics: {
-          where: { screenOrder: screenMetric.order }
-        }
-      }
-    });
+    const progress = await this.userLessonProgressRepository.getOrCreateProgressWithScreenMetric(
+      userId,
+      lessonId,
+      screenMetric.order
+    );
 
     const existingScreenMetric = progress.screenMetrics[0];
 
     const currentScreenMetrics: FullMetricData = screenMetric.metrics;
 
     let xpEarned = 0;
-    let updateData: Partial<FullMetricData> = {};
     const lessonDifficulty = await this.getLessonDifficulty(lessonId);
 
+    //remake this later into xp service
     const { xpEarned: calculatedXp, metricsToUpdate } = determineXpAndMetricsUpdate(
       currentScreenMetrics,
       existingScreenMetric || null,
@@ -192,27 +142,18 @@ export class UserProgressService {
       'screen'
     );
     xpEarned = calculatedXp;
-    updateData = metricsToUpdate;
 
-    const updatedScreenMetricRecord = await this.db.screenMetrics.upsert({
-      where: {
-        userLessonProgressId_screenOrder: {
-          userLessonProgressId: progress.id,
-          screenOrder: screenMetric.order
-        }
-      },
-      update: updateData,
-      create: {
-        userLessonProgressId: progress.id,
-        screenOrder: screenMetric.order,
-        screenType: screenMetric.type,
-        ...currentScreenMetrics
-      }
-    });
+    const updatedScreenMetricRecord = await this.screenMetricsRepository.upsertScreenMetric(
+      progress.id,
+      screenMetric.order,
+      screenMetric.type,
+      currentScreenMetrics,
+      metricsToUpdate
+    );
 
     const newCurrentScreenOrder = Math.max(progress.currentScreenOrder || 0, screenMetric.order);
 
-    await this.db.userLessonProgress.update({
+    await this.userLessonProgressRepository.update({
       where: {
         id: progress.id
       },
@@ -221,9 +162,11 @@ export class UserProgressService {
       }
     });
 
-    await this.userStatsService.handleScreenXPAggregation(userId, xpEarned);
+    appEventEmitter.emit('screenCompleted', userId, xpEarned, 'screen');
 
-    await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'screen');
+    // await this.userStatsService.handleScreenXPAggregation(userId, xpEarned);
+
+    // await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'screen');`
 
     return { updatedScreenMetricRecord, xpEarned };
   }

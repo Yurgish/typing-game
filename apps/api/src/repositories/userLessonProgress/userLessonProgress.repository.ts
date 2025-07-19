@@ -1,10 +1,14 @@
 import { PrismaClient } from '@repo/database';
 
 import { BaseRepository } from '../BaseRepository';
-import { IUserLessonProgressRepository, UserLessonProgressPayload } from './IUserLessonProgressRepository';
+import {
+  IUserLessonProgressRepository,
+  UserLessonProgressPayload,
+  UserLessonProgressWithSpecificScreenMetrics
+} from './IUserLessonProgressRepository';
 
 export class UserLessonProgressRepository
-  extends BaseRepository<'userLessonProgress', UserLessonProgressPayload>
+  extends BaseRepository<'userLessonProgress'>
   implements IUserLessonProgressRepository
 {
   constructor(db: PrismaClient) {
@@ -38,6 +42,33 @@ export class UserLessonProgressRepository
       where: { userId },
       orderBy: { lesson: { order: 'desc' } },
       include: { lesson: true }
+    });
+  }
+
+  async findProgressByUserAndLesson(userId: string, lessonId: string) {
+    return this.findUnique({
+      where: { userId_lessonId: { userId, lessonId } }
+    });
+  }
+
+  async upsertLessonProgress(userId: string, lessonId: string, data: Partial<UserLessonProgressPayload>) {
+    return this.upsert({
+      where: { userId_lessonId: { userId, lessonId } },
+      update: data,
+      create: { userId, lessonId, ...data }
+    });
+  }
+
+  async getOrCreateProgressWithScreenMetric(
+    userId: string,
+    lessonId: string,
+    screenOrder: number
+  ): Promise<UserLessonProgressWithSpecificScreenMetrics> {
+    return this.upsert({
+      where: { userId_lessonId: { userId, lessonId } },
+      update: {},
+      create: { userId, lessonId, currentScreenOrder: screenOrder, isCompleted: false },
+      include: { screenMetrics: { where: { screenOrder } } }
     });
   }
 }

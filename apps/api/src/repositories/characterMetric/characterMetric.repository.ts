@@ -1,12 +1,9 @@
 import { PrismaClient } from '@repo/database';
 
 import { BaseRepository } from '../BaseRepository';
-import { CharacterMetricPayload, ICharacterMetricRepository } from './ICharacterMetricRepository';
+import { ICharacterMetricRepository } from './ICharacterMetricRepository';
 
-export class CharacterMetricRepository
-  extends BaseRepository<'characterMetric', CharacterMetricPayload>
-  implements ICharacterMetricRepository
-{
+export class CharacterMetricRepository extends BaseRepository<'characterMetric'> implements ICharacterMetricRepository {
   constructor(db: PrismaClient) {
     super(db, 'characterMetric');
   }

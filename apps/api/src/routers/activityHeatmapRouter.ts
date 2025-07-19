@@ -1,10 +1,10 @@
-import { DailyActivityService } from '@api/services/DailyActivityService';
 import { protectedProcedure, router } from '@api/trpc';
 
+// add it to activity service
 export const activityHeatmapRouter = router({
   getUserActivityHeatmap: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
-    const dailyActivityService = new DailyActivityService(ctx.prisma);
+    const { dailyActivityService } = ctx.services;
 
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
