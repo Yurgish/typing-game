@@ -97,19 +97,6 @@ export class UserProgressService {
       'lesson'
     );
 
-    // const updatedUserStats = await this.userStatsService.handleLessonCompletionAggregation(
-    //   userId,
-    //   xpEarned,
-    //   lessonDifficulty,
-    //   currentLessonMetrics,
-    //   isFirstCompletion,
-    //   wasPerfectCompletion
-    // );
-
-    // const newAchievements = await this.achievementService.checkAndAwardAchievements(userId, updatedUserStats);
-
-    // await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'lesson');
-
     return {
       updatedProgress,
       xpEarned
@@ -134,7 +121,6 @@ export class UserProgressService {
     let xpEarned = 0;
     const lessonDifficulty = await this.getLessonDifficulty(lessonId);
 
-    //remake this later into xp service
     const { xpEarned: calculatedXp, metricsToUpdate } = determineXpAndMetricsUpdate(
       currentScreenMetrics,
       existingScreenMetric || null,
@@ -163,10 +149,6 @@ export class UserProgressService {
     });
 
     appEventEmitter.emit('screenCompleted', userId, xpEarned, 'screen');
-
-    // await this.userStatsService.handleScreenXPAggregation(userId, xpEarned);
-
-    // await this.dailyActivityService.updateDailyActivity(userId, xpEarned, 'screen');`
 
     return { updatedScreenMetricRecord, xpEarned };
   }

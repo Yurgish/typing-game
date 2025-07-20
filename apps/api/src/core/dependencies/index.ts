@@ -11,7 +11,8 @@ import { UserProgressService } from '@api/services/UserProgressService';
 import { UserStatsService } from '@api/services/UserStatsService';
 import { PrismaClient } from '@repo/database/generated/client';
 
-import { AppRepositories, AppServices } from './types'; //remake imports here and in types.ts
+import { registerAllEventListeners } from '../events/listeners';
+import { AppRepositories, AppServices } from './types';
 
 // thats how we initialize our dependencies (thats bad need to remake this (maybe)))
 export const initializeDependencies = (db: PrismaClient) => {
@@ -52,6 +53,8 @@ export const initializeDependencies = (db: PrismaClient) => {
     achievementService,
     userProgressService
   };
+
+  registerAllEventListeners(services);
 
   return { repositories, services };
 };

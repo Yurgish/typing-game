@@ -1,5 +1,6 @@
-import { FullMetricData, LessonDifficulty } from '@api/types';
+import { FullMetricData } from '@api/types';
 import { areNewMetricsBetter, MetricData } from '@api/utils/metricsComparator';
+import { LessonDifficulty } from '@repo/database';
 
 type XpCalculationResult = {
   xpEarned: number;
