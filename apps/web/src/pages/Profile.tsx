@@ -50,11 +50,7 @@ const Profile = () => {
 
   const xpOnThisLevel = totalExperience - prevLevelXp; // remake on server side, so we can use it directly
 
-  // useEffect(() => {
-  //   if (!session) {
-  //     navigate('/lessons');
-  //   }
-  // }, [navigate, session]);
+  const currentLevelSegment = LEVEL_THRESHOLDS[currentLevel] - LEVEL_THRESHOLDS[currentLevel - 1];
 
   return (
     <div className="min-w-[1200px] pt-20">
@@ -74,7 +70,7 @@ const Profile = () => {
               </div>
               <p>LVL: {experienceData?.currentLevel};</p>
               <p>XP to next LVL -&gt; {experienceData?.xpToNextLevel ?? 'error'};</p>
-              <ProgressBar current={xpOnThisLevel} max={experienceData?.xpToNextLevel} />
+              <ProgressBar current={xpOnThisLevel} max={currentLevelSegment} />
             </div>
           </div>
         </div>
