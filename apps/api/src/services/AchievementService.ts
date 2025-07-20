@@ -44,7 +44,7 @@ export class AchievementService {
       }
     }
 
-    return newlyUnlockedAchievementNames;
+    return Array.from(unlockedAchievementIds);
   }
 
   /**
@@ -69,5 +69,9 @@ export class AchievementService {
     });
 
     return achievementsWithStatus;
+  }
+
+  public getAchievementById(achievementId: string): Achievement | undefined {
+    return ACHIEVEMENTS.find((ach) => ach.id === achievementId);
   }
 }

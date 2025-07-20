@@ -7,6 +7,12 @@ export const registerUserStatsListeners = (userStatsService: UserStatsService) =
     try {
       console.log(`[UserStats Listener] Processing screenCompleted for user ${userId}`);
       await userStatsService.handleScreenXPAggregation(userId, xpEarned);
+
+      appEventEmitter.emit('sse_userStatsUpdated', userId, {
+        id: `${userId}-${Date.now()}`,
+        xpEarned,
+        updatedAt: new Date().toISOString()
+      });
     } catch (error) {
       console.error(`[UserStats Listener Error] Failed to aggregate screen XP for user ${userId}:`, error);
     }

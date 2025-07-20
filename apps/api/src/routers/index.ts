@@ -5,6 +5,7 @@ import { activityHeatmapRouter } from './activityHeatmapRouter';
 import { characterMetricsRouter } from './characterMetricsRouter';
 import { lessonProgressRouter } from './lessonProgressRouter';
 import { lessonRouter } from './lessons';
+import { sseRouter } from './seeRouter';
 import { userStatsRouter } from './userStatsRouter';
 
 export const appRouter = router({
@@ -13,7 +14,8 @@ export const appRouter = router({
   achievements: achievementsRouter,
   activityHeatmap: activityHeatmapRouter,
   characterMetrics: characterMetricsRouter,
-  userStats: userStatsRouter
+  userStats: userStatsRouter,
+  sse: sseRouter
 });
 
 export type AppRouter = typeof appRouter;
