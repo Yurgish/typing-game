@@ -112,9 +112,9 @@ export class UserStatsService {
   }
 
   public async getUserStats(userId: string): Promise<UserStatsPayload> {
-    const userStats = await this.userStatsRepository.findByUserId(userId);
+    let userStats = await this.userStatsRepository.findByUserId(userId);
     if (!userStats) {
-      throw new Error(`UserStats not found for user ID: ${userId}`);
+      userStats = await this.userStatsRepository.initializeUserStats(userId);
     }
     return userStats;
   }

@@ -88,12 +88,12 @@ const Profile = () => {
           </div>
         )}
       </div>
-      <div className="p-6">
-        <h1 className="mb-4 text-xl">Characters statistic</h1>
-        <Carousel>
-          <CarouselContent className="-ml-4">
-            {charactersData &&
-              charactersData.map((character) => (
+      {charactersData?.length !== 0 && (
+        <div className="p-6">
+          <h1 className="mb-4 text-xl">Characters statistic</h1>
+          <Carousel>
+            <CarouselContent className="-ml-4">
+              {charactersData?.map((character) => (
                 <CarouselItem key={character.character} className="basis-1/3 pl-4">
                   <div className="rounded-md border-2 p-4 transition-all">
                     <h2 className="mb-2 text-lg uppercase">
@@ -133,12 +133,13 @@ const Profile = () => {
                   </div>
                 </CarouselItem>
               ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
-        <div className="flex gap-2"></div>
-      </div>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+          <div className="flex gap-2"></div>
+        </div>
+      )}
     </div>
   );
 };

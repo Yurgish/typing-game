@@ -41,13 +41,6 @@ export class UserStatsRepository extends BaseRepository<'userStats'> implements 
     });
   }
 
-  // async updateAllData(userId: string, data: Prisma.UserStatsUpdateInput): Promise<UserStatsPayload> {
-  //   return this.update({
-  //     where: { userId },
-  //     data
-  //   });
-  // }
-
   async updateLevel(userId: string, newLevel: number): Promise<UserStatsPayload> {
     return this.update({
       where: { userId },
