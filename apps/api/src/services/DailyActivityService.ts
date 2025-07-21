@@ -1,6 +1,6 @@
 import { IDailyActivityRepository } from '@api/repositories/dailyActivity/IDailyActivityRepository';
 import { IUserStatsRepository } from '@api/repositories/userStats/IUserStatsRepository';
-import { Prisma, UserDailyActivity, UserStats } from '@repo/database';
+import { UserDailyActivity, UserStats } from '@repo/database';
 
 export class DailyActivityService {
   constructor(
@@ -20,13 +20,6 @@ export class DailyActivityService {
     activityType: 'screen' | 'lesson'
   ): Promise<UserDailyActivity> {
     const today = this.normalizeDate(new Date());
-
-    const updateData: Prisma.UserDailyActivityUpdateInput = { xpEarnedToday: { increment: xpEarned } };
-    if (activityType === 'screen') {
-      updateData.screensCompleted = { increment: 1 };
-    } else {
-      updateData.lessonsCompleted = { increment: 1 };
-    }
 
     const dailyActivity = await this.dailyActivityRepository.upsertDailyActivity(userId, today, xpEarned, activityType);
 
