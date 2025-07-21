@@ -75,7 +75,7 @@ model UserStats {
   currentLevel           Int     @default(1)
   xpToNextLevel          Int?
 
-  totalLessonsCompleted  Int     @default(0) // Still useful for overall count
+  totalLessonsCompleted  Int     @default(0)
   totalPerfectLessons    Int     @default(0)
   highestOverallWPM      Float   @default(0)
   highestOverallAccuracy Float   @default(0)

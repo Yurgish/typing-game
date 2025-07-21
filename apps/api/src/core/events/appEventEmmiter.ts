@@ -23,7 +23,8 @@ export interface AppEvents {
     lessonDifficulty: LessonDifficulty,
     metrics: FullMetricDataWithLearningMode,
     isFirstCompletion: boolean,
-    wasPerfectCompletion: boolean
+    wasPerfectCompletion: boolean,
+    activityType: 'lesson' | 'screen'
   ) => void;
   lessonCompleted: (
     userId: string,
@@ -31,7 +32,8 @@ export interface AppEvents {
     lessonDifficulty: LessonDifficulty,
     metrics: FullMetricData,
     isFirstCompletion: boolean,
-    wasPerfectCompletion: boolean
+    wasPerfectCompletion: boolean,
+    activityType: 'lesson' | 'screen'
   ) => void;
   sse_achievementUnlocked: (userId: string, payload: SSEPayloads['achievementUnlocked']) => void;
   sse_userStatsUpdated: (userId: string, payload: SSEPayloads['userStatsUpdated']) => void;
