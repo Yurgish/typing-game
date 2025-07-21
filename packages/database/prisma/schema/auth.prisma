@@ -15,6 +15,7 @@ model User {
   banExpires DateTime?
 
   userStats UserStats?
+  lessonDifficultyStats LessonDifficultyStats[]
 
   userAchievements   UserAchievement[]
   userDailyActivity  UserDailyActivity[]

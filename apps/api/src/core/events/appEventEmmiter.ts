@@ -1,4 +1,4 @@
-import { FullMetricData } from '@api/types';
+import { FullMetricData, FullMetricDataWithLearningMode } from '@api/types';
 import { LessonDifficulty } from '@repo/database';
 import { EventEmitter, on } from 'events';
 
@@ -17,16 +17,22 @@ export interface SSEPayloads {
 }
 
 export interface AppEvents {
+  screenCompleted: (
+    userId: string,
+    xpEarned: number,
+    lessonDifficulty: LessonDifficulty,
+    metrics: FullMetricDataWithLearningMode,
+    isFirstCompletion: boolean,
+    wasPerfectCompletion: boolean
+  ) => void;
   lessonCompleted: (
     userId: string,
     xpEarned: number,
     lessonDifficulty: LessonDifficulty,
     metrics: FullMetricData,
     isFirstCompletion: boolean,
-    wasPerfectCompletion: boolean,
-    activityType: 'screen' | 'lesson'
+    wasPerfectCompletion: boolean
   ) => void;
-  screenCompleted: (userId: string, xpEarned: number, activityType: 'screen' | 'lesson') => void;
   sse_achievementUnlocked: (userId: string, payload: SSEPayloads['achievementUnlocked']) => void;
   sse_userStatsUpdated: (userId: string, payload: SSEPayloads['userStatsUpdated']) => void;
 }

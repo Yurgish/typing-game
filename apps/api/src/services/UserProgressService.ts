@@ -2,7 +2,6 @@ import appEventEmitter from '@api/core/events/appEventEmmiter';
 import { ILessonRepository } from '@api/repositories/lesson/ILessonRepository';
 import { IScreenMetricsRepository } from '@api/repositories/screenMetric/IScreenMetricsRepository';
 import { IUserLessonProgressRepository } from '@api/repositories/userLessonProgress/IUserLessonProgressRepository';
-import { IUserStatsRepository } from '@api/repositories/userStats/IUserStatsRepository';
 import { FullMetricData, LearningMode } from '@api/types';
 import { determineXpAndMetricsUpdate } from '@api/utils/xpCalculator';
 import { LessonDifficulty } from '@repo/database';
@@ -27,8 +26,7 @@ export class UserProgressService {
   constructor(
     private lessonRepository: ILessonRepository,
     private userLessonProgressRepository: IUserLessonProgressRepository,
-    private screenMetricsRepository: IScreenMetricsRepository,
-    private userStatsRepository: IUserStatsRepository
+    private screenMetricsRepository: IScreenMetricsRepository
   ) {}
 
   private async getLessonDifficulty(lessonId: string): Promise<LessonDifficulty> {
@@ -46,35 +44,45 @@ export class UserProgressService {
       newCurrentScreenOrder = Math.max(existingProgress.currentScreenOrder, currentScreenOrder);
     }
 
-    let xpEarned = 0;
+    let xpEarnedForLessonCompletion = 0;
     let updateLessonMetricsData: Partial<FullMetricData> = {};
-    let isFirstCompletion = false;
+    let isFirstCompletionOfLesson = false;
     const lessonDifficulty = await this.getLessonDifficulty(lessonId);
 
-    // this shit idk what to do with this, ill be hones with u, future me ;)
-    const transformedExistingProgress: FullMetricData | null = existingProgress
-      ? {
-          rawWPM: existingProgress.rawWPM ?? 0,
-          adjustedWPM: existingProgress.adjustedWPM ?? 0,
-          accuracy: existingProgress.accuracy ?? 0,
-          backspaces: existingProgress.backspaces ?? 0,
-          errors: existingProgress.errors ?? 0,
-          timeTaken: existingProgress.timeTaken ?? 0,
-          typedCharacters: existingProgress.typedCharacters ?? 0,
-          correctCharacters: existingProgress.correctCharacters ?? 0
-        }
-      : null;
-
     if (isCompleted) {
-      const { xpEarned: calculatedXp, metricsToUpdate } = determineXpAndMetricsUpdate(
-        currentLessonMetrics,
-        transformedExistingProgress,
-        lessonDifficulty,
-        'lesson'
-      );
-      xpEarned = calculatedXp;
-      updateLessonMetricsData = metricsToUpdate;
-      isFirstCompletion = !existingProgress?.isCompleted;
+      if (!existingProgress?.isCompleted) {
+        isFirstCompletionOfLesson = true;
+
+        const { xpEarned: calculatedXp, metricsToUpdate } = determineXpAndMetricsUpdate(
+          currentLessonMetrics,
+          null,
+          lessonDifficulty,
+          'lesson'
+        );
+        xpEarnedForLessonCompletion = calculatedXp;
+        updateLessonMetricsData = metricsToUpdate;
+      } else {
+        const transformedExistingProgress: FullMetricData | null = existingProgress
+          ? {
+              rawWPM: existingProgress.rawWPM ?? 0,
+              adjustedWPM: existingProgress.adjustedWPM ?? 0,
+              accuracy: existingProgress.accuracy ?? 0,
+              backspaces: existingProgress.backspaces ?? 0,
+              errors: existingProgress.errors ?? 0,
+              timeTaken: existingProgress.timeTaken ?? 0,
+              typedCharacters: existingProgress.typedCharacters ?? 0,
+              correctCharacters: existingProgress.correctCharacters ?? 0
+            }
+          : null;
+
+        const { metricsToUpdate } = determineXpAndMetricsUpdate(
+          currentLessonMetrics,
+          transformedExistingProgress,
+          lessonDifficulty,
+          'lesson'
+        );
+        updateLessonMetricsData = metricsToUpdate;
+      }
     }
 
     const updatedProgress = await this.userLessonProgressRepository.upsertLessonProgress(userId, lessonId, {
@@ -84,29 +92,24 @@ export class UserProgressService {
       ...updateLessonMetricsData
     });
 
-    const wasPerfectCompletion = currentLessonMetrics.errors === 0 && currentLessonMetrics.backspaces === 0;
-
     appEventEmitter.emit(
       'lessonCompleted',
       userId,
-      xpEarned,
+      xpEarnedForLessonCompletion,
       lessonDifficulty,
       currentLessonMetrics,
-      isFirstCompletion,
-      wasPerfectCompletion,
-      'lesson'
+      isFirstCompletionOfLesson,
+      currentLessonMetrics.errors === 0 && currentLessonMetrics.backspaces === 0
     );
 
     return {
       updatedProgress,
-      xpEarned
+      xpEarned: xpEarnedForLessonCompletion
     };
   }
 
   public async saveScreenMetric(userId: string, input: SaveScreenMetricInput) {
     const { lessonId, screenMetric } = input;
-
-    await this.userStatsRepository.initializeUserStats(userId);
 
     const progress = await this.userLessonProgressRepository.getOrCreateProgressWithScreenMetric(
       userId,
@@ -118,7 +121,6 @@ export class UserProgressService {
 
     const currentScreenMetrics: FullMetricData = screenMetric.metrics;
 
-    let xpEarned = 0;
     const lessonDifficulty = await this.getLessonDifficulty(lessonId);
 
     const { xpEarned: calculatedXp, metricsToUpdate } = determineXpAndMetricsUpdate(
@@ -127,7 +129,8 @@ export class UserProgressService {
       lessonDifficulty,
       'screen'
     );
-    xpEarned = calculatedXp;
+
+    const currentScreenXpEarned = calculatedXp;
 
     const updatedScreenMetricRecord = await this.screenMetricsRepository.upsertScreenMetric(
       progress.id,
@@ -136,6 +139,10 @@ export class UserProgressService {
       currentScreenMetrics,
       metricsToUpdate
     );
+
+    const isScreenFirstCompletion = !existingScreenMetric;
+
+    const wasScreenPerfectCompletion = currentScreenMetrics.errors === 0 && currentScreenMetrics.backspaces === 0;
 
     const newCurrentScreenOrder = Math.max(progress.currentScreenOrder || 0, screenMetric.order);
 
@@ -148,8 +155,16 @@ export class UserProgressService {
       }
     });
 
-    appEventEmitter.emit('screenCompleted', userId, xpEarned, 'screen');
+    appEventEmitter.emit(
+      'screenCompleted',
+      userId,
+      currentScreenXpEarned,
+      lessonDifficulty,
+      { ...currentScreenMetrics, learningMode: screenMetric.type },
+      isScreenFirstCompletion,
+      wasScreenPerfectCompletion
+    );
 
-    return { updatedScreenMetricRecord, xpEarned };
+    return { updatedScreenMetricRecord, xpEarned: currentScreenXpEarned };
   }
 }

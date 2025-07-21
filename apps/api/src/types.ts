@@ -30,3 +30,7 @@ export type FullMetricData = {
   typedCharacters: number;
   correctCharacters: number;
 };
+
+export type FullMetricDataWithLearningMode = FullMetricData & {
+  learningMode: LearningMode;
+};

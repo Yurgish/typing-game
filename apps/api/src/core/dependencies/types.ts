@@ -1,14 +1,13 @@
-import { IAchievementRepository } from '@api/repositories/achivement/IAchievementRepository';
-import { ICharacterMetricRepository } from '@api/repositories/characterMetric/ICharacterMetricRepository';
-import { IDailyActivityRepository } from '@api/repositories/dailyActivity/IDailyActivityRepository';
-import { ILessonRepository } from '@api/repositories/lesson/ILessonRepository';
-import { IScreenMetricsRepository } from '@api/repositories/screenMetric/IScreenMetricsRepository';
-import { IUserLessonProgressRepository } from '@api/repositories/userLessonProgress/IUserLessonProgressRepository';
-import { IUserStatsRepository } from '@api/repositories/userStats/IUserStatsRepository';
-import { AchievementService } from '@api/services/AchievementService';
-import { DailyActivityService } from '@api/services/DailyActivityService';
-import { UserProgressService } from '@api/services/UserProgressService';
-import { UserStatsService } from '@api/services/UserStatsService';
+import {
+  IAchievementRepository,
+  ICharacterMetricRepository,
+  IDailyActivityRepository,
+  ILessonRepository,
+  IScreenMetricsRepository,
+  IUserLessonProgressRepository,
+  IUserStatsRepository
+} from '@api/repositories';
+import { AchievementService, DailyActivityService, UserProgressService, UserStatsService } from '@api/services';
 
 export type AppRepositories = {
   dailyActivityRepository: IDailyActivityRepository;

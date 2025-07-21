@@ -51,40 +51,42 @@ model ScreenMetrics {
   @@map("screenMetrics")
 }
 
+model LessonDifficultyStats {
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String
+  user             User           @relation(fields: [userId], references: [id])
+  userStats        UserStats?     @relation(fields: [userId], references: [userId])
+  difficulty       LessonDifficulty
+
+  lessonsCompleted  Int            @default(0)
+  perfectLessons    Int            @default(0)
+  highestWPM        Float          @default(0)
+  highestAccuracy   Float          @default(0)
+
+  @@unique([userId, difficulty])
+}
+
 model UserStats {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id])
 
-  totalExperience Int  @default(0)
-  currentLevel    Int  @default(1)
-  xpToNextLevel   Int?
+  totalExperience        Int     @default(0)
+  currentLevel           Int     @default(1)
+  xpToNextLevel          Int?
 
-  totalLessonsCompleted  Int   @default(0)
-  totalPerfectLessons    Int   @default(0)
-  highestOverallWPM      Float @default(0)
-  highestOverallAccuracy Float @default(0)
-
-  beginnerLessonsCompleted Int   @default(0)
-  beginnerPerfectLessons   Int   @default(0)
-  highestBeginnerWPM       Float @default(0)
-  highestBeginnerAccuracy  Float @default(0)
-
-  mediumLessonsCompleted Int   @default(0)
-  mediumPerfectLessons   Int   @default(0)
-  highestMediumWPM       Float @default(0)
-  highestMediumAccuracy  Float @default(0)
-
-  advancedLessonsCompleted Int   @default(0)
-  advancedPerfectLessons   Int   @default(0)
-  highestAdvancedWPM       Float @default(0)
-  highestAdvancedAccuracy  Float @default(0)
+  totalLessonsCompleted  Int     @default(0) // Still useful for overall count
+  totalPerfectLessons    Int     @default(0)
+  highestOverallWPM      Float   @default(0)
+  highestOverallAccuracy Float   @default(0)
 
   currentStreak Int @default(0)
   longestStreak Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  difficultyStats LessonDifficultyStats[]
 }
 
 model UserAchievement {

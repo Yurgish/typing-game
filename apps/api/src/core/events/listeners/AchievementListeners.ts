@@ -7,16 +7,18 @@ export const registerAchievementListeners = (
   achievementService: AchievementService,
   userStatsService: UserStatsService
 ) => {
-  appEventEmitter.on('lessonCompleted', async (userId) => {
+  appEventEmitter.on('screenCompleted', async (userId) => {
     try {
-      console.log(`[Achievement Listener] Processing lessonCompleted for user ${userId}`);
-
+      console.log(`[Achievement Listener] Processing screenCompleted for user ${userId}`);
       const currentUserStats = await userStatsService.getUserStats(userId);
       const newAchievementsIds = await achievementService.checkAndAwardAchievements(userId, currentUserStats);
+      if (newAchievementsIds.length === 0) {
+        return;
+      }
 
-      if (newAchievementsIds.length < 0) return;
-
-      console.log(`[Achievement Listener] User ${userId} unlocked new achievements: ${newAchievementsIds.join(', ')}`);
+      console.log(
+        `[Achievement Listener] User ${userId} unlocked new achievements (screen): ${newAchievementsIds.join(', ')}`
+      );
 
       for (const achievementId of newAchievementsIds) {
         const achievement = achievementService.getAchievementById(achievementId);
@@ -29,25 +31,10 @@ export const registerAchievementListeners = (
         });
       }
     } catch (error) {
-      console.error(`[Achievement Listener Error] Failed to check/award achievements for user ${userId}:`, error);
+      console.error(
+        `[Achievement Listener Error] Failed to check/award achievements for user ${userId} (screen):`,
+        error
+      );
     }
   });
-
-  //   appEventEmitter.on('screenCompleted', async (userId, _xpEarned, _activityType) => {
-  //     try {
-  //       console.log(`[Achievement Listener] Processing screenCompleted for user ${userId}`);
-  //       const currentUserStats = await userStatsService.getUserStats(userId);
-  //       const newAchievements = await achievementService.checkAndAwardAchievements(userId, currentUserStats);
-  //       if (newAchievements.length > 0) {
-  //         console.log(
-  //           `[Achievement Listener] User ${userId} unlocked new achievements (screen): ${newAchievements.join(', ')}`
-  //         );
-  //       }
-  //     } catch (error) {
-  //       console.error(
-  //         `[Achievement Listener Error] Failed to check/award achievements for user ${userId} (screen):`,
-  //         error
-  //       );
-  //     }
-  //   });
 };
