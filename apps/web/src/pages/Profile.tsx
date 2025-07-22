@@ -18,7 +18,7 @@ import { trpc } from '@web/utils/trpc';
 import { Trophy } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
-const Profile = () => {
+export const Profile = () => {
   const { data: session } = authClient.useSession();
 
   const { data: heatmap } = useQuery(trpc.activityHeatmap.getUserActivityHeatmap.queryOptions());
@@ -89,7 +89,7 @@ const Profile = () => {
         )}
       </div>
       {charactersData?.length !== 0 && (
-        <div className="p-6">
+        <div className="p-4">
           <h1 className="mb-4 text-xl">Characters statistic</h1>
           <Carousel>
             <CarouselContent className="-ml-4">
@@ -143,5 +143,3 @@ const Profile = () => {
     </div>
   );
 };
-
-export default Profile;

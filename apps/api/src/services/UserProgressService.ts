@@ -99,7 +99,8 @@ export class UserProgressService {
       lessonDifficulty,
       currentLessonMetrics,
       isFirstCompletionOfLesson,
-      currentLessonMetrics.errors === 0 && currentLessonMetrics.backspaces === 0
+      currentLessonMetrics.errors === 0 && currentLessonMetrics.backspaces === 0,
+      'lesson'
     );
 
     return {
@@ -162,7 +163,8 @@ export class UserProgressService {
       lessonDifficulty,
       { ...currentScreenMetrics, learningMode: screenMetric.type },
       isScreenFirstCompletion,
-      wasScreenPerfectCompletion
+      wasScreenPerfectCompletion,
+      'screen'
     );
 
     return { updatedScreenMetricRecord, xpEarned: currentScreenXpEarned };

@@ -16,7 +16,7 @@ const screenVariants = {
   exit: { clipPath: 'polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)' }
 };
 
-export default function LessonScreen({
+export const LessonScreen = ({
   currentScreen,
   onScreenComplete,
   lesson
@@ -24,7 +24,7 @@ export default function LessonScreen({
   currentScreen: Screen;
   onScreenComplete: () => void;
   lesson: Lesson;
-}) {
+}) => {
   const isEndOfInputText = useTypingStore((s) => s.isEndOfInputText);
   const screenStartTime = useTypingMetricsStore((s) => s.screenStartTime);
   const updateCalculatedScreenMetrics = useTypingMetricsStore((s) => s.updateCalculatedScreenMetrics);
@@ -126,4 +126,4 @@ export default function LessonScreen({
       </motion.div>
     </LayoutGroup>
   );
-}
+};

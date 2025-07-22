@@ -19,7 +19,7 @@ const LessonCard = ({ lesson, index, lessonProgress, isLessonAvailable }: Lesson
   const { setCurrentLessonId, setCurrentScreenOrder } = useCurrentLessonStore();
 
   const navigateToScreen = (screenOrder: number) => {
-    if (!isLessonAvailable) return;
+    if (!isLessonAvailable || !lesson) return;
     setCurrentLessonId(lesson.id);
     setCurrentScreenOrder(screenOrder);
     navigate(`/lesson/${lesson.id}`);
@@ -32,7 +32,7 @@ const LessonCard = ({ lesson, index, lessonProgress, isLessonAvailable }: Lesson
       <div className="border-background h-full w-full overflow-hidden rounded-md border-2">
         <div className="flex items-center justify-between p-4">
           <h1 className="text-base">
-            {index + 1}. {lesson.title} {lessonProgress?.isCompleted && '(completed)'}
+            {index + 1}. {lesson?.title} {lessonProgress?.isCompleted && '(completed)'}
           </h1>
           {lessonProgress?.isCompleted ? (
             <Button variant="ghost" size="sm" onClick={() => navigateToScreen(1)}>
@@ -53,7 +53,7 @@ const LessonCard = ({ lesson, index, lessonProgress, isLessonAvailable }: Lesson
           )}
         </div>
         <div className="flex w-full gap-1">
-          {lesson.screens.map((screen) => {
+          {lesson?.screens.map((screen) => {
             const screenMetric = lessonProgress?.screenMetrics.find((sm) => sm.screenOrder === screen.order);
 
             return (

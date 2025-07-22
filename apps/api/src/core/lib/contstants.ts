@@ -34,49 +34,43 @@ export const ACHIEVEMENT_TEMPLATES: AchievementTemplate[] = [
     baseId: 'TOTAL_LESSONS_COMPLETED',
     nameTemplate: 'Marathoner ({value})',
     descriptionTemplate: 'Complete {value} lessons.',
-    icon: '🏃',
     conditionGenerator: (value: number) => (data) => data.totalLessonsCompleted >= value
   },
-  {
-    baseId: 'OVERALL_WPM',
-    nameTemplate: 'Speed of Light ({value} WPM)',
-    descriptionTemplate: 'Reach {value} WPM in any lesson.',
-    icon: '⚡',
-    conditionGenerator: (value: number) => (data) => data.highestOverallWPM >= value
-  },
-  {
-    baseId: 'OVERALL_ACCURACY',
-    nameTemplate: 'Accuracy Champion ({value}%)',
-    descriptionTemplate: 'Achieve {value}% accuracy in any lesson (best result).',
-    icon: '🎯',
-    conditionGenerator: (value: number) => (data) => data.highestOverallAccuracy >= value / 100
-  },
-  {
-    baseId: 'TOTAL_PERFECT_LESSONS',
-    nameTemplate: 'Perfect Lessons ({value})',
-    descriptionTemplate: 'Complete {value} lessons without any mistakes.',
-    icon: '💯',
-    conditionGenerator: (value: number) => (data) => data.totalPerfectLessons >= value
-  },
+  // remake later,
+  // {
+  //   baseId: 'OVERALL_WPM',
+  //   nameTemplate: 'Speed of Light ({value} WPM)',
+  //   descriptionTemplate: 'Reach {value} WPM in any lesson.',
+  //   conditionGenerator: (value: number) => (data) => data.highestOverallWPM >= value
+  // },
+  // {
+  //   baseId: 'OVERALL_ACCURACY',
+  //   nameTemplate: 'Accuracy Champion ({value}%)',
+  //   descriptionTemplate: 'Achieve {value}% accuracy in any lesson (best result).',
+  //   conditionGenerator: (value: number) => (data) => data.highestOverallAccuracy >= value / 100
+  // },
+  // {
+  //   baseId: 'TOTAL_PERFECT_LESSONS',
+  //   nameTemplate: 'Perfect Lessons ({value})',
+  //   descriptionTemplate: 'Complete {value} lessons without any mistakes.',
+  //   conditionGenerator: (value: number) => (data) => data.totalPerfectLessons >= value
+  // },
   {
     baseId: 'TOTAL_EXPERIENCE',
     nameTemplate: 'Experienced User ({value} XP)',
     descriptionTemplate: 'Earn {value} XP.',
-    icon: '⭐',
     conditionGenerator: (value: number) => (data) => data.totalExperience >= value
   },
   {
     baseId: 'STREAK',
     nameTemplate: '{value}-Day Streak',
     descriptionTemplate: 'Train for {value} consecutive days.',
-    icon: '🔥',
     conditionGenerator: (value: number) => (data) => data.currentStreak >= value
   },
   {
     baseId: 'LONGEST_STREAK',
     nameTemplate: 'Legendary Streak ({value} Days)',
     descriptionTemplate: 'Reach a longest streak of {value} days.',
-    icon: '👑',
     conditionGenerator: (value: number) => (data) => data.longestStreak >= value
   },
 
@@ -84,7 +78,6 @@ export const ACHIEVEMENT_TEMPLATES: AchievementTemplate[] = [
     baseId: 'DIFFICULTY_LESSONS_COMPLETED',
     nameTemplate: '{difficulty} Master ({value} Lessons)',
     descriptionTemplate: 'Complete {value} {difficulty} level lessons.',
-    icon: '📚',
     conditionGenerator: (value: number, difficulty?: LessonDifficulty) => (data) => {
       const stats = data.difficultyStats.find((s) => s.difficulty === difficulty);
       return stats ? stats.lessonsCompleted >= value : false;
@@ -94,7 +87,6 @@ export const ACHIEVEMENT_TEMPLATES: AchievementTemplate[] = [
     baseId: 'DIFFICULTY_PERFECT_LESSONS',
     nameTemplate: 'Perfect {difficulty} ({value} Lessons)',
     descriptionTemplate: 'Complete {value} {difficulty} level lessons without mistakes.',
-    icon: '✨',
     conditionGenerator: (value: number, difficulty?: LessonDifficulty) => (data) => {
       const stats = data.difficultyStats.find((s) => s.difficulty === difficulty);
       return stats ? stats.perfectLessons >= value : false;
@@ -104,7 +96,6 @@ export const ACHIEVEMENT_TEMPLATES: AchievementTemplate[] = [
     baseId: 'DIFFICULTY_HIGHEST_WPM',
     nameTemplate: '{difficulty} Speed Demon ({value} WPM)',
     descriptionTemplate: 'Reach {value} WPM in a {difficulty} level lesson.',
-    icon: '💨',
     conditionGenerator: (value: number, difficulty?: LessonDifficulty) => (data) => {
       const stats = data.difficultyStats.find((s) => s.difficulty === difficulty);
       return stats ? stats.highestWPM >= value : false;
@@ -114,7 +105,6 @@ export const ACHIEVEMENT_TEMPLATES: AchievementTemplate[] = [
     baseId: 'DIFFICULTY_HIGHEST_ACCURACY',
     nameTemplate: 'Precise {difficulty} ({value}%)',
     descriptionTemplate: 'Achieve {value}% accuracy in a {difficulty} level lesson.',
-    icon: '📐',
     conditionGenerator: (value: number, difficulty?: LessonDifficulty) => (data) => {
       const stats = data.difficultyStats.find((s) => s.difficulty === difficulty);
       return stats ? stats.highestAccuracy >= value / 100 : false;
@@ -130,9 +120,9 @@ export const ACHIEVEMENT_TIERS: {
   customDescriptions?: { [value: number]: string };
 }[] = [
   { templateId: 'TOTAL_LESSONS_COMPLETED', values: [1, 5, 10, 25, 50, 100] },
-  { templateId: 'OVERALL_WPM', values: [50, 70, 90, 110, 130] },
-  { templateId: 'OVERALL_ACCURACY', values: [98, 99, 99.5] },
-  { templateId: 'TOTAL_PERFECT_LESSONS', values: [1, 5, 10, 25, 50] },
+  // { templateId: 'OVERALL_WPM', values: [50, 70, 90, 110, 130] },
+  // { templateId: 'OVERALL_ACCURACY', values: [98, 99, 99.5] },
+  // { templateId: 'TOTAL_PERFECT_LESSONS', values: [1, 5, 10, 25, 50] },
   { templateId: 'TOTAL_EXPERIENCE', values: [1000, 5000, 10000, 50000, 100000] },
   { templateId: 'STREAK', values: [2, 7, 14, 30, 60] },
   { templateId: 'LONGEST_STREAK', values: [60, 90, 180, 365] },

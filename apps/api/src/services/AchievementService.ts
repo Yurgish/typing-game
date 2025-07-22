@@ -1,57 +1,25 @@
 import { Achievement, AchievementConditionData, ACHIEVEMENTS } from '@api/core/lib/contstants';
 import { IAchievementRepository } from '@api/repositories/achivement/IAchievementRepository';
 
-/**
- * Service for managing user achievements.
- *
- * Provides methods to check and award achievements based on user statistics,
- * as well as to fetch all achievements for a user with their unlock status.
- *
- * @remarks
- * - Uses Prisma ORM for database interactions.
- * - Assumes the existence of an `ACHIEVEMENTS` constant containing all possible achievements,
- *   each with an `id`, `name`, and a `condition` function.
- * - Should be called after user statistics are updated to ensure achievements are awarded promptly.
- *
- * @example
- * ```typescript
- * const service = new AchievementService();
- * const newAchievements = await service.checkAndAwardAchievements(userId, userStats);
- * const allAchievements = await service.getUserAchievements(userId);
- * ```
- */
 export class AchievementService {
   constructor(private achievementsRepository: IAchievementRepository) {}
 
-  /**
-   * Checks if a user has unlocked any new achievements and awards them.
-   * This method should be called after a user's UserStats have been updated.
-   * @param userId The ID of the user.
-   * @param userStats The current UserStats object for the user.
-   * @returns An array of names of newly unlocked achievements.
-   */
   public async checkAndAwardAchievements(userId: string, userStats: AchievementConditionData): Promise<string[]> {
     const unlockedAchievements = await this.achievementsRepository.findAllUserAchievements(userId);
 
     const unlockedAchievementIds = new Set(unlockedAchievements.map((ua) => ua.achievementId));
-    const newlyUnlockedAchievementNames: string[] = [];
+    const newlyUnlockedAchievementIds: string[] = [];
 
     for (const achievement of ACHIEVEMENTS) {
       if (!unlockedAchievementIds.has(achievement.id) && achievement.condition(userStats)) {
         await this.achievementsRepository.createUserAchievement(userId, achievement.id, new Date());
-        newlyUnlockedAchievementNames.push(achievement.name);
-        unlockedAchievementIds.add(achievement.id);
+        newlyUnlockedAchievementIds.push(achievement.id);
       }
     }
 
-    return Array.from(unlockedAchievementIds);
+    return newlyUnlockedAchievementIds;
   }
 
-  /**
-   * Fetches all achievements for a user, indicating which ones are unlocked.
-   * @param userId The ID of the user.
-   * @returns An array of Achievement objects with an `unlocked` status and `unlockedAt` date.
-   */
   public async getUserAchievements(
     userId: string
   ): Promise<(Achievement & { unlocked: boolean; unlockedAt: Date | null })[]> {

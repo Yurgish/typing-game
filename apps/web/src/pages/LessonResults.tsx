@@ -7,7 +7,7 @@ import { trpc } from '@web/utils/trpc';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
-const LessonMetricsScreen = () => {
+export const LessonMetricsScreen = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const { setCurrentLessonId, setCurrentScreenOrder } = useCurrentLessonStore();
   const navigate = useNavigate();
@@ -109,5 +109,3 @@ const LessonMetricsScreen = () => {
     </div>
   );
 };
-
-export default LessonMetricsScreen;

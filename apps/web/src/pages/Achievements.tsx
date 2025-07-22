@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { trpc } from '@web/utils/trpc';
 import { BadgeCheck, Lock } from 'lucide-react';
 
-const Achievements = () => {
+export const Achievements = () => {
   const { data: achievements, isLoading, error } = useQuery(trpc.achievements.getAchievements.queryOptions());
 
   if (isLoading) return <div>Downloading...</div>;
@@ -38,5 +38,3 @@ const Achievements = () => {
     </div>
   );
 };
-
-export default Achievements;

@@ -11,7 +11,7 @@ export default function MainLayout() {
 
   return (
     <div className="relative flex min-h-screen flex-col">
-      <Toaster />
+      <Toaster expand={true} />
       <div className="absolute top-10 right-10 z-10 flex items-center justify-end gap-4">
         <ThemeToggle /> <LoginButton />
       </div>

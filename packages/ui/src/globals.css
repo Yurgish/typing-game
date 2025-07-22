@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "VCR_OSD Mono";
-  src: url("../../../apps/web//public/fonts/VCR_OSD_MONO_1.001.ttf") format("truetype");
+  src: url("../../../apps/web/public/fonts/VCR_OSD_MONO_1.001.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -25,6 +25,10 @@
 @custom-variant dark (&:is(.dark *));
 
 body {
+  font-family: "VCR_OSD Mono", "Geist Mono", monospace;
+}
+
+.custom-font {
   font-family: "VCR_OSD Mono", "Geist Mono", monospace;
 }
 

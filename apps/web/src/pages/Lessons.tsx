@@ -1,21 +1,27 @@
 import { Tabs, TabsList, TabsTrigger } from '@repo/ui/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 import LessonCard from '@web/components/LessonCard';
+import { useSession } from '@web/lib/auth';
 import { trpc } from '@web/utils/trpc';
 
-const Lessons = () => {
+export const Lessons = () => {
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user.id;
+
   const { data: lessons, isLoading: isLoadingLessons } = useQuery({
     ...trpc.lesson.getAll.queryOptions(),
     staleTime: 1000 * 60 * 10
   });
 
-  const { data: allUserProgress, isLoading: isLoadingProgress } = useQuery(
-    trpc.lessonProgress.getAllUserProgress.queryOptions()
-  );
+  const { data: allUserProgress, isLoading: isLoadingProgress } = useQuery({
+    ...trpc.lessonProgress.getAllUserProgress.queryOptions(),
+    enabled: isAuthenticated
+  });
 
-  const { data: lastCompletedLessonProgress, isLoading: isLoadingLastLesson } = useQuery(
-    trpc.lessonProgress.getLastLessonByOrder.queryOptions()
-  );
+  const { data: lastCompletedLessonProgress, isLoading: isLoadingLastLesson } = useQuery({
+    ...trpc.lessonProgress.getLastLessonByOrder.queryOptions(),
+    enabled: isAuthenticated
+  });
 
   if (isLoadingLessons || isLoadingProgress || isLoadingLastLesson) {
     return <div>Loading lessons...</div>;
@@ -54,5 +60,3 @@ const Lessons = () => {
     )
   );
 };
-
-export default Lessons;
