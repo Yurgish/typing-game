@@ -2,7 +2,7 @@ import { useSubscription } from '@trpc/tanstack-react-query';
 import { authClient } from '@web/lib/auth';
 import { APP_ROUTES } from '@web/lib/routes';
 import { trpc } from '@web/utils/trpc';
-import { ArrowUpRight, Trophy } from 'lucide-react';
+import { ArrowUpRight, ChevronsUp, Trophy } from 'lucide-react';
 import { Outlet, useMatch } from 'react-router';
 import { toast } from 'sonner';
 
@@ -14,9 +14,9 @@ export const LessonWrapper = () => {
 
   const isLessonActive = isLessonRoute || isLessonResultsRoute;
 
-  // remake toast later
+  // remake toasts later
   useSubscription(
-    trpc.sse.onUserStatsUpdated.subscriptionOptions(
+    trpc.sse.onUserXpEarned.subscriptionOptions(
       { userId: session?.user.id ?? '' },
       {
         enabled: !!session?.user.id && isLessonActive,
@@ -46,6 +46,28 @@ export const LessonWrapper = () => {
           toast(`${data.achievementName}`, {
             icon: <Trophy size={20} />,
             description: data.achievementDescription,
+            classNames: {
+              description: 'text-sm',
+              content: 'ml-2',
+              toast: 'custom-font'
+            }
+          });
+        },
+        onError: (error) => {
+          toast.error(`Error: ${error.message}`);
+        }
+      }
+    )
+  );
+
+  useSubscription(
+    trpc.sse.onUserLevelUp.subscriptionOptions(
+      { userId: session?.user.id ?? '' },
+      {
+        enabled: !!session?.user.id && isLessonActive,
+        onData: ({ data }) => {
+          toast(`You reached level ${data.newLevel}`, {
+            icon: <ChevronsUp size={20} />,
             classNames: {
               description: 'text-sm',
               content: 'ml-2',

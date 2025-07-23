@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@repo/ui/components/ui/avatar';
-import { Badge } from '@repo/ui/components/ui/badge';
 import { Button } from '@repo/ui/components/ui/button';
 import {
   Carousel,
@@ -64,9 +63,6 @@ export const Profile = () => {
             <div className="flex flex-col items-start gap-1">
               <div className="flex items-center gap-1">
                 <h1 className="mb-1 text-2xl">{session?.user.name} </h1>
-                <Badge variant="default" color="">
-                  NewBuy
-                </Badge>
               </div>
               <p>LVL: {experienceData?.currentLevel};</p>
               <p>XP to next LVL -&gt; {experienceData?.xpToNextLevel ?? 'error'};</p>

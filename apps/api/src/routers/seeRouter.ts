@@ -22,16 +22,30 @@ export const sseRouter = router({
     }
   }),
 
-  onUserStatsUpdated: publicProcedure.input(sseInput).subscription(async function* (opts) {
+  onUserXpEarned: publicProcedure.input(sseInput).subscription(async function* (opts) {
     const { userId } = opts.input;
 
-    const iterable = appEventEmitter.toIterable('sse_userStatsUpdated', {
+    const iterable = appEventEmitter.toIterable('sse_userXpEarned', {
       signal: opts.signal
     });
 
     for await (const [eventUserId, payload] of iterable) {
       if (eventUserId === userId) {
-        yield tracked(payload.id, payload as SSEPayloads['userStatsUpdated']);
+        yield tracked(payload.id, payload as SSEPayloads['userXpEarned']);
+      }
+    }
+  }),
+
+  onUserLevelUp: publicProcedure.input(sseInput).subscription(async function* (opts) {
+    const { userId } = opts.input;
+
+    const iterable = appEventEmitter.toIterable('sse_userLevelUp', {
+      signal: opts.signal
+    });
+
+    for await (const [eventUserId, payload] of iterable) {
+      if (eventUserId === userId) {
+        yield tracked(payload.id, payload as SSEPayloads['levelUp']);
       }
     }
   })

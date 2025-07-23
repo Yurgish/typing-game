@@ -11,8 +11,9 @@ export class UserStatsService {
     xpEarned: number,
     lessonDifficulty: LessonDifficulty,
     currentScreenMetrics: FullMetricDataWithLearningMode
-  ): Promise<UserStatsPayload> {
+  ): Promise<UserStatsPayload & { newLevel?: number; oldLevel?: number }> {
     const currentUserStats = await this.userStatsRepository.initializeUserStats(userId);
+    const oldLevel = currentUserStats.currentLevel;
 
     const userStatsUpdateData: Prisma.UserStatsUpdateInput = {};
     const difficultyStatsUpdateData: Prisma.LessonDifficultyStatsUpdateInput = {};
@@ -65,9 +66,10 @@ export class UserStatsService {
     const { currentLevel: newNumericLevel } = calculateLevel(updatedStats.totalExperience);
     if (newNumericLevel !== updatedStats.currentLevel) {
       updatedStats = await this.userStatsRepository.updateLevel(userId, newNumericLevel);
+      return { ...updatedStats, newLevel: newNumericLevel, oldLevel: oldLevel };
     }
 
-    return updatedStats;
+    return { ...updatedStats, oldLevel: oldLevel };
   }
 
   public async handleLessonStatsAggregation(
@@ -75,7 +77,10 @@ export class UserStatsService {
     xpEarned: number,
     isFirstCompletion: boolean,
     wasPerfectCompletion: boolean
-  ): Promise<UserStatsPayload> {
+  ): Promise<UserStatsPayload & { newLevel?: number; oldLevel?: number }> {
+    const currentUserStats = await this.userStatsRepository.initializeUserStats(userId);
+    const oldLevel = currentUserStats.currentLevel;
+
     if (xpEarned <= 0 && !isFirstCompletion && !wasPerfectCompletion) {
       return await this.userStatsRepository.findUniqueOrThrow({
         where: { userId: userId },
@@ -107,8 +112,9 @@ export class UserStatsService {
     const { currentLevel: newNumericLevel } = calculateLevel(updatedStats.totalExperience);
     if (newNumericLevel !== updatedStats.currentLevel) {
       updatedStats = await this.userStatsRepository.updateLevel(userId, newNumericLevel);
+      return { ...updatedStats, newLevel: newNumericLevel, oldLevel: oldLevel };
     }
-    return updatedStats;
+    return { ...updatedStats, oldLevel: oldLevel };
   }
 
   public async getUserStats(userId: string): Promise<UserStatsPayload> {

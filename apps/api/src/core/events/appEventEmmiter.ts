@@ -9,9 +9,14 @@ export interface SSEPayloads {
     achievementDescription: string;
     unlockedAt: string;
   };
-  userStatsUpdated: {
+  userXpEarned: {
     id: string;
     xpEarned: number;
+    updatedAt: string;
+  };
+  levelUp: {
+    id: string;
+    newLevel: number;
     updatedAt: string;
   };
 }
@@ -36,7 +41,8 @@ export interface AppEvents {
     activityType: 'lesson' | 'screen'
   ) => void;
   sse_achievementUnlocked: (userId: string, payload: SSEPayloads['achievementUnlocked']) => void;
-  sse_userStatsUpdated: (userId: string, payload: SSEPayloads['userStatsUpdated']) => void;
+  sse_userXpEarned: (userId: string, payload: SSEPayloads['userXpEarned']) => void;
+  sse_userLevelUp: (userId: string, payload: SSEPayloads['levelUp']) => void;
 }
 
 interface AppEventEmitter extends EventEmitter {

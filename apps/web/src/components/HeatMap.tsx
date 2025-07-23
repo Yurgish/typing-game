@@ -30,7 +30,7 @@ const generateDateRange = (start: Date, end: Date): string[] => {
 };
 
 const HeatMap = ({ heatmap }: { heatmap: HeatMapType }) => {
-  const [dataType, setDataType] = useState<DataType>('lessons');
+  const [dataType, setDataType] = useState<DataType>('xp');
 
   const endDate = useMemo(() => new Date(), []);
 
@@ -89,16 +89,40 @@ const HeatMap = ({ heatmap }: { heatmap: HeatMapType }) => {
         values={values}
         classForValue={getClassForValue}
         transformDayElement={(element, value, index) => {
+          const fullDayData = heatmap.heatmapData?.[value?.date || ''];
+
           const dateLabel = new Date(value?.date || '').toLocaleDateString(undefined, {
             day: 'numeric',
             month: 'long'
           });
-          const countLabel =
-            value?.count && value.count > 0 ? `${value.count} ${dataType === 'xp' ? 'XP' : dataType}` : 'No activity';
+
+          const tooltipContent = (
+            <div>
+              <p>{dateLabel}</p>
+              {fullDayData ? (
+                <>
+                  <div className="flex justify-between">
+                    <p>Lessons: </p>
+                    <p>{fullDayData.lessons ?? 0}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p>XP: </p>
+                    <p>{fullDayData.xp ?? 0}</p>
+                  </div>
+                  <div className="flex justify-between">
+                    <p>Screens: </p>
+                    <p>{fullDayData.screens ?? 0}</p>
+                  </div>
+                </>
+              ) : (
+                <p>No activity</p>
+              )}
+            </div>
+          );
           return (
             <Tooltip key={index} delayDuration={300}>
               <TooltipTrigger asChild>{React.cloneElement(element as React.ReactElement)}</TooltipTrigger>
-              <TooltipContent className="text-sm">{`${dateLabel}: ${countLabel}`}</TooltipContent>
+              <TooltipContent className="text-sm w-[140px]">{tooltipContent}</TooltipContent>
             </Tooltip>
           );
         }}
