@@ -3,13 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import LessonCard from '@web/components/LessonCard';
 import { useSession } from '@web/lib/auth';
 import { trpc } from '@web/utils/trpc';
+import { LessonDifficulty } from '@web/utils/types';
+import { useState } from 'react';
 
 export const Lessons = () => {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user.id;
 
+  const [difficulty, setDifficulty] = useState<LessonDifficulty>(LessonDifficulty.BEGINNER);
+
   const { data: lessons, isLoading: isLoadingLessons } = useQuery({
-    ...trpc.lesson.getAll.queryOptions(),
+    ...trpc.lesson.getByDifficulty.queryOptions({ difficulty }),
     staleTime: 1000 * 60 * 10
   });
 
@@ -30,15 +34,20 @@ export const Lessons = () => {
   const lastCompletedLessonOrder = lastCompletedLessonProgress?.lesson?.order ?? 0;
 
   return (
-    lessons && (
-      <div className="no-scrollbar h-full max-h-screen overflow-auto py-40">
-        <Tabs className="mb-6 flex w-full items-center justify-center" defaultValue="BEGGINER">
-          <TabsList>
-            <TabsTrigger value="BEGGINER">BEGGINER</TabsTrigger>
-            <TabsTrigger value="INTERMEDIATE">INTERMEDIATE</TabsTrigger>
-            <TabsTrigger value="ADVANCED">ADVANCED</TabsTrigger>
-          </TabsList>
-        </Tabs>
+    <div className="no-scrollbar h-full max-h-screen overflow-auto py-40">
+      <Tabs
+        className="mb-6 flex w-full items-center justify-center"
+        defaultValue={difficulty}
+        value={difficulty}
+        onValueChange={(value) => setDifficulty(value as LessonDifficulty)}
+      >
+        <TabsList>
+          <TabsTrigger value={LessonDifficulty.BEGINNER}>BEGINNER</TabsTrigger>
+          <TabsTrigger value={LessonDifficulty.INTERMEDIATE}>INTERMEDIATE</TabsTrigger>
+          <TabsTrigger value={LessonDifficulty.ADVANCED}>ADVANCED</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {lessons?.length ? (
         <ul className="flex flex-col gap-4">
           {lessons.map((lesson, index) => {
             const lessonProgress = allUserProgress?.find((progress) => progress.lessonId === lesson.id);
@@ -56,7 +65,9 @@ export const Lessons = () => {
             );
           })}
         </ul>
-      </div>
-    )
+      ) : (
+        <div className="flex justify-center">No lessons available :(</div>
+      )}
+    </div>
   );
 };

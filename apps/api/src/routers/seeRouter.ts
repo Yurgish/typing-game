@@ -50,16 +50,3 @@ export const sseRouter = router({
     }
   })
 });
-
-// TODO: Реалізуй логіку "наздоганяння" пропущених подій для статистики
-// Якщо lastEventId присутній, отримай всі оновлення статистики для цього userId,
-// які відбулися після lastEventId, і yield їх першими.
-// Це критично для забезпечення, що користувач не пропустить оновлення XP/рівня.
-// Приклад:
-// if (lastEventId) {
-//   const lastUpdateTime = await yourStatsRepo.getTimestampOfEventId(lastEventId);
-//   const missedUpdates = await yourStatsRepo.getUpdatesSince(userId, lastUpdateTime);
-//   for (const update of missedUpdates) {
-//     yield tracked(update.id, update.payload);
-//   }
-// }

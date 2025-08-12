@@ -10,7 +10,6 @@ export const updateCharacterMetricsInputSchema = z.array(
 );
 
 export const characterMetricsRouter = router({
-  // need to make it into service or repository
   updateCharacterMetrics: protectedProcedure
     .input(updateCharacterMetricsInputSchema)
     .mutation(async ({ input, ctx }) => {
@@ -39,7 +38,6 @@ export const characterMetricsRouter = router({
       );
       return results;
     }),
-  // thats remake into service
   getCharacterMetrics: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx.session;
     const characterMetrics = await ctx.prisma.characterMetric.findMany({

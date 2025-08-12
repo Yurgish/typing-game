@@ -14,7 +14,6 @@ export const LessonWrapper = () => {
 
   const isLessonActive = isLessonRoute || isLessonResultsRoute;
 
-  // remake toasts later
   useSubscription(
     trpc.sse.onUserXpEarned.subscriptionOptions(
       { userId: session?.user.id ?? '' },
