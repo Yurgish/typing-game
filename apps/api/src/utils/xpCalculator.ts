@@ -8,6 +8,13 @@ type XpCalculationResult = {
   isBetterPerformance: boolean;
 };
 
+/**
+ * An array representing the total experience points required to reach each level.
+ *
+ * The index `i` corresponds to level `i+1`. For example, LEVEL_THRESHOLDS[0] is for Level 1,
+ *
+ * LEVEL_THRESHOLDS[1] is the threshold for Level 2, and so on.
+ */
 const LEVEL_THRESHOLDS = [
   0, // Level 1
   500, // Level 2 (need 500 XP from 0)
@@ -21,8 +28,18 @@ const LEVEL_THRESHOLDS = [
   22500 // Level 10 (need 4500 XP from Level 9) - Maximum defined level
 ];
 
+/**
+ * The minimum amount of experience points a user can earn on a reattempt,
+ * regardless of whether their performance was better or not.
+ */
 export const BASE_XP_ON_REATTEMPT = 10;
 
+/**
+ * Calculates a difficulty-based multiplier for XP.
+ * @param xp - The base XP amount.
+ * @param difficulty - The difficulty of the lesson.
+ * @returns The XP amount multiplied by a factor corresponding to the difficulty.
+ */
 const getMultipliedXP = (xp: number, difficulty: LessonDifficulty): number => {
   switch (difficulty) {
     case LessonDifficulty.BEGINNER:
@@ -36,6 +53,14 @@ const getMultipliedXP = (xp: number, difficulty: LessonDifficulty): number => {
   }
 };
 
+/**
+ * Calculates the XP a user earns for completing a single screen.
+ * The calculation is based on accuracy, WPM, and penalties for errors and backspaces.
+ *
+ * @param metrics - The performance metrics for the screen.
+ * @param difficulty - The difficulty of the lesson.
+ * @returns The calculated and rounded XP amount. Minimum XP is 0.
+ */
 export function calculateXpForScreen(
   metrics: FullMetricData,
   difficulty: LessonDifficulty = LessonDifficulty.BEGINNER
@@ -52,6 +77,14 @@ export function calculateXpForScreen(
   return Math.max(0, Math.round(xp));
 }
 
+/**
+ * Calculates the XP a user earns for completing an entire lesson.
+ * This includes a base XP, an accuracy bonus, and a bonus for a perfect, error-free completion.
+ *
+ * @param metrics - The aggregated metrics for the entire lesson.
+ * @param difficulty - The difficulty of the lesson.
+ * @returns The calculated and rounded XP amount.
+ */
 export function calculateXpForLessonCompletion(
   metrics: MetricData,
   difficulty: LessonDifficulty = LessonDifficulty.BEGINNER
@@ -67,22 +100,13 @@ export function calculateXpForLessonCompletion(
   return Math.round(xp);
 }
 
-export function calculateXpDifference(
-  newMetrics: FullMetricData,
-  oldMetrics: FullMetricData,
-  difficulty: LessonDifficulty,
-  calculateFn: (metrics: FullMetricData, difficulty: LessonDifficulty) => number
-): number {
-  const xpNew = calculateFn(newMetrics, difficulty);
-  const xpOld = calculateFn(oldMetrics, difficulty);
-
-  if (xpNew > xpOld) {
-    return xpNew - xpOld;
-  }
-
-  return BASE_XP_ON_REATTEMPT;
-}
-
+/**
+ * Calculates a user's current level and the amount of XP needed for the next level
+ * based on their total experience.
+ *
+ * @param totalExperience - The user's total accumulated XP.
+ * @returns An object containing the current level and XP required for the next.
+ */
 export function calculateLevel(totalExperience: number) {
   const MAX_LEVEL_IN_SYSTEM = LEVEL_THRESHOLDS.length;
 
@@ -109,6 +133,20 @@ export function calculateLevel(totalExperience: number) {
   };
 }
 
+/**
+ * Determines the XP to be awarded and the metrics to be saved for a new performance,
+ * comparing it against an existing record.
+ *
+ * - If there are no existing metrics, it calculates the full XP and saves the current metrics.
+ * - If new metrics are better than existing ones, it calculates the XP gain from the reattempt and updates the metrics.
+ * - If new metrics are not better, it awards a base XP amount for the reattempt.
+ *
+ * @param currentMetrics - The metrics from the current attempt.
+ * @param existingMetrics - The metrics from the previous best attempt.
+ * @param lessonDifficulty - The difficulty of the lesson.
+ * @param type - The type of activity (lesson or screen).
+ * @returns An object containing the earned XP, metrics to update, and a flag indicating a better performance.
+ */
 export function determineXpAndMetricsUpdate(
   currentMetrics: FullMetricData,
   existingMetrics: FullMetricData | null | undefined,
@@ -154,6 +192,18 @@ export function determineXpAndMetricsUpdate(
   return { xpEarned, metricsToUpdate, isBetterPerformance };
 }
 
+/**
+ * Calculates the XP gain when a user reattempts a lesson or screen.
+ * This function uses a weighted comparison (`areNewMetricsBetter`) to determine if the new attempt is an improvement.
+ * If it is, the XP gain is the difference between the new and old XP, with a minimum of `BASE_XP_ON_REATTEMPT`.
+ * If it is not, a base XP amount is awarded.
+ *
+ * @param newMetrics - The metrics from the current attempt.
+ * @param oldMetrics - The metrics from the previous best attempt.
+ * @param difficulty - The difficulty of the lesson.
+ * @param calculateFn - The function used to calculate the XP value.
+ * @returns The XP amount to be awarded.
+ */
 export function calculateXpGainOnReattempt(
   newMetrics: FullMetricData,
   oldMetrics: FullMetricData,

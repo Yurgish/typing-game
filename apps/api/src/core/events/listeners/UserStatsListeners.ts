@@ -4,6 +4,17 @@ import { LessonDifficulty } from '@repo/database';
 
 import appEventEmitter from '../appEventEmmiter';
 
+/**
+ * Registers event listeners related to user statistics aggregation and updates.
+ *
+ * This function attaches listeners to the `appEventEmitter` for the following events:
+ * - `'screenCompleted'`: Triggered when a user completes a screen. Aggregates screen stats,
+ *   emits XP earned and level-up events if applicable.
+ * - `'lessonCompleted'`: Triggered when a user completes a lesson. Aggregates lesson stats,
+ *   emits XP earned and level-up events if applicable.
+ *
+ * @param userStatsService - An instance of `UserStatsService` used to aggregate and update user statistics.
+ */
 export const registerUserStatsListeners = (userStatsService: UserStatsService) => {
   appEventEmitter.on(
     'screenCompleted',

@@ -3,9 +3,28 @@ import { FullMetricDataWithLearningMode } from '@api/types';
 import { calculateLevel } from '@api/utils/xpCalculator';
 import { LearningMode, LessonDifficulty, Prisma } from '@repo/database';
 
+/**
+ * Service for managing a user's overall statistics and progress.
+ *
+ * It handles the aggregation of statistics from individual screens and lessons,
+ * updates overall records like highest WPM and accuracy, and calculates level
+ * progression based on earned experience points.
+ */
 export class UserStatsService {
   constructor(private userStatsRepository: IUserStatsRepository) {}
 
+  /**
+   * Handles the aggregation of a user's stats after completing a single screen.
+   *
+   * This method updates a user's total experience, highest WPM and accuracy (both overall and
+   * for the specific lesson difficulty), and checks if the user has leveled up.
+   * @async
+   * @param userId - The ID of the user.
+   * @param xpEarned - XP earned from this screen completion.
+   * @param lessonDifficulty - The difficulty of the lesson.
+   * @param currentScreenMetrics - The metrics from the completed screen.
+   * @returns - The updated user stats, including the new and old level if a level-up occurred.
+   */
   public async handleScreenStatsAggregation(
     userId: string,
     xpEarned: number,
@@ -72,6 +91,18 @@ export class UserStatsService {
     return { ...updatedStats, oldLevel: oldLevel };
   }
 
+  /**
+   * Handles the aggregation of a user's stats after completing an entire lesson.
+   *
+   * This method updates the user's total lessons completed, perfect lessons,
+   * and total experience, and checks for a level-up.
+   * @async
+   * @param userId - The ID of the user.
+   * @param xpEarned - Total XP earned from the lesson.
+   * @param isFirstCompletion - True if this is the first time the user completed this lesson.
+   * @param wasPerfectCompletion - True if the lesson was completed without any errors or backspaces.
+   * @returns - The updated user stats, including the new and old level if a level-up occurred.
+   */
   public async handleLessonStatsAggregation(
     userId: string,
     xpEarned: number,
@@ -117,6 +148,12 @@ export class UserStatsService {
     return { ...updatedStats, oldLevel: oldLevel };
   }
 
+  /**
+   * Retrieves a user's statistics. If the user has no existing stats, a new record is initialized.
+   * @async
+   * @param userId - The ID of the user.
+   * @returns - The user's statistics record.
+   */
   public async getUserStats(userId: string): Promise<UserStatsPayload> {
     let userStats = await this.userStatsRepository.findByUserId(userId);
     if (!userStats) {

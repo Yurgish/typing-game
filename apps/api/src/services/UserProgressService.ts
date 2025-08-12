@@ -22,6 +22,12 @@ type SaveScreenMetricInput = {
   };
 };
 
+/**
+ * Service for managing user progress through lessons and screens.
+ *
+ * It handles saving progress, calculating XP, and emitting events
+ * for both individual screen completions and full lesson completions.
+ */
 export class UserProgressService {
   constructor(
     private lessonRepository: ILessonRepository,
@@ -34,6 +40,16 @@ export class UserProgressService {
     return difficulty;
   }
 
+  /**
+   * Saves the user's overall progress for a lesson.
+   *
+   * This method updates the user's progress record, calculates XP if the lesson
+   * is completed for the first time, and emits a `lessonCompleted` event.
+   * @async
+   * @param userId - The ID of the user.
+   * @param input - The lesson progress data to save.
+   * @returns The updated progress record and any XP earned.
+   */
   public async saveLessonProgress(userId: string, input: SaveLessonProgressInput) {
     const { lessonId, currentScreenOrder, isCompleted, metrics: currentLessonMetrics } = input;
 
@@ -109,6 +125,16 @@ export class UserProgressService {
     };
   }
 
+  /**
+   * Saves the metrics for a single screen completion.
+   *
+   * This method fetches or creates the user's lesson progress, calculates XP and metrics
+   * based on the screen data, and emits a `screenCompleted` event.
+   * @async
+   * @param userId - The ID of the user.
+   * @param input - The screen metric data to save.
+   * @returns - The updated screen metric record and any XP earned.
+   */
   public async saveScreenMetric(userId: string, input: SaveScreenMetricInput) {
     const { lessonId, screenMetric } = input;
 

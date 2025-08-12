@@ -8,6 +8,18 @@ const sseInput = z.object({
   lastEventId: z.string().nullish()
 });
 
+/**
+ * Router providing Server-Sent Events (SSE) subscriptions for user-related events.
+ *
+ * @remarks
+ * This router exposes three SSE subscriptions:
+ * - `onAchievementUnlocked`: Notifies when a user unlocks an achievement.
+ * - `onUserXpEarned`: Notifies when a user earns experience points (XP).
+ * - `onUserLevelUp`: Notifies when a user levels up.
+ *
+ * Each subscription listens for events specific to the provided `userId` and yields
+ * tracked payloads for the corresponding event type.
+ */
 export const sseRouter = router({
   onAchievementUnlocked: publicProcedure.input(sseInput).subscription(async function* (opts) {
     const { userId } = opts.input;

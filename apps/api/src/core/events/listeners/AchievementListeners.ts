@@ -3,6 +3,16 @@ import { UserStatsService } from '@api/services/UserStatsService';
 
 import appEventEmitter from '../appEventEmmiter';
 
+/**
+ * Registers listeners for achievement-related events.
+ *
+ * Specifically, listens for the 'screenCompleted' event, checks if the user qualifies
+ * for new achievements, awards them if applicable, and emits an 'sse_achievementUnlocked'
+ * event for each new achievement unlocked.
+ *
+ * @param achievementService - Service responsible for achievement logic and data.
+ * @param userStatsService - Service for retrieving user statistics.
+ */
 export const registerAchievementListeners = (
   achievementService: AchievementService,
   userStatsService: UserStatsService
