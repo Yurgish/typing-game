@@ -14,8 +14,8 @@ import { PrismaClient } from '@repo/database/generated/client';
  *
  * Repositories are the data access layer of the application. They encapsulate
  * the logic for interacting with the database, abstracting the details from services.
- * @param {PrismaClient} db The PrismaClient instance for database access.
- * @returns {object} An object containing all initialized repository instances.
+ * @param db - The PrismaClient instance for database access.
+ * @returns An object containing all initialized repository instances.
  */
 export const createRepositories = (db: PrismaClient) => ({
   dailyActivityRepository: new DailyActivityRepository(db),

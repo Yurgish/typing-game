@@ -1,7 +1,7 @@
 import { AchievementService } from '@api/services/AchievementService';
 import { UserStatsService } from '@api/services/UserStatsService';
 
-import appEventEmitter from '../appEventEmmiter';
+import appEventEmitter, { APP_EVENTS } from '../appEventEmmiter';
 
 /**
  * Registers listeners for achievement-related events.
@@ -17,7 +17,7 @@ export const registerAchievementListeners = (
   achievementService: AchievementService,
   userStatsService: UserStatsService
 ) => {
-  appEventEmitter.on('screenCompleted', async (userId) => {
+  appEventEmitter.on(APP_EVENTS.SCREEN_COMPLETED, async (userId) => {
     try {
       console.log(`[Achievement Listener] Processing screenCompleted for user ${userId}`);
       const currentUserStats = await userStatsService.getUserStats(userId);

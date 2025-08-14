@@ -1,4 +1,4 @@
-import appEventEmitter from '@api/core/events/appEventEmmiter';
+import appEventEmitter, { APP_EVENTS } from '@api/core/events/appEventEmmiter';
 import { ILessonRepository } from '@api/repositories/lesson/ILessonRepository';
 import { IScreenMetricsRepository } from '@api/repositories/screenMetric/IScreenMetricsRepository';
 import { IUserLessonProgressRepository } from '@api/repositories/userLessonProgress/IUserLessonProgressRepository';
@@ -109,7 +109,7 @@ export class UserProgressService {
     });
 
     appEventEmitter.emit(
-      'lessonCompleted',
+      APP_EVENTS.LESSON_COMPLETED,
       userId,
       xpEarnedForLessonCompletion,
       lessonDifficulty,
@@ -183,7 +183,7 @@ export class UserProgressService {
     });
 
     appEventEmitter.emit(
-      'screenCompleted',
+      APP_EVENTS.SCREEN_COMPLETED,
       userId,
       currentScreenXpEarned,
       lessonDifficulty,

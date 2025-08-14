@@ -2,7 +2,7 @@ import { UserStatsService } from '@api/services/UserStatsService';
 import { FullMetricDataWithLearningMode } from '@api/types';
 import { LessonDifficulty } from '@repo/database';
 
-import appEventEmitter from '../appEventEmmiter';
+import appEventEmitter, { APP_EVENTS } from '../appEventEmmiter';
 
 /**
  * Registers event listeners related to user statistics aggregation and updates.
@@ -17,7 +17,7 @@ import appEventEmitter from '../appEventEmmiter';
  */
 export const registerUserStatsListeners = (userStatsService: UserStatsService) => {
   appEventEmitter.on(
-    'screenCompleted',
+    APP_EVENTS.SCREEN_COMPLETED,
     async (
       userId: string,
       xpEarned: number,
@@ -28,7 +28,7 @@ export const registerUserStatsListeners = (userStatsService: UserStatsService) =
         console.log(`[UserStats Listener] Processing screenCompleted for user ${userId}`);
         const result = await userStatsService.handleScreenStatsAggregation(userId, xpEarned, lessonDifficulty, metrics);
 
-        appEventEmitter.emit('sse_userXpEarned', userId, {
+        appEventEmitter.emit(APP_EVENTS.SSE_USER_XP_EARNED, userId, {
           id: `${userId}-${Date.now()}-xp`,
           xpEarned,
           updatedAt: new Date().toISOString()
@@ -36,7 +36,7 @@ export const registerUserStatsListeners = (userStatsService: UserStatsService) =
 
         if (result.newLevel !== undefined && result.oldLevel !== undefined && result.newLevel > result.oldLevel) {
           console.log(`[UserStats Listener] User ${userId} leveled up from ${result.oldLevel} to ${result.newLevel}!`);
-          appEventEmitter.emit('sse_userLevelUp', userId, {
+          appEventEmitter.emit(APP_EVENTS.SSE_USER_LEVEL_UP, userId, {
             id: `${userId}-${Date.now()}-level`,
             newLevel: result.newLevel,
             updatedAt: new Date().toISOString()
@@ -49,7 +49,7 @@ export const registerUserStatsListeners = (userStatsService: UserStatsService) =
   );
 
   appEventEmitter.on(
-    'lessonCompleted',
+    APP_EVENTS.LESSON_COMPLETED,
     async (userId, xpEarned, _lessonDifficulty, _metrics, isFirstCompletion, wasPerfectCompletion) => {
       try {
         console.log(`[UserStats Listener] Processing lessonCompleted for user ${userId}`);
@@ -62,7 +62,7 @@ export const registerUserStatsListeners = (userStatsService: UserStatsService) =
         );
 
         if (xpEarned > 0) {
-          appEventEmitter.emit('sse_userXpEarned', userId, {
+          appEventEmitter.emit(APP_EVENTS.SSE_USER_XP_EARNED, userId, {
             id: `${userId}-${Date.now()}-xp`,
             xpEarned,
             updatedAt: new Date().toISOString()
@@ -71,7 +71,7 @@ export const registerUserStatsListeners = (userStatsService: UserStatsService) =
 
         if (result.newLevel !== undefined && result.oldLevel !== undefined && result.newLevel > result.oldLevel) {
           console.log(`[UserStats Listener] User ${userId} leveled up from ${result.oldLevel} to ${result.newLevel}!`);
-          appEventEmitter.emit('sse_userLevelUp', userId, {
+          appEventEmitter.emit(APP_EVENTS.SSE_USER_LEVEL_UP, userId, {
             id: `${userId}-${Date.now()}-level`,
             newLevel: result.newLevel,
             updatedAt: new Date().toISOString()

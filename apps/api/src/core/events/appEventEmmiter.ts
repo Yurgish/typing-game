@@ -3,6 +3,17 @@ import { LessonDifficulty } from '@repo/database';
 import { EventEmitter, on } from 'events';
 
 /**
+ * Defines the set of application-wide event names used for event emission and handling.
+ */
+export const APP_EVENTS = {
+  SCREEN_COMPLETED: 'screenCompleted',
+  LESSON_COMPLETED: 'lessonCompleted',
+  SSE_ACHIEVEMENT_UNLOCKED: 'sse_achievementUnlocked',
+  SSE_USER_XP_EARNED: 'sse_userXpEarned',
+  SSE_USER_LEVEL_UP: 'sse_userLevelUp'
+} as const;
+
+/**
  * Defines the structure of data payloads sent via Server-Sent Events.
  */
 export interface SSEPayloads {
@@ -31,7 +42,7 @@ export interface AppEvents {
   /**
    * Event emitted when a user completes a single screen within a lesson.
    */
-  screenCompleted: (
+  [APP_EVENTS.SCREEN_COMPLETED]: (
     userId: string,
     xpEarned: number,
     lessonDifficulty: LessonDifficulty,
@@ -44,7 +55,7 @@ export interface AppEvents {
   /**
    * Event emitted when a user completes an entire lesson.
    */
-  lessonCompleted: (
+  [APP_EVENTS.LESSON_COMPLETED]: (
     userId: string,
     xpEarned: number,
     lessonDifficulty: LessonDifficulty,
@@ -57,17 +68,17 @@ export interface AppEvents {
   /**
    * Event for broadcasting an unlocked achievement to a specific user via SSE.
    */
-  sse_achievementUnlocked: (userId: string, payload: SSEPayloads['achievementUnlocked']) => void;
+  [APP_EVENTS.SSE_ACHIEVEMENT_UNLOCKED]: (userId: string, payload: SSEPayloads['achievementUnlocked']) => void;
 
   /**
    * Event for broadcasting XP earned to a specific user via SSE.
    */
-  sse_userXpEarned: (userId: string, payload: SSEPayloads['userXpEarned']) => void;
+  [APP_EVENTS.SSE_USER_XP_EARNED]: (userId: string, payload: SSEPayloads['userXpEarned']) => void;
 
   /**
    * Event for broadcasting a user leveling up to a specific user via SSE.
    */
-  sse_userLevelUp: (userId: string, payload: SSEPayloads['levelUp']) => void;
+  [APP_EVENTS.SSE_USER_LEVEL_UP]: (userId: string, payload: SSEPayloads['levelUp']) => void;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { DailyActivityService } from '@api/services/DailyActivityService';
 
-import appEventEmitter from '../appEventEmmiter';
+import appEventEmitter, { APP_EVENTS } from '../appEventEmmiter';
 
 /**
  * Registers event listeners for daily activity updates.
@@ -15,7 +15,7 @@ import appEventEmitter from '../appEventEmmiter';
  */
 export const registerDailyActivityListeners = (dailyActivityService: DailyActivityService) => {
   appEventEmitter.on(
-    'screenCompleted',
+    APP_EVENTS.SCREEN_COMPLETED,
     async (userId, xpEarned, _lessonDifficulty, _metrics, _isFirstCompletion, _wasPerfectCompletion, activityType) => {
       try {
         console.log(`[DailyActivity Listener] Processing screenCompleted for user ${userId}`);
@@ -27,7 +27,7 @@ export const registerDailyActivityListeners = (dailyActivityService: DailyActivi
   );
 
   appEventEmitter.on(
-    'lessonCompleted',
+    APP_EVENTS.LESSON_COMPLETED,
     async (userId, xpEarned, _lessonDifficulty, _metrics, _isFirstCompletion, _wasPerfectCompletion, activityType) => {
       try {
         console.log(`[DailyActivity Listener] Processing lessonCompleted for user ${userId}`);

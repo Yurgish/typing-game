@@ -12,8 +12,8 @@ import { createServices, Services } from './services';
  * 1. Create the data repositories.
  * 2. Create the business services, injecting the repositories.
  * 3. Register all event listeners, injecting the services.
- * @param {PrismaClient} db The PrismaClient instance for database access.
- * @returns {object} An object containing the initialized repositories and services.
+ * @param db - The PrismaClient instance for database access.
+ * @returns An object containing the initialized repositories and services.
  */
 export const initializeDependencies = (db: PrismaClient) => {
   const repositories: Repositories = createRepositories(db);
