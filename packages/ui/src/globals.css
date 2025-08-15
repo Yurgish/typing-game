@@ -13,9 +13,14 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  .mask-fade-vertical {
+    mask-image: linear-gradient(to bottom, transparent 0px, black 30px, black calc(100% - 30px), transparent 100%);
   }
 }
 @source "../../../packages/ui/src/**/*.{js,ts,jsx,tsx}";

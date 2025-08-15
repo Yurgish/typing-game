@@ -12,6 +12,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 
+import { AdminDashboard } from './pages/AdminDashboard';
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
@@ -34,8 +36,7 @@ createRoot(document.getElementById('root')!).render(
             <Route
               element={<ProtectedRoute allowedRoles={[UserRole.Admin]} unauthorizedRedirectTo={APP_ROUTES.LESSONS} />}
             >
-              {/* <Route path={APP_ROUTES.ADMIN} element={<AdminDashboard />} /> */}
-              {/* <Route path={APP_ROUTES.ADMIN_USERS} element={<UserManagement />} /> */}
+              <Route path={APP_ROUTES.ADMIN_DASHBOARD} element={<AdminDashboard />} />
             </Route>
             <Route path={APP_ROUTES.NOT_FOUND} element={<div>404 Not Found</div>} />
           </Route>

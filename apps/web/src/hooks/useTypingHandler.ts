@@ -3,6 +3,17 @@ import { useTypingMetricsStore } from '@web/stores/useTypingMetricsStore';
 import { useTypingStore } from '@web/stores/useTypingStore';
 import { useEffect } from 'react';
 
+/**
+ * Custom hook that handles typing logic for a typing application.
+ *
+ * Integrates with keyboard, typing, and metrics stores to process user input,
+ * track typing statistics, and manage timers.
+ *
+ * - Handles character addition and removal based on key presses.
+ * - Tracks backspaces, errors, and typed characters.
+ * - Starts a timer when typing begins.
+ * - Updates character metrics for each typed character.
+ */
 export function useTypingHandler() {
   const { lastPressedKey } = useKeyboardStore();
 

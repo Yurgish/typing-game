@@ -33,7 +33,7 @@ export const registerAchievementListeners = (
       for (const achievementId of newAchievementsIds) {
         const achievement = achievementService.getAchievementById(achievementId);
         if (!achievement) continue;
-        appEventEmitter.emit('sse_achievementUnlocked', userId, {
+        appEventEmitter.emit(APP_EVENTS.SSE_ACHIEVEMENT_UNLOCKED, userId, {
           id: achievement.id,
           achievementName: achievement.name,
           achievementDescription: achievement.description,

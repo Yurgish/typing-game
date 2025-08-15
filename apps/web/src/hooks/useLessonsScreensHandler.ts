@@ -9,6 +9,23 @@ import { useNavigate, useParams } from 'react-router';
 
 import { useTypingHandler } from './useTypingHandler';
 
+/**
+ * Custom hook to manage the state and logic for handling lesson screens in a typing lesson application.
+ *
+ * This hook coordinates the flow of lesson screens, typing input, metrics collection, and progress saving.
+ * It interacts with multiple stores and mutations to track user progress, update metrics, and navigate between screens.
+ *
+ * @returns An object containing:
+ * - `lesson`: The current lesson data fetched from the backend.
+ * - `currentScreen`: The current screen object within the lesson.
+ * - `handleScreenComplete`: Callback to handle completion of the current screen, update metrics, and navigate to the next screen or results.
+ *
+ * @remarks
+ * - Handles initialization and cleanup of lesson and screen metrics.
+ * - Sets up the target text or key for the current screen based on its type.
+ * - Saves screen and lesson progress to the backend.
+ * - Navigates to the results page upon lesson completion.
+ */
 export const useLessonsScreensHandler = () => {
   const { lessonId } = useParams<{ lessonId: string }>();
   const navigate = useNavigate();

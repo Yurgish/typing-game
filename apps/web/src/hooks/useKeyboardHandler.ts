@@ -16,6 +16,16 @@ function isShortcutPressed(
   return allKeysPressed && hasNoExtraKeys;
 }
 
+/**
+ * Custom React hook for globally listening to user keyboard events and handling shortcuts.
+ *
+ * Attaches keyboard event listeners to the specified element or the document body.
+ * Detects pressed key combinations and triggers corresponding shortcut actions.
+ * Supports both global and local shortcut definitions, prioritizing local shortcuts if provided.
+ *
+ * @param ref - Optional React ref to the target HTMLElement for keyboard event listening. Defaults to `document.body` if not provided.
+ * @param localShortcuts - Optional array of shortcut definitions to be used locally for the target element. If not provided, global shortcuts are used.
+ */
 export function useKeyboardHandler(ref?: React.RefObject<HTMLElement>, localShortcuts?: Shortcut[]): void {
   const {
     setKeyPressed,

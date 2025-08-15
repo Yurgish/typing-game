@@ -1,6 +1,5 @@
 import { Toaster } from '@repo/ui/components/ui/sonner';
-import LoginButton from '@web/components/LoginButton';
-import { ThemeToggle } from '@web/components/ThemeToggle';
+import HeadersButtons from '@web/components/HeadersButtons';
 import { useKeyboardHandler } from '@web/hooks/useKeyboardHandler';
 import { useApplyTheme } from '@web/stores/useThemeStore';
 import { Outlet } from 'react-router';
@@ -12,9 +11,7 @@ export default function MainLayout() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <Toaster expand={true} />
-      <div className="absolute top-10 right-10 z-10 flex items-center justify-end gap-4">
-        <ThemeToggle /> <LoginButton />
-      </div>
+      <HeadersButtons />
       <main className="container mx-auto flex-1">
         <div className="flex min-h-screen w-full flex-col items-center justify-center">
           <Outlet />

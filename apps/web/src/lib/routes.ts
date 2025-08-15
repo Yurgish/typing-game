@@ -5,10 +5,9 @@ export const APP_ROUTES = {
   LESSON_RESULTS: '/lesson/:lessonId/results',
   PROFILE: '/profile',
   ACHIEVEMENTS: '/profile/achievements',
-  ADMIN: '/admin',
-  ADMIN_USERS: '/admin/users',
+  ADMIN_DASHBOARD: '/dashboard',
   NOT_FOUND: '*'
-};
+} as const;
 
 export const generateLessonPath = (lessonId: string) => APP_ROUTES.LESSON_DETAIL.replace(':lessonId', lessonId);
 
