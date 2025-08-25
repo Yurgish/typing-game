@@ -1,7 +1,7 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/2c80aa68-59e7-49e6-bbe1-1a4692ff7c74" alt="Typing Quest Banner"/>
 </p>
-<p align = "center">
+<p align="center">
   <img src="https://img.shields.io/badge/Turborepo-0C0606?style=for-the-badge&logo=turborepo&logoColor=EF4444" alt="Turborepo">
   <img src="https://img.shields.io/badge/tRPC-2596BE?style=for-the-badge&logo=trpc&logoColor=white" alt="tRPC">
   <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="Typescript">
@@ -17,14 +17,14 @@
 </p>
 
 <p align="center">
-  A gamified web platform for learning touch typing with lessons, real-time metrics, XP, and achievements.  
+  A gamified web app for learning touch typing with lessons, real-time metrics, XP, and achievements.  
   Built as my Computer Science diploma project, showcasing clean(ish) architecture and modern full-stack practices (I think ;).    
 </p>
 
 ---
 
-## 🎥 Demo
-*(insert a GIF here — e.g. typing lesson in action)*  
+## 🎥 Little Demo Gif
+ ![Animation](https://github.com/user-attachments/assets/cd1d5580-74cd-46dc-b90b-f10c6dd4008a)
 
 ---
 
@@ -43,14 +43,14 @@
 Somewhere in the middle of my CS degree I realized:  
 👉 I still hadn’t learned touch typing (yep, still smashing the keyboard with 2–3 fingers).  
 
-I tried platforms like **MonkeyType**, **TypingClub**, and **Keybr**. They were cool, but each lacked something.  
-So I thought: why not build my own mix — with **Duolingo-like streaks, XP, levels, and achievements** combined with typing practice?  
+I tried platforms like [**MonkeyType**](https://monkeytype.com/), [**TypingClub**](https://www.typingclub.com/), and [**Keybr**](https://www.keybr.com/). They were cool, but each lacked something.  
+So I thought: why not build my own mix with **[Duolingo](https://uk.duolingo.com/)-like streaks, XP, levels, and achievements** combined with typing practice?  
 
-That’s how **Typing Quest** was born: part personal challenge, part diploma thesis.  
+That’s how **Typing Quest** - my little project was born: part personal challenge, part diploma thesis.  
 
 ---
 
-## ✨ Features
+## 🛠 Features
 
 - 🧑‍🎓 **Typing Lessons** with different difficulty levels  
 - ⌨️ **Highlighted keyboard** (next key + pressed key visualization)  
@@ -63,69 +63,107 @@ That’s how **Typing Quest** was born: part personal challenge, part diploma th
 
 ---
 
-## 🛠 Tech Stack
+## ✨ Tech Stack
 
-### Frontend
-- React + TypeScript  
-- Zustand (state management)  
-- TailwindCSS + Shadcn UI (UI components)  
-- Framer Motion (animations)  
-- TRPC client (type-safe API calls)  
-- Vite  
+### ⚙️ Infrastructure
 
-### Backend
-- Node.js + Express  
-- TRPC (type-safe API layer)  
-- Prisma ORM + MongoDB  
-- EventEmitter (for service communication & SSE events)  
-- Repository & Service pattern  
+* **[TypeScript](https://www.typescriptlang.org/)** – Ensures type safety across the entire project, helping prevent errors and improving maintainability. Used in both frontend and backend.
+* **[Turborepo](https://turborepo.com/)** – Manages multiple apps and shared packages in a single monorepo. This allows reusing UI components, configurations, and logic efficiently.
+* **Shared Configurations (TSConfig, ESLint, Prettier)** – Maintains consistent coding style, formatting, and type checking across all parts of the project.
+* **[tRPC](https://trpc.io/)** – Provides a fully type-safe API between frontend and backend. Ideal for monorepo projects where frontend and backend share types.
+* **[Zod](https://zod.dev/)** – Validates data at runtime and integrates with tRPC, ensuring that data sent to and received from the server always matches expected types.
+* **[Better Auth](https://www.better-auth.com/)** – Handles authentication and authorization simply and securely.
 
-### Infra
-- Monorepo with **Turborepo**  
-- Shared UI, config, eslint, prettier  
-- Better Auth for authentication  
+---
+
+### 💻 Frontend
+
+* **[React](https://reactjs.org/)** – Main library for building dynamic, interactive, and component-based user interfaces.
+* **[Zustand](https://zustand-demo.pmnd.rs/)** – Lightweight global state management. Used for tracking progress, lesson completion, and UI state efficiently.
+* **[TailwindCSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)** – Tailwind provides fast utility-based styling, while Shadcn UI offers prebuilt, customizable components. Together they speed up UI development while keeping a consistent design.
+* **[Framer Motion](https://www.framer.com/motion/)** – Used for animations and transitions to make the UI feel smooth and interactive.
+* **[Vite](https://vitejs.dev/)** – Fast frontend build tool and development server, providing quick hot-reloading and build performance.
+
+---
+
+### 🖥 Backend
+
+* **[Node.js](https://nodejs.org/) + [Express](https://expressjs.com/)** – Backend runtime and web server framework, providing routing and API endpoints.
+* **[Prisma ORM](https://www.prisma.io/)** – Type-safe ORM to interact with the database efficiently and safely.
+* **[MongoDB](https://www.mongodb.com/)** – Flexible NoSQL database to store user data, lessons, achievements, and XP logs.
 
 ---
 
 ## 🏛 Architecture & Structure
 
-Typing Quest is a **monorepo** with Turborepo.
+Typing Quest is built as a **monorepo** ([Turborepo](https://turborepo.com/)).
 
-### Monorepo overview
+### Monorepo Overview
+
+The **monorepo structure** looks like this:
+
 ```bash
-Dyploma/
-├─ apps/           # Main apps
-│  ├─ api/         # Backend (Express + TRPC + Prisma)
-│  └─ web/         # Frontend (React + Zustand + Tailwind)
-├─ packages/       # Shared libraries (db, ui, configs)
-└─ turbo.json
-````
+repo/
+├─ apps/                # Main applications
+│  ├─ api/              # Backend (Express + TRPC + Prisma)
+│  └─ web/              # Frontend (React + Zustand + Tailwind)
+├─ packages/            # Shared libraries
+│  ├─ database/         # Prisma schemas, DB client, seeding
+│  ├─ eslint-config/    # Shared ESLint rules
+│  ├─ prettier-config/  # Shared Prettier rules
+│  ├─ typescript-config/# Shared TS configs
+│  └─ ui/               # Shared UI components (Shadcn-based)
+└─ turbo.json           # Turborepo configuration
+```
 
-### Frontend structure (`apps/web`)
+The `apps/` folder contains the main applications: **backend** and **frontend**, while `packages/` holds reusable code such as UI components, TypeScript, Prettier & Eslint configurations and database logic. The `turbo.json` file defines pipelines, caching, and build rules for the monorepo.
+
+---
+
+### 🎨 Frontend (`apps/web`)
+
+The frontend is built with **React** and styled using **TailwindCSS** with **Shadcn UI** components. State management is handled via **Zustand**, and animations are powered by **Framer Motion**.
+
+The folder structure:
 
 ```bash
 src/
-├─ components/     # UI modules (Keyboard, HeatMap, TypingText...)
-├─ pages/          # Lessons, Profile, Achievements, Results
-├─ stores/         # Zustand stores (typing, metrics, theme)
-├─ hooks/          # Custom hooks
-└─ utils/          # Helpers (keyboard, metrics, trpc client)
+├─ components/          # UI modules (Keyboard, Heatmap, TypingText, Dashboard)
+├─ pages/               # Pages (Lessons, Profile, Achievements, Admin)
+├─ layouts/             # Layouts (Main, LessonWrapper, ProtectedRoute)
+├─ stores/              # Zustand stores (typing, metrics, theme, lesson)
+├─ hooks/               # Custom hooks (keyboard, typing, lessons)
+├─ lib/                 # Auth, routes, configs
+├─ utils/               # Helpers (keyboard, metrics, trpc client)
+└─ main.tsx             # App entry
 ```
 
-*(Architecture note: kept modular, grouped by feature. Nothing over-engineered.)*
+Components are small, focused, and reusable blocks like keyboards, progress bars, or lesson text. **Stores** manage global state, such as the current lesson, typing metrics, or theme. **Layouts** provide consistent wrappers for pages, and **utils** contain pure functions without React dependencies.
 
-### Backend structure (`apps/api`)
+---
+
+### ⚙️ Backend (`apps/api`)
+
+The backend is structured to separate responsibilities. Core business logic lives in `services`, database interactions are encapsulated in `repositories`, and API endpoints are implemented as **tRPC routers** for fully type-safe client-server communication. The backend also uses an **EventEmitter pattern**. For example when a lesson is completed, events are fired to update user stats, award achievements, and trigger real-time updates via SSE to the frontend if user level or some other specific data changed.
+
+The folder structure:
 
 ```bash
 src/
-├─ repositories/   # Database access
-├─ services/       # Business logic
-├─ routers/        # TRPC routers (API layer)
-├─ shared/         # EventEmitter (internal events)
-└─ utils/          # XP calculator, metrics comparator
+├─ core/
+│  ├─ dependencies/     # Centralized DI (services, repositories)
+│  ├─ events/           # EventEmitter + domain listeners
+│  └─ lib/              # Auth, config, context
+│
+├─ repositories/        # Data access layer (Prisma)
+├─ services/            # Business logic (XP, achievements, stats)
+├─ routers/             # TRPC routers (API layer)
+├─ utils/               # Helpers (xpCalculator, metricsComparator)
+├─ types.ts             # Shared backend types
+└─ index.ts             # Server entry
 ```
 
-*(Architecture note: a 3-layer approach → Repository (DB) → Service (business logic) → Router (API). Plus EventEmitter for internal comms & SSE events.)*
+This separation ensures that each layer is focused on a single responsibility: **repositories** handle data, **services** handle business rules, **routers** expose APIs, and **events** orchestrate reactive updates.
 
 ---
 
