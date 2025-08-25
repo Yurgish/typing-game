@@ -24,7 +24,8 @@
 ---
 
 ## 🎥 Little Demo Gif
- ![Animation](https://github.com/user-attachments/assets/cd1d5580-74cd-46dc-b90b-f10c6dd4008a)
+ ![Animation](https://github.com/user-attachments/assets/f895bfa7-e5b5-4975-9d6c-4402256250eb)
+
 
 ---
 
@@ -34,7 +35,7 @@
 3. [Tech Stack](#-tech-stack)  
 4. [Architecture & Structure](#-architecture--structure)  
 5. [Showcase](#-showcase)  
-6. [Run Locally](#-run-locally)  
+6. [Database](#-database)  
 
 ---
 
@@ -167,49 +168,31 @@ This separation ensures that each layer is focused on a single responsibility: *
 
 ---
 
-## 🖼 Showcase
+## 🖼 Little Showcase
 
-*(place here extra GIFs/screenshots, e.g.):*
+### 👤 Profile & Achievements
+Here you can see the **profile page** with overall stats, and the **achievements page** where unlocked badges are displayed.  
+</br>
 
-* Unlocking achievements
-* Achievements page
-* Profile with stats
-* Daily activity heatmap
+![profile](https://github.com/user-attachments/assets/9d8e29aa-7045-4caa-8e18-601faa03191d)
 
 ---
 
-## 🚀 Run Locally
+### ⌨️ Taking a Lesson (Light difficulty)
+A quick demo of completing the **second lesson** on the *Easy* level — with real-time metrics, highlighted keyboard, and progress tracking.  
+</br>
 
-### Prerequisites
+![lesson2](https://github.com/user-attachments/assets/cd0fc924-e749-40ae-9d91-cd910eee3868)
 
-* Node.js >= 18
-* pnpm (recommended)
-* MongoDB running locally
+---
 
-### Install & run
+### 🌗 Dark ↔ Light Theme
+And here’s the same **lesson #2**, but in **light theme**, showing that the whole UI is theme-aware.  
+</br>
 
-```bash
-git clone https://github.com/yourusername/typing-quest.git
-cd typing-quest
-pnpm install
-```
+![lesson3](https://github.com/user-attachments/assets/52163486-6b40-4b7e-a3da-62cd95fc84e0)
 
-### Setup environment
-
-Create `.env` in `apps/api`:
-
-```env
-DATABASE_URL="mongodb://localhost:27017/typing"
-AUTH_SECRET="super_secret"
-GOOGLE_CLIENT_ID="..."
-GITHUB_CLIENT_ID="..."
-```
-
-### Run dev
-
-```bash
-pnpm dev
-```
+---
 
 * Frontend → [http://localhost:3000](http://localhost:3000)
 * Backend → [http://localhost:5000](http://localhost:5000)
