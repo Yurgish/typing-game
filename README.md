@@ -198,6 +198,6 @@ And here’s the same **lesson #2**, but in **light theme**, showing that the wh
 
 To keep the main README concise, all database details (collections, relations and enums) are described in a **separate file**:
 
-📖 [Open Database Schema & Docs](./packages/db/readme/database.md)
+📖 [Open Database Schema & Docs](./packages/database/readme/database.md)
 
 ---
