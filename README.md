@@ -194,7 +194,10 @@ And here’s the same **lesson #2**, but in **light theme**, showing that the wh
 
 ---
 
-* Frontend → [http://localhost:3000](http://localhost:3000)
-* Backend → [http://localhost:5000](http://localhost:5000)
+## 📚 Database
+
+To keep the main README concise, all database details (collections, relations and enums) are described in a **separate file**:
+
+📖 [Open Database Schema & Docs](./packages/db/readme/database.md)
 
 ---
